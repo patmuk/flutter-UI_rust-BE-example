@@ -21,19 +21,6 @@ use std::sync::Arc;
 
 // Section: wire functions
 
-fn wire_greet_impl(port_: MessagePort, name: impl Wire2Api<String> + UnwindSafe) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "greet",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_name = name.wire2api();
-            move |task_callback| Ok(greet(api_name))
-        },
-    )
-}
 // Section: wrapper structs
 
 // Section: static checks
@@ -56,13 +43,6 @@ where
         (!self.is_null()).then(|| self.wire2api())
     }
 }
-
-impl Wire2Api<u8> for u8 {
-    fn wire2api(self) -> u8 {
-        self
-    }
-}
-
 // Section: impl IntoDart
 
 // Section: executor

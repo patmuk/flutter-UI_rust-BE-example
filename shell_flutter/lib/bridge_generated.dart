@@ -9,11 +9,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 import 'dart:ffi' as ffi;
 
-abstract class Core {
-  Future<String> greet({required String name, dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kGreetConstMeta;
-}
+abstract class Core {}
 
 class CoreImpl implements Core {
   final CorePlatform _platform;
@@ -23,47 +19,13 @@ class CoreImpl implements Core {
   factory CoreImpl.wasm(FutureOr<WasmModule> module) =>
       CoreImpl(module as ExternalLibrary);
   CoreImpl.raw(this._platform);
-  Future<String> greet({required String name, dynamic hint}) {
-    var arg0 = _platform.api2wire_String(name);
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_greet(port_, arg0),
-      parseSuccessData: _wire2api_String,
-      constMeta: kGreetConstMeta,
-      argValues: [name],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kGreetConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "greet",
-        argNames: ["name"],
-      );
-
   void dispose() {
     _platform.dispose();
   }
 // Section: wire2api
-
-  String _wire2api_String(dynamic raw) {
-    return raw as String;
-  }
-
-  int _wire2api_u8(dynamic raw) {
-    return raw as int;
-  }
-
-  Uint8List _wire2api_uint_8_list(dynamic raw) {
-    return raw as Uint8List;
-  }
 }
 
 // Section: api2wire
-
-@protected
-int api2wire_u8(int raw) {
-  return raw;
-}
 
 // Section: finalizer
 
@@ -72,17 +34,6 @@ class CorePlatform extends FlutterRustBridgeBase<CoreWire> {
 
 // Section: api2wire
 
-  @protected
-  ffi.Pointer<wire_uint_8_list> api2wire_String(String raw) {
-    return api2wire_uint_8_list(utf8.encoder.convert(raw));
-  }
-
-  @protected
-  ffi.Pointer<wire_uint_8_list> api2wire_uint_8_list(Uint8List raw) {
-    final ans = inner.new_uint_8_list_0(raw.length);
-    ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
-    return ans;
-  }
 // Section: finalizer
 
 // Section: api_fill_to_wire
@@ -182,38 +133,6 @@ class CoreWire implements FlutterRustBridgeWireBase {
   late final _init_frb_dart_api_dl = _init_frb_dart_api_dlPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
 
-  void wire_greet(
-    int port_,
-    ffi.Pointer<wire_uint_8_list> name,
-  ) {
-    return _wire_greet(
-      port_,
-      name,
-    );
-  }
-
-  late final _wire_greetPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_greet');
-  late final _wire_greet = _wire_greetPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
-
-  ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
-    int len,
-  ) {
-    return _new_uint_8_list_0(
-      len,
-    );
-  }
-
-  late final _new_uint_8_list_0Ptr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wire_uint_8_list> Function(
-              ffi.Int32)>>('new_uint_8_list_0');
-  late final _new_uint_8_list_0 = _new_uint_8_list_0Ptr
-      .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
-
   void free_WireSyncReturn(
     WireSyncReturn ptr,
   ) {
@@ -230,13 +149,6 @@ class CoreWire implements FlutterRustBridgeWireBase {
 }
 
 class _Dart_Handle extends ffi.Opaque {}
-
-class wire_uint_8_list extends ffi.Struct {
-  external ffi.Pointer<ffi.Uint8> ptr;
-
-  @ffi.Int32()
-  external int len;
-}
 
 typedef DartPostCObjectFnType = ffi.Pointer<
     ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
