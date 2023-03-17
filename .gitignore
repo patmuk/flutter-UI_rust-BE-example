@@ -1,0 +1,4 @@
+core/src/bridge_generated.io.rs
+core/src/bridge_generated.rs
+shell_flutter/ios/Runner/bridge_generated.h
+target

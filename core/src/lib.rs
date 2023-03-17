@@ -1,17 +1,33 @@
+pub mod api;
 mod bridge_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not be accurate, and you can change it according to your needs. */
-mod api;
 
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use lazy_static::lazy_static;
+use wasm_bindgen::prelude::wasm_bindgen;
+
+use crux_core::Core;
+pub use crux_core::Request;
+
+pub use api::*;
+
+// TODO hide this plumbing
+
+uniffi::include_scaffolding!("shared");
+
+lazy_static! {
+    static ref CORE: Core<Effect, TodoList> = Core::new::<Capabilities>();
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[wasm_bindgen]
+pub fn process_event(data: &[u8]) -> Vec<u8> {
+    CORE.process_event(data)
+}
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[wasm_bindgen]
+pub fn handle_response(uuid: &[u8], data: &[u8]) -> Vec<u8> {
+    CORE.handle_response(uuid, data)
+}
+
+#[wasm_bindgen]
+pub fn view() -> Vec<u8> {
+    CORE.view()
 }
