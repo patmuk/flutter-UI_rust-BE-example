@@ -17,14 +17,22 @@ lazy_static! {
     static ref CORE: Core<Effect, TodoList> = Core::new::<Capabilities>();
 }
 
+// original, doesn't work with flutter-rust-bridge (&[u8])
+// #[wasm_bindgen]
+// pub fn process_event(data: &[u8]) -> Vec<u8> {
+//     CORE.process_event(data)
+// }
 #[wasm_bindgen]
-pub fn process_event(data: &[u8]) -> Vec<u8> {
-    CORE.process_event(data)
+pub fn process_event(data: Vec<u8>) -> Vec<u8> {
+    CORE.process_event(&data)
 }
-
+// #[wasm_bindgen]
+// pub fn handle_response(uuid: &[u8], data: &[u8]) -> Vec<u8> {
+//     CORE.handle_response(uuid, data)
+// }
 #[wasm_bindgen]
-pub fn handle_response(uuid: &[u8], data: &[u8]) -> Vec<u8> {
-    CORE.handle_response(uuid, data)
+pub fn handle_response(uuid: Vec<u8>, data: Vec<u8>) -> Vec<u8> {
+    CORE.handle_response(&uuid, &data)
 }
 
 #[wasm_bindgen]

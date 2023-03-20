@@ -108,7 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FutureBuilder(
-              future: api.greet(name: 'Patrick'),
+             future: api.processEvent(data: api.view()),
+              // future: api.greet("Patrick"),
               builder: (context, data) {
                 return Text(
                   'From Rust: ${data.data}',

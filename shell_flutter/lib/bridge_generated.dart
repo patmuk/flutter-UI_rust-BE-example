@@ -9,7 +9,20 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 import 'dart:ffi' as ffi;
 
-abstract class Core {}
+abstract class Core {
+  Future<Uint8List> processEvent({required Uint8List data, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kProcessEventConstMeta;
+
+  Future<Uint8List> handleResponse(
+      {required Uint8List uuid, required Uint8List data, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kHandleResponseConstMeta;
+
+  Future<Uint8List> view({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kViewConstMeta;
+}
 
 class CoreImpl implements Core {
   final CorePlatform _platform;
@@ -19,13 +32,79 @@ class CoreImpl implements Core {
   factory CoreImpl.wasm(FutureOr<WasmModule> module) =>
       CoreImpl(module as ExternalLibrary);
   CoreImpl.raw(this._platform);
+  Future<Uint8List> processEvent({required Uint8List data, dynamic hint}) {
+    var arg0 = _platform.api2wire_uint_8_list(data);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_process_event(port_, arg0),
+      parseSuccessData: _wire2api_uint_8_list,
+      constMeta: kProcessEventConstMeta,
+      argValues: [data],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kProcessEventConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "process_event",
+        argNames: ["data"],
+      );
+
+  Future<Uint8List> handleResponse(
+      {required Uint8List uuid, required Uint8List data, dynamic hint}) {
+    var arg0 = _platform.api2wire_uint_8_list(uuid);
+    var arg1 = _platform.api2wire_uint_8_list(data);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_handle_response(port_, arg0, arg1),
+      parseSuccessData: _wire2api_uint_8_list,
+      constMeta: kHandleResponseConstMeta,
+      argValues: [uuid, data],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kHandleResponseConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "handle_response",
+        argNames: ["uuid", "data"],
+      );
+
+  Future<Uint8List> view({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_view(port_),
+      parseSuccessData: _wire2api_uint_8_list,
+      constMeta: kViewConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kViewConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "view",
+        argNames: [],
+      );
+
   void dispose() {
     _platform.dispose();
   }
 // Section: wire2api
+
+  int _wire2api_u8(dynamic raw) {
+    return raw as int;
+  }
+
+  Uint8List _wire2api_uint_8_list(dynamic raw) {
+    return raw as Uint8List;
+  }
 }
 
 // Section: api2wire
+
+@protected
+int api2wire_u8(int raw) {
+  return raw;
+}
 
 // Section: finalizer
 
@@ -34,6 +113,12 @@ class CorePlatform extends FlutterRustBridgeBase<CoreWire> {
 
 // Section: api2wire
 
+  @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_uint_8_list(Uint8List raw) {
+    final ans = inner.new_uint_8_list_0(raw.length);
+    ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
+    return ans;
+  }
 // Section: finalizer
 
 // Section: api_fill_to_wire
@@ -133,6 +218,70 @@ class CoreWire implements FlutterRustBridgeWireBase {
   late final _init_frb_dart_api_dl = _init_frb_dart_api_dlPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
 
+  void wire_process_event(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> data,
+  ) {
+    return _wire_process_event(
+      port_,
+      data,
+    );
+  }
+
+  late final _wire_process_eventPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_process_event');
+  late final _wire_process_event = _wire_process_eventPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_handle_response(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> uuid,
+    ffi.Pointer<wire_uint_8_list> data,
+  ) {
+    return _wire_handle_response(
+      port_,
+      uuid,
+      data,
+    );
+  }
+
+  late final _wire_handle_responsePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_handle_response');
+  late final _wire_handle_response = _wire_handle_responsePtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_view(
+    int port_,
+  ) {
+    return _wire_view(
+      port_,
+    );
+  }
+
+  late final _wire_viewPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_view');
+  late final _wire_view = _wire_viewPtr.asFunction<void Function(int)>();
+
+  ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
+    int len,
+  ) {
+    return _new_uint_8_list_0(
+      len,
+    );
+  }
+
+  late final _new_uint_8_list_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_uint_8_list> Function(
+              ffi.Int32)>>('new_uint_8_list_0');
+  late final _new_uint_8_list_0 = _new_uint_8_list_0Ptr
+      .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
+
   void free_WireSyncReturn(
     WireSyncReturn ptr,
   ) {
@@ -149,6 +298,13 @@ class CoreWire implements FlutterRustBridgeWireBase {
 }
 
 class _Dart_Handle extends ffi.Opaque {}
+
+class wire_uint_8_list extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint8> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
 
 typedef DartPostCObjectFnType = ffi.Pointer<
     ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
