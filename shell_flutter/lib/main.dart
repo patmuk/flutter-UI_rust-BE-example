@@ -41,11 +41,10 @@ class MainScreen extends StatelessWidget {
   MainScreen({super.key, required this.title});
 
   final String title;
-  String textInput = "add a todo";
 
   // this triggers the button event in the rust lib
-  void _addTodo() {
-    api.processEvent(event: Event_AddTodo(textInput));
+  void _addTodo(String todo) {
+    api.processEvent(event: Event_AddTodo(todo));
   }
 
   final TextEditingController textController = TextEditingController();
@@ -96,32 +95,36 @@ class MainScreen extends StatelessWidget {
               future: api.view(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final data = snapshot.data;
-                  return Text(
-                    'From Rust: ${data?.items.first}',
-                    style: TextStyle(
-                      color: (data?.items.isNotEmpty ?? false)
-                          ? Colors.green
-                          : Colors.red,
-                    ),
-                  );
+                  final viewModel = snapshot.data;
+                  if (viewModel!.count == 0) {
+                    return const Text(
+                      "No Todo's in the List!",
+                    );
+                  } else {
+                    return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: viewModel.count,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title:
+                              Text('$index. todo: ${viewModel.items[index]}'),
+                        );
+                      },
+                    );
+
+//                     return Text(
+//                       '${viewModel.items}',
+// //                    'From Rust: ${data?.items.first}',
+//                     );
+                  }
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 }
               },
             ),
-
-// ```dart
-// ListView.builder(
-//   itemBuilder: (context, index) {
-//     return ListTile(
-//       title: Text('Item $index'),
-//     );
-//   },
-// );
-// ```
             Column(
               children: [
                 TextField(
@@ -130,25 +133,15 @@ class MainScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    textInput = textController.text;
-                    print("pressed, teext is: $textInput");
+                    _addTodo(textController.text);
                   },
-                  child: Text("Add Todo"),
+                  child: const Text("Add Todo"),
                 ),
-                Text(
-                  textInput,
-                  style: TextStyle(fontSize: 20),
-                )
               ],
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addTodo,
-        tooltip: 'Add ToDo',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
