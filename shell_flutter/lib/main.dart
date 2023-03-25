@@ -97,6 +97,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
+          // use 'setState' for triggering a refresh, which calling the future
           FutureBuilder(
             future: api.view(),
             builder: (context, snapshot) {
