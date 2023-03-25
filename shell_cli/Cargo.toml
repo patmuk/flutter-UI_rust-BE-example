@@ -12,6 +12,8 @@ edition = "2021"
 [dependencies]
 core = { path = "../core" }
 bcs = "0.1.5"
+log = "0.4"
+simple_logger = "4.1.0"
 # crossbeam-channel = "0.5.7"
 # clap = { version = "4.1.8", features = ["derive"] }
 # eyre = "0.6.8"

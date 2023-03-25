@@ -6,10 +6,49 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
+import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 
 import 'dart:ffi' as ffi;
 
-abstract class Core {}
+part 'bridge_generated.freezed.dart';
+
+abstract class Core {
+  Future<List<Effect>> processEvent({required Event event, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kProcessEventConstMeta;
+
+  Future<ViewModel> view({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kViewConstMeta;
+}
+
+@freezed
+class Effect with _$Effect {
+  const factory Effect.render(
+    ViewModel field0,
+  ) = Effect_Render;
+}
+
+@freezed
+class Event with _$Event {
+  const factory Event.addTodo(
+    String field0,
+  ) = Event_AddTodo;
+  const factory Event.removeTodo(
+    int field0,
+  ) = Event_RemoveTodo;
+  const factory Event.cleanList() = Event_CleanList;
+}
+
+class ViewModel {
+  final List<String> items;
+  final int count;
+
+  const ViewModel({
+    required this.items,
+    required this.count,
+  });
+}
 
 class CoreImpl implements Core {
   final CorePlatform _platform;
@@ -19,14 +58,105 @@ class CoreImpl implements Core {
   factory CoreImpl.wasm(FutureOr<WasmModule> module) =>
       CoreImpl(module as ExternalLibrary);
   CoreImpl.raw(this._platform);
+  Future<List<Effect>> processEvent({required Event event, dynamic hint}) {
+    var arg0 = _platform.api2wire_box_autoadd_event(event);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_process_event(port_, arg0),
+      parseSuccessData: _wire2api_list_effect,
+      constMeta: kProcessEventConstMeta,
+      argValues: [event],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kProcessEventConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "process_event",
+        argNames: ["event"],
+      );
+
+  Future<ViewModel> view({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_view(port_),
+      parseSuccessData: _wire2api_view_model,
+      constMeta: kViewConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kViewConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "view",
+        argNames: [],
+      );
+
   void dispose() {
     _platform.dispose();
   }
 // Section: wire2api
+
+  String _wire2api_String(dynamic raw) {
+    return raw as String;
+  }
+
+  List<String> _wire2api_StringList(dynamic raw) {
+    return (raw as List<dynamic>).cast<String>();
+  }
+
+  ViewModel _wire2api_box_autoadd_view_model(dynamic raw) {
+    return _wire2api_view_model(raw);
+  }
+
+  Effect _wire2api_effect(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return Effect_Render(
+          _wire2api_box_autoadd_view_model(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  List<Effect> _wire2api_list_effect(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_effect).toList();
+  }
+
+  int _wire2api_u8(dynamic raw) {
+    return raw as int;
+  }
+
+  Uint8List _wire2api_uint_8_list(dynamic raw) {
+    return raw as Uint8List;
+  }
+
+  int _wire2api_usize(dynamic raw) {
+    return castInt(raw);
+  }
+
+  ViewModel _wire2api_view_model(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return ViewModel(
+      items: _wire2api_StringList(arr[0]),
+      count: _wire2api_usize(arr[1]),
+    );
+  }
 }
 
 // Section: api2wire
 
+@protected
+int api2wire_u8(int raw) {
+  return raw;
+}
+
+@protected
+int api2wire_usize(int raw) {
+  return raw;
+}
 // Section: finalizer
 
 class CorePlatform extends FlutterRustBridgeBase<CoreWire> {
@@ -34,9 +164,54 @@ class CorePlatform extends FlutterRustBridgeBase<CoreWire> {
 
 // Section: api2wire
 
+  @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_String(String raw) {
+    return api2wire_uint_8_list(utf8.encoder.convert(raw));
+  }
+
+  @protected
+  ffi.Pointer<wire_Event> api2wire_box_autoadd_event(Event raw) {
+    final ptr = inner.new_box_autoadd_event_0();
+    _api_fill_to_wire_event(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_uint_8_list(Uint8List raw) {
+    final ans = inner.new_uint_8_list_0(raw.length);
+    ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
+    return ans;
+  }
+
 // Section: finalizer
 
 // Section: api_fill_to_wire
+
+  void _api_fill_to_wire_box_autoadd_event(
+      Event apiObj, ffi.Pointer<wire_Event> wireObj) {
+    _api_fill_to_wire_event(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_event(Event apiObj, wire_Event wireObj) {
+    if (apiObj is Event_AddTodo) {
+      var pre_field0 = api2wire_String(apiObj.field0);
+      wireObj.tag = 0;
+      wireObj.kind = inner.inflate_Event_AddTodo();
+      wireObj.kind.ref.AddTodo.ref.field0 = pre_field0;
+      return;
+    }
+    if (apiObj is Event_RemoveTodo) {
+      var pre_field0 = api2wire_usize(apiObj.field0);
+      wireObj.tag = 1;
+      wireObj.kind = inner.inflate_Event_RemoveTodo();
+      wireObj.kind.ref.RemoveTodo.ref.field0 = pre_field0;
+      return;
+    }
+    if (apiObj is Event_CleanList) {
+      wireObj.tag = 2;
+      return;
+    }
+  }
 }
 
 // ignore_for_file: camel_case_types, non_constant_identifier_names, avoid_positional_boolean_parameters, annotate_overrides, constant_identifier_names
@@ -133,6 +308,80 @@ class CoreWire implements FlutterRustBridgeWireBase {
   late final _init_frb_dart_api_dl = _init_frb_dart_api_dlPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
 
+  void wire_process_event(
+    int port_,
+    ffi.Pointer<wire_Event> event,
+  ) {
+    return _wire_process_event(
+      port_,
+      event,
+    );
+  }
+
+  late final _wire_process_eventPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_Event>)>>('wire_process_event');
+  late final _wire_process_event = _wire_process_eventPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_Event>)>();
+
+  void wire_view(
+    int port_,
+  ) {
+    return _wire_view(
+      port_,
+    );
+  }
+
+  late final _wire_viewPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_view');
+  late final _wire_view = _wire_viewPtr.asFunction<void Function(int)>();
+
+  ffi.Pointer<wire_Event> new_box_autoadd_event_0() {
+    return _new_box_autoadd_event_0();
+  }
+
+  late final _new_box_autoadd_event_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Event> Function()>>(
+          'new_box_autoadd_event_0');
+  late final _new_box_autoadd_event_0 = _new_box_autoadd_event_0Ptr
+      .asFunction<ffi.Pointer<wire_Event> Function()>();
+
+  ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
+    int len,
+  ) {
+    return _new_uint_8_list_0(
+      len,
+    );
+  }
+
+  late final _new_uint_8_list_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_uint_8_list> Function(
+              ffi.Int32)>>('new_uint_8_list_0');
+  late final _new_uint_8_list_0 = _new_uint_8_list_0Ptr
+      .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
+
+  ffi.Pointer<EventKind> inflate_Event_AddTodo() {
+    return _inflate_Event_AddTodo();
+  }
+
+  late final _inflate_Event_AddTodoPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<EventKind> Function()>>(
+          'inflate_Event_AddTodo');
+  late final _inflate_Event_AddTodo =
+      _inflate_Event_AddTodoPtr.asFunction<ffi.Pointer<EventKind> Function()>();
+
+  ffi.Pointer<EventKind> inflate_Event_RemoveTodo() {
+    return _inflate_Event_RemoveTodo();
+  }
+
+  late final _inflate_Event_RemoveTodoPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<EventKind> Function()>>(
+          'inflate_Event_RemoveTodo');
+  late final _inflate_Event_RemoveTodo = _inflate_Event_RemoveTodoPtr
+      .asFunction<ffi.Pointer<EventKind> Function()>();
+
   void free_WireSyncReturn(
     WireSyncReturn ptr,
   ) {
@@ -149,6 +398,39 @@ class CoreWire implements FlutterRustBridgeWireBase {
 }
 
 class _Dart_Handle extends ffi.Opaque {}
+
+class wire_uint_8_list extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint8> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+class wire_Event_AddTodo extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> field0;
+}
+
+class wire_Event_RemoveTodo extends ffi.Struct {
+  @ffi.UintPtr()
+  external int field0;
+}
+
+class wire_Event_CleanList extends ffi.Opaque {}
+
+class EventKind extends ffi.Union {
+  external ffi.Pointer<wire_Event_AddTodo> AddTodo;
+
+  external ffi.Pointer<wire_Event_RemoveTodo> RemoveTodo;
+
+  external ffi.Pointer<wire_Event_CleanList> CleanList;
+}
+
+class wire_Event extends ffi.Struct {
+  @ffi.Int32()
+  external int tag;
+
+  external ffi.Pointer<EventKind> kind;
+}
 
 typedef DartPostCObjectFnType = ffi.Pointer<
     ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;

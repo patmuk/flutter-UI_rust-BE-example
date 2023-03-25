@@ -88,7 +88,7 @@ generate_bridge:
 
 _generate_bridge_with_flutter:
     {{cargo_run_codegen}} \
-    --rust-input {{dir_core}}/src/api.rs \
+    --rust-input {{dir_core}}/src/lib_crux.rs \
     --dart-output {{dir_shell_flutter}}//lib/bridge_generated.dart \
     --c-output {{dir_shell_flutter}}//ios/Runner/bridge_generated.h \
     -e {{dir_shell_flutter}}//macos/Runner/   # if building for MacOS, extra path is essential -- 
