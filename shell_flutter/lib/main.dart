@@ -50,8 +50,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   // this triggers the button event in the rust lib
-  void _addTodo(String todo) {
-    api.processEvent(event: Event_AddTodo(todo));
+  void _processEvent(Event event) {
+    api.processEvent(event: event);
     textController.clear();
     // triggers a refresh
     setState(() {});
@@ -82,7 +82,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  _addTodo(textController.text);
+                  _processEvent(Event_AddTodo(textController.text));
                 },
                 child: const Text("Add Todo"),
               ),
@@ -105,9 +105,17 @@ class _MainScreenState extends State<MainScreen> {
                       itemCount: viewModel.count,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          title:
-                              Text('${index + 1}.: ${viewModel.items[index]}'),
-                        );
+                            title: Row(
+                          children: [
+                            ElevatedButton(
+                              child: const Icon(Icons.remove),
+                              onPressed: () {
+                                _processEvent(Event.removeTodo(index + 1));
+                              },
+                            ),
+                            Text(' ${index + 1}.: ${viewModel.items[index]}'),
+                          ],
+                        ));
                       },
                     ),
                   );
