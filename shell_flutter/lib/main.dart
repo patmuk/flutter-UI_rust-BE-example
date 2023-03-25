@@ -72,61 +72,56 @@ class _MainScreenState extends State<MainScreen> {
             "---=== TODO LIST ===---",
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          Expanded(
-            child: Column(verticalDirection: VerticalDirection.up, children: [
-              FutureBuilder(
-                future: api.view(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final viewModel = snapshot.data;
-                    if (viewModel!.count == 0) {
-                      return const Center(
-                        child: Text("No Todo's in the List!"),
-                      );
-                    } else {
-                      return Expanded(
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: viewModel.count,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(
-                                '${index + 1}. todo: ${viewModel.items[index]}',
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    }
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: textController,
+                  maxLines: null,
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _addTodo(textController.text);
                 },
+                child: const Text("Add Todo"),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: textController,
-                      maxLines: null,
+            ],
+          ),
+          FutureBuilder(
+            future: api.view(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final viewModel = snapshot.data;
+                if (viewModel!.count == 0) {
+                  return const Center(
+                    child: Text("No Todo's in the List!"),
+                  );
+                } else {
+                  return Expanded(
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: viewModel.count,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title:
+                              Text('${index + 1}.: ${viewModel.items[index]}'),
+                        );
+                      },
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _addTodo(textController.text);
-                    },
-                    child: const Text("Add Todo"),
-                  ),
-                ],
-              ),
-            ]),
+                  );
+                }
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
           ),
         ],
       ),

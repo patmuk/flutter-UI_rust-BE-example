@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "shell_flutter",
+            "cwd": "shell_flutter",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "shell_flutter (profile mode)",
+            "cwd": "shell_flutter",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "shell_flutter (release mode)",
+            "cwd": "shell_flutter",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "dart",
+            "cwd": "shared_types/generated/dart",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}
