@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shell_flutter/ffi.dart';
-
 import 'bridge_definitions.dart';
 
 void main() {
@@ -40,7 +39,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MainScreen extends StatefulWidget {
-  MainScreen({super.key, required this.title});
+  const MainScreen({super.key, required this.title});
 
   final String title;
 
@@ -50,11 +49,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   // this triggers the button event in the rust lib
-  void _processEvent(Event event) {
-    api.processEvent(event: event);
-    textController.clear();
+  Future<void> _processEvent(Event event) async {
+    var effects = await api.processEvent(event: event);
+    for (Effect effect in effects) {
+      effect.when(render: (ViewModel viewModel) => setState(() {}));
+    }
     // triggers a refresh
-    setState(() {});
   }
 
   final TextEditingController textController = TextEditingController();
@@ -76,13 +76,20 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               Expanded(
                 child: TextField(
+                  keyboardType: TextInputType.text,
                   controller: textController,
                   maxLines: null,
+                  onSubmitted: (value) {
+                    // Add your action here
+                    _processEvent(Event.addTodo(value));
+                    textController.clear();
+                  },
                 ),
               ),
               ElevatedButton(
                 onPressed: () {
                   _processEvent(Event_AddTodo(textController.text));
+                  textController.clear();
                 },
                 child: const Text("Add Todo"),
               ),
