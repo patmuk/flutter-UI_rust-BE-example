@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shell_flutter/ffi.dart';
 
+import 'bridge_definitions.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -45,6 +47,7 @@ class MainScreen extends StatelessWidget {
   // this triggers the button event in the rust lib
   void _addTodo(String todo) {
     api.processEvent(event: Event_AddTodo(todo));
+    setState() {}
   }
 
   final TextEditingController textController = TextEditingController();
@@ -107,8 +110,8 @@ class MainScreen extends StatelessWidget {
                       itemCount: viewModel.count,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          title:
-                              Text('$index. todo: ${viewModel.items[index]}'),
+                          title: Text(
+                              '${index+1}. todo: ${viewModel.items[index]}'),
                         );
                       },
                     );

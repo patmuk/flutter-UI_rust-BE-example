@@ -24,3 +24,4 @@ uniffi = { version = "0.23.0", features = ["cli"] }
 
 [build-dependencies]
 uniffi = { version = "0.23.0", features = ["build"] }
+flutter_rust_bridge_codegen = { workspace = true}

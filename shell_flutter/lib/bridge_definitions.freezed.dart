@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'bridge_generated.dart';
+part of 'bridge_definitions.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -56,15 +56,13 @@ mixin _$Effect {
 
 /// @nodoc
 abstract class $EffectCopyWith<$Res> {
-  factory $EffectCopyWith(Effect value, $Res Function(Effect) then) =
-      _$EffectCopyWithImpl<$Res, Effect>;
+  factory $EffectCopyWith(Effect value, $Res Function(Effect) then) = _$EffectCopyWithImpl<$Res, Effect>;
   @useResult
   $Res call({ViewModel field0});
 }
 
 /// @nodoc
-class _$EffectCopyWithImpl<$Res, $Val extends Effect>
-    implements $EffectCopyWith<$Res> {
+class _$EffectCopyWithImpl<$Res, $Val extends Effect> implements $EffectCopyWith<$Res> {
   _$EffectCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
@@ -88,8 +86,7 @@ class _$EffectCopyWithImpl<$Res, $Val extends Effect>
 
 /// @nodoc
 abstract class _$$Effect_RenderCopyWith<$Res> implements $EffectCopyWith<$Res> {
-  factory _$$Effect_RenderCopyWith(
-          _$Effect_Render value, $Res Function(_$Effect_Render) then) =
+  factory _$$Effect_RenderCopyWith(_$Effect_Render value, $Res Function(_$Effect_Render) then) =
       __$$Effect_RenderCopyWithImpl<$Res>;
   @override
   @useResult
@@ -97,12 +94,9 @@ abstract class _$$Effect_RenderCopyWith<$Res> implements $EffectCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$Effect_RenderCopyWithImpl<$Res>
-    extends _$EffectCopyWithImpl<$Res, _$Effect_Render>
+class __$$Effect_RenderCopyWithImpl<$Res> extends _$EffectCopyWithImpl<$Res, _$Effect_Render>
     implements _$$Effect_RenderCopyWith<$Res> {
-  __$$Effect_RenderCopyWithImpl(
-      _$Effect_Render _value, $Res Function(_$Effect_Render) _then)
-      : super(_value, _then);
+  __$$Effect_RenderCopyWithImpl(_$Effect_Render _value, $Res Function(_$Effect_Render) _then) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -212,8 +206,7 @@ abstract class Effect_Render implements Effect {
   ViewModel get field0;
   @override
   @JsonKey(ignore: true)
-  _$$Effect_RenderCopyWith<_$Effect_Render> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$Effect_RenderCopyWith<_$Effect_Render> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -266,13 +259,11 @@ mixin _$Event {
 
 /// @nodoc
 abstract class $EventCopyWith<$Res> {
-  factory $EventCopyWith(Event value, $Res Function(Event) then) =
-      _$EventCopyWithImpl<$Res, Event>;
+  factory $EventCopyWith(Event value, $Res Function(Event) then) = _$EventCopyWithImpl<$Res, Event>;
 }
 
 /// @nodoc
-class _$EventCopyWithImpl<$Res, $Val extends Event>
-    implements $EventCopyWith<$Res> {
+class _$EventCopyWithImpl<$Res, $Val extends Event> implements $EventCopyWith<$Res> {
   _$EventCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
@@ -283,20 +274,16 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
 
 /// @nodoc
 abstract class _$$Event_AddTodoCopyWith<$Res> {
-  factory _$$Event_AddTodoCopyWith(
-          _$Event_AddTodo value, $Res Function(_$Event_AddTodo) then) =
+  factory _$$Event_AddTodoCopyWith(_$Event_AddTodo value, $Res Function(_$Event_AddTodo) then) =
       __$$Event_AddTodoCopyWithImpl<$Res>;
   @useResult
   $Res call({String field0});
 }
 
 /// @nodoc
-class __$$Event_AddTodoCopyWithImpl<$Res>
-    extends _$EventCopyWithImpl<$Res, _$Event_AddTodo>
+class __$$Event_AddTodoCopyWithImpl<$Res> extends _$EventCopyWithImpl<$Res, _$Event_AddTodo>
     implements _$$Event_AddTodoCopyWith<$Res> {
-  __$$Event_AddTodoCopyWithImpl(
-      _$Event_AddTodo _value, $Res Function(_$Event_AddTodo) _then)
-      : super(_value, _then);
+  __$$Event_AddTodoCopyWithImpl(_$Event_AddTodo _value, $Res Function(_$Event_AddTodo) _then) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -416,25 +403,21 @@ abstract class Event_AddTodo implements Event {
 
   String get field0;
   @JsonKey(ignore: true)
-  _$$Event_AddTodoCopyWith<_$Event_AddTodo> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$Event_AddTodoCopyWith<_$Event_AddTodo> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class _$$Event_RemoveTodoCopyWith<$Res> {
-  factory _$$Event_RemoveTodoCopyWith(
-          _$Event_RemoveTodo value, $Res Function(_$Event_RemoveTodo) then) =
+  factory _$$Event_RemoveTodoCopyWith(_$Event_RemoveTodo value, $Res Function(_$Event_RemoveTodo) then) =
       __$$Event_RemoveTodoCopyWithImpl<$Res>;
   @useResult
   $Res call({int field0});
 }
 
 /// @nodoc
-class __$$Event_RemoveTodoCopyWithImpl<$Res>
-    extends _$EventCopyWithImpl<$Res, _$Event_RemoveTodo>
+class __$$Event_RemoveTodoCopyWithImpl<$Res> extends _$EventCopyWithImpl<$Res, _$Event_RemoveTodo>
     implements _$$Event_RemoveTodoCopyWith<$Res> {
-  __$$Event_RemoveTodoCopyWithImpl(
-      _$Event_RemoveTodo _value, $Res Function(_$Event_RemoveTodo) _then)
+  __$$Event_RemoveTodoCopyWithImpl(_$Event_RemoveTodo _value, $Res Function(_$Event_RemoveTodo) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -555,23 +538,19 @@ abstract class Event_RemoveTodo implements Event {
 
   int get field0;
   @JsonKey(ignore: true)
-  _$$Event_RemoveTodoCopyWith<_$Event_RemoveTodo> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$Event_RemoveTodoCopyWith<_$Event_RemoveTodo> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class _$$Event_CleanListCopyWith<$Res> {
-  factory _$$Event_CleanListCopyWith(
-          _$Event_CleanList value, $Res Function(_$Event_CleanList) then) =
+  factory _$$Event_CleanListCopyWith(_$Event_CleanList value, $Res Function(_$Event_CleanList) then) =
       __$$Event_CleanListCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$Event_CleanListCopyWithImpl<$Res>
-    extends _$EventCopyWithImpl<$Res, _$Event_CleanList>
+class __$$Event_CleanListCopyWithImpl<$Res> extends _$EventCopyWithImpl<$Res, _$Event_CleanList>
     implements _$$Event_CleanListCopyWith<$Res> {
-  __$$Event_CleanListCopyWithImpl(
-      _$Event_CleanList _value, $Res Function(_$Event_CleanList) _then)
+  __$$Event_CleanListCopyWithImpl(_$Event_CleanList _value, $Res Function(_$Event_CleanList) _then)
       : super(_value, _then);
 }
 
@@ -587,8 +566,7 @@ class _$Event_CleanList implements Event_CleanList {
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$Event_CleanList);
+    return identical(this, other) || (other.runtimeType == runtimeType && other is _$Event_CleanList);
   }
 
   @override

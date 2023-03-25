@@ -11,3 +11,4 @@ keywords = ["photos", "sharring"]
 [workspace.dependencies]
 anyhow = "1.0.69"
 serde = "1.0.154"
+flutter_rust_bridge_codegen = "1.72.0"

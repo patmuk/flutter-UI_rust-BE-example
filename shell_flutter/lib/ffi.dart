@@ -3,6 +3,7 @@
 
 import 'dart:ffi';
 
+import 'bridge_definitions.dart';
 import 'bridge_generated.dart';
 
 // Re-export the bridge so it is only necessary to import this file.
