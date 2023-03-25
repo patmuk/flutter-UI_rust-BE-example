@@ -48,6 +48,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  late ViewModel viewModel;
+
   // this triggers the button event in the rust lib
   Future<void> _processEvent(Event event) async {
     var effects = await api.processEvent(event: event);
@@ -99,8 +101,8 @@ class _MainScreenState extends State<MainScreen> {
             future: api.view(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                final viewModel = snapshot.data;
-                if (viewModel!.count == 0) {
+                viewModel = snapshot.data!;
+                if (viewModel.count == 0) {
                   return const Center(
                     child: Text("No Todo's in the List!"),
                   );
