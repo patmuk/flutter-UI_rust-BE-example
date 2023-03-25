@@ -1,5 +1,5 @@
 use anyhow::Result;
-use core::api::{Effect, Event, ViewModel};
+use core::lib_crux::{Effect, Event, ViewModel};
 use crux_core::{typegen::TypeGen, Request};
 use std::path::PathBuf;
 
