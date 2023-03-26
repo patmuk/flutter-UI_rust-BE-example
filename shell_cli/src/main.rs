@@ -11,11 +11,14 @@ fn main() {
     let stdin = io::stdin();
     let mut effects;
     let mut view_model = core::lib_crux::view();
-    println!("Todo List \n enter an entry to add or\n   the number of the line to delete");
+    println!("=====================");
+    println!("Todo List CLI");
+    println!("enter an entry to add or\nthe number of the line to delete");
+    println!("=====================");
     loop {
         println!("\n\n\n----- {} TODOs -----", view_model.count);
         for (index, item) in view_model.items.iter().enumerate() {
-            println!("{}....{}", index + 1, item);
+            println!("{}....{item}",index+1);
         }
         stdin
             .read_line(&mut user_input)
