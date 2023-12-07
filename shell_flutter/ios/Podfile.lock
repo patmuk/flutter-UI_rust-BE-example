@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - rinf (0.1.0):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - rinf (from `.symlinks/plugins/rinf/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  rinf:
+    :path: ".symlinks/plugins/rinf/ios"
+
+SPEC CHECKSUMS:
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  rinf: 75ee395a39eedbc6aa8c7698ad04faa0f47753c6
+
+PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
+
+COCOAPODS: 1.13.0

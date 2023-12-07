@@ -1,14 +1,15 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
     localPropertiesFile.withReader('UTF-8') { reader ->
         localProperties.load(reader)
     }
-}
-
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
@@ -21,12 +22,9 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    namespace "com.example.shell_flutter"
+    compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -66,36 +64,4 @@ flutter {
     source '../..'
 }
 
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
-
-[
-    new Tuple2('Debug', ''),
-    new Tuple2('Profile', '--release'),
-    new Tuple2('Release', '--release')
-].each {
-    def taskPostfix = it.first
-    def profileMode = it.second
-    tasks.whenTaskAdded { task ->
-        if (task.name == "javaPreCompile$taskPostfix") {
-            task.dependsOn "cargoBuild$taskPostfix"
-        }
-    }
-    tasks.register("cargoBuild$taskPostfix", Exec) {
-        // Until https://github.com/bbqsrc/cargo-ndk/pull/13 is merged,
-        // this workaround is necessary.
-
-        def ndk_command = """cargo ndk \
-            -t armeabi-v7a -t arm64-v8a -t x86_64 -t x86 \
-            -o ../android/app/src/main/jniLibs build $profileMode"""
-
-        workingDir "../../$crate"
-        environment "ANDROID_NDK_HOME", "$ANDROID_NDK"
-        if (org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem.isWindows()) {
-            commandLine 'cmd', '/C', ndk_command
-        } else {
-            commandLine 'sh', '-c', ndk_command
-        }
-    }
-}
+dependencies {}

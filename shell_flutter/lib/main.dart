@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shell_flutter/ffi.dart';
-import 'bridge_definitions.dart';
+import 'package:rinf/rinf.dart';
 
-void main() {
+void main() async {
+  await Rinf.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
+        // the application has a purple toolbar. Then, without quitting the app,
         // try changing the seedColor in the colorScheme below to Colors.green
         // and then invoke "hot reload" (save your changes or press the "hot
         // reload" button in a Flutter-supported IDE, or press "r" if you used
@@ -33,116 +33,95 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MainScreen(title: 'Flutter-rust-bridge crux style Demo'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key, required this.title});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
 
   final String title;
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  late ViewModel viewModel;
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
 
-  // this triggers the button event in the rust lib
-  Future<void> _processEvent(Event event) async {
-    var effects = await api.processEvent(event: event);
-    for (Effect effect in effects) {
-      effect.when(render: (ViewModel viewModel) => setState(() {}));
-    }
-    // triggers a refresh
+  void _incrementCounter() {
+    setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
+    });
   }
-
-  final TextEditingController textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
+        // TRY THIS: Try changing the color here to a specific color (to
+        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Column(
-        children: [
-          Text(
-            "---=== TODO LIST ===---",
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  keyboardType: TextInputType.text,
-                  controller: textController,
-                  maxLines: null,
-                  onSubmitted: (value) {
-                    // Add your action here
-                    _processEvent(Event.addTodo(value));
-                    textController.clear();
-                  },
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _processEvent(Event_AddTodo(textController.text));
-                  textController.clear();
-                },
-                child: const Text("Add Todo"),
-              ),
-            ],
-          ),
-          // use 'setState' for triggering a refresh, which calling the future
-          FutureBuilder(
-            future: api.view(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                viewModel = snapshot.data!;
-                if (viewModel.count == 0) {
-                  return const Center(
-                    child: Text("No Todo's in the List!"),
-                  );
-                } else {
-                  return Expanded(
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: viewModel.count,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                            title: Row(
-                          children: [
-                            ElevatedButton(
-                              child: const Icon(Icons.remove),
-                              onPressed: () {
-                                _processEvent(Event.removeTodo(index + 1));
-                              },
-                            ),
-                            Text(' ${index + 1}.: ${viewModel.items[index]}'),
-                          ],
-                        ));
-                      },
-                    ),
-                  );
-                }
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
-        ],
+      body: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          //
+          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+          // action in the IDE, or press "p" in the console), to see the
+          // wireframe for each widget.
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ],
+        ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
