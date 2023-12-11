@@ -1,0 +1,18 @@
+rust_input:
+  - ../app_core/src/api.rs
+rust_crate-dir:
+  - ../app_core
+rust_output:
+  - ../app_core/src/bridge/generated/mod.rs
+inline_rust: false
+dart_output:
+  - lib/bridge/generated/bridge_generated.dart
+c_output:
+  - ios/Runner/generated/bridge_generated.h
+extra_c_output_path:
+  - macos/Runner/generated
+dart_decl_output: lib/bridge/generated/bridge_definitions.dart
+skip_add_mod_to_lib: true
+dart_enums_style: false
+dart_format_line_length: 120
+wasm: true

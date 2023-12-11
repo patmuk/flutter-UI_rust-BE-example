@@ -1,32 +1,20 @@
-// use crux_core::{render::Render, App, Capability};
-// use crux_macros::Effect;
-use serde::{Deserialize, Serialize};
-// #[derive(Default)]
-// pub struct TodoList;
-
 #[derive(Default)]
 pub(crate) struct TodoListModel {
     items: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct ViewModel {
     pub items: Vec<String>,
     pub count: usize,
 }
 #[allow(dead_code)]
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Event {
     AddTodo(String),
     RemoveTodo(usize),
     CleanList,
 }
-
-// #[derive(Effect)]
-// #[effect(app = "TodoList")]
-// pub struct Capabilities {
-//     render: Render<Event>,
-// }
 
 // requests to the shell, aka Capabilities aka Effects
 #[derive(Debug, PartialEq, Eq)]
@@ -34,15 +22,6 @@ pub enum Effect {
     Render(ViewModel),
 }
 
-// impl App for TodoList {
-// impl TodoList {
-// type Event = Event;
-// type Model = TodoListModel;
-// type ViewModel = ViewModel;
-// type Capabilities = Vec<Request>;
-
-// fn update(&self, event: Self::Event, model: &mut Self::Model, caps: &Self::Capabilities) {
-// pub fn update(&self, event: Event, model: &mut TodoListModel) -> Vec<Request> {
 pub(crate) fn update(event: Event, model: &mut TodoListModel) -> Vec<Effect> {
     match event {
         Event::AddTodo(todo) => model.items.push(todo),
@@ -51,11 +30,9 @@ pub(crate) fn update(event: Event, model: &mut TodoListModel) -> Vec<Effect> {
         }
         Event::CleanList => model.items = vec![],
     }
-    // caps.render.render();
     vec![Effect::Render(view(model))]
 }
 
-// pub fn view(&self, model: &TodoListModel) -> ViewModel {
 pub(crate) fn view(model: &TodoListModel) -> ViewModel {
     let count = model.items.len();
     ViewModel {
@@ -63,13 +40,6 @@ pub(crate) fn view(model: &TodoListModel) -> ViewModel {
         count,
     }
 }
-// }
-// temporarily adapted for use with flutter-rust-bridge
-// impl TodoList {
-//     fn new() -> Self {
-//         Self {}
-//     }
-// }
 
 #[cfg(test)]
 mod tests {

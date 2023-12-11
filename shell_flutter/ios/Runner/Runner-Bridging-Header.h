@@ -1,2 +1,2 @@
 #import "GeneratedPluginRegistrant.h"
-#import "bridge_generated.h"
+#import "generated/bridge_generated.h"

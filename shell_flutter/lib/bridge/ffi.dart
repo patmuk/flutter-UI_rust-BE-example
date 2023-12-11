@@ -3,19 +3,21 @@
 
 import 'dart:ffi';
 
-import 'bridge_definitions.dart';
-import 'bridge_generated.dart';
+import 'generated/bridge_generated.dart';
+import 'generated/bridge_generated.io.dart';
+import 'generated/bridge_definitions.dart';
 
 // Re-export the bridge so it is only necessary to import this file.
-export 'bridge_generated.dart';
+export 'generated/bridge_generated.dart';
+export 'generated/bridge_definitions.dart';
 import 'dart:io' as io;
 
-const _base = '../core';
+const _base = 'app_core';
 
 // On MacOS, the dynamic library is not bundled with the binary,
 // but rather directly **linked** against the binary.
 final _dylib = io.Platform.isWindows ? '$_base.dll' : 'lib$_base.so';
 
-final Core api = CoreImpl(io.Platform.isIOS || io.Platform.isMacOS
+final AppCore api = AppCoreImpl(io.Platform.isIOS || io.Platform.isMacOS
     ? DynamicLibrary.executable()
     : DynamicLibrary.open(_dylib));

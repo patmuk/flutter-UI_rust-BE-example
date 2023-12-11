@@ -1,5 +1,5 @@
 [workspace]
-members = ["core", "shared_types", "shell_cli"]
+members = ["app_core", "shell_cli"]
 
 [workspace.package]
 authors = ["PSTT"]
@@ -9,6 +9,7 @@ license = "Apache-2.0"
 keywords = ["photos", "sharring"]
 
 [workspace.dependencies]
-anyhow = "1.0.69"
-serde = "1.0.154"
-flutter_rust_bridge_codegen = "1.72.0"
+thiserror = "^1.0.40"
+anyhow = "^1.0.69"
+serde = "^1.0.154"
+flutter_rust_bridge_codegen = "^1.82.4"
