@@ -1,0 +1,11 @@
+syntax = "proto3";
+package todo_list;
+
+message Item {
+  string value = 1;
+}
+
+message ViewModel {
+  repeated Item items = 1;
+  uint32 count = 2;
+}

@@ -1,0 +1,42 @@
+syntax = "proto3";
+package crux;
+
+message AddTodoEvent {
+  string todo = 1;
+}
+
+message RemoveTodoEvent {
+  uint32 index = 1;
+}
+
+message CleanListEvent {
+}
+
+message Event {
+  oneof event {
+    AddTodoEvent add_todo = 1;
+    RemoveTodoEvent remove_todo = 2;
+    CleanListEvent clean_list = 3;
+  }
+}
+
+message RustCallError {
+}
+
+message Render {
+}
+
+message Effect {
+  oneof effect {
+    RustCallError rustCallError = 1;
+    Render render = 2;
+  }
+}
+
+message ProcessEvent {
+    Event event = 1;
+}
+
+message HandleEffect {
+    repeated Effect effects = 1;
+}

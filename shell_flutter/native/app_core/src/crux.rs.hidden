@@ -1,0 +1,80 @@
+// use std::sync::RwLock;
+
+// use lazy_static::lazy_static;
+
+// use bridge::{RustOperation, RustRequest, RustResponse, RustSignal};
+
+// use crate::todo_list::{self, TodoListModel};
+// pub use crate::todo_list::{Effect, Event, ViewModel};
+// use crate::hub::messages::todo_list::{ViewModel, ID};
+
+
+
+// lazy_static! {
+//     static ref MODEL: RwLock<TodoListModel> = RwLock::new(TodoListModel::default());
+// }
+
+// static ref view_model = RwLock::new(TodoListModel::default());
+struct Crux {
+    todo_list_view_model: ViewModel
+}
+
+impl Crux {
+
+pub fn process_event(self: &Self, event: Event) -> Vec<Effect> {
+    match event {
+        Event::AddTodo(_) => todo_list::update(event, &mut self.todo_list_view_model.write().unwrap()),
+        Event::RemoveTodo(_) => todo_list::update(event, &mut MODEL.write().unwrap()),
+        Event::CleanList => todo_list::update(event, &mut MODEL.write().unwrap()),
+    }
+}
+
+pub async fn handle_response(rust_request: RustRequest) -> RustResponse {
+    match rust_request.operation {
+        RustOperation::Create => RustResponse::default(),
+        RustOperation::Read => {
+            let message_bytes = rust_request.message.unwrap();
+            let request_message = ReadRequest::decode(message_bytes.as_slice()).unwrap();
+            // let event = request_message.
+            match (request_message.id, request_message.resource) {
+                (Some(id), Some(resource)) => {
+                    if id != ID || resource != ID {
+                        return RustResponse::default();
+                    }
+                }
+                _ => return RustResponse::default(),
+            }
+
+            let response_message = HandleEffect {
+                effects: Effect{Render}
+            };
+            RustResponse {
+                successful: true,
+                message: Some(response_message.encode_to_vec()),
+                blob: None,
+            }
+        }
+        RustOperation::Update => RustResponse::default(),
+        RustOperation::Delete => RustResponse::default(),
+    }}
+
+pub fn view() -> ViewModel {
+    todo_list::view(&MODEL.read().unwrap())
+    // CORE.view(&MODEL)
+}
+pub fn stream_view() -> ViewModel {
+
+    let mut view_model: ViewModel;
+    loop {
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+
+        let signal_message = StateSignal { View_model };
+        let rust_signal = RustSignal {
+            resource: ID,
+            message: Some(signal_message.encode_to_vec()),
+            blob: None,
+        };
+        send_rust_signal(rust_signal);
+    }
+}
+}

@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MainScreen(title: 'Flutter-rust-bridge crux style Demo'),
+      home: const MainScreen(title: 'Flutter-rust-bridge crux style Demo'),
     );
   }
 }
