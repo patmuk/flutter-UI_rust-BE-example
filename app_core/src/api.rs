@@ -12,7 +12,7 @@ lazy_static! {
 
 
 pub fn process_event(event: Event) -> Vec<Effect> {
-    todo_list::update(event, &mut MODEL.write().unwrap())
+    todo_list::process_event(event, &mut MODEL.write().unwrap())
 }
 
 // pub fn handle_response(uuid: &[u8], data: &[u8]) -> Vec<u8> {

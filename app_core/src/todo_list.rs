@@ -8,7 +8,6 @@ pub struct ViewModel {
     pub items: Vec<String>,
     pub count: usize,
 }
-#[allow(dead_code)]
 #[derive(Debug, PartialEq, Eq)]
 pub enum Event {
     AddTodo(String),
@@ -22,7 +21,7 @@ pub enum Effect {
     Render(ViewModel),
 }
 
-pub(crate) fn update(event: Event, model: &mut TodoListModel) -> Vec<Effect> {
+pub(crate) fn process_event(event: Event, model: &mut TodoListModel) -> Vec<Effect> {
     match event {
         Event::AddTodo(todo) => model.items.push(todo),
         Event::RemoveTodo(todo_pos) => {
