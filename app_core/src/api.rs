@@ -2,8 +2,8 @@ use std::sync::RwLock;
 
 use flutter_rust_bridge::support::lazy_static;
 
-use crate::share_pictures::{self, TodoListModel};
-pub use crate::share_pictures::{Effect, Event, ViewModel};
+use crate::todo_list::{self, TodoListModel};
+pub use crate::todo_list::{Effect, Event, ViewModel};
 
 lazy_static! {
     static ref MODEL: RwLock<TodoListModel> = RwLock::new(TodoListModel::default());
@@ -12,7 +12,7 @@ lazy_static! {
 
 
 pub fn process_event(event: Event) -> Vec<Effect> {
-    share_pictures::update(event, &mut MODEL.write().unwrap())
+    todo_list::update(event, &mut MODEL.write().unwrap())
 }
 
 // pub fn handle_response(uuid: &[u8], data: &[u8]) -> Vec<u8> {
@@ -20,7 +20,7 @@ pub fn process_event(event: Event) -> Vec<Effect> {
 // }
 
 pub fn view() -> ViewModel {
-    share_pictures::view(&MODEL.read().unwrap())
+    todo_list::view(&MODEL.read().unwrap())
 }
 
 // test method "greet"
