@@ -1,3 +1,14 @@
+Stopped with this branch, as there is a fundamental problem:  
+The app_core shall have a cruix-style API, so that different shells (like shell_cli) can speak to it.
+So the events should be used by app.
+rinf defines them in the proto messages.
+Thus the app needs to import them - or else rinf's events would need to be converted to the app's events.
+But at the same time, rinf starts the execution from the hub/src/lib.rs file.
+Thus, the hub crate needs to import the app, to trigger it.  
+And here we have a cyclic dependency of the hub-crate and the app_core crate.
+
+Thus, I am moving back to Flutter-Rust-Bridge, which doesn't have both above mentioned dependencies.
+
 # shell_flutter
 
 A new Flutter project.
