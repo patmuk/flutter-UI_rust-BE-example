@@ -2,7 +2,6 @@ use app_core::api::{self, process_event, view, Effect, ViewModel};
 use std::{io, num::ParseIntError, process};
 
 fn main() {
-    //    let args = Args::parse();
     let mut user_input = String::new();
     let stdin = io::stdin();
 
@@ -75,7 +74,6 @@ fn hande_effects(effects: Vec<Effect>) {
         Effect::Render(view_model) => {
             print_todo_list(&view_model);
         }
-        _ => panic!("Unknown Effect received!"),
     });
 }
 

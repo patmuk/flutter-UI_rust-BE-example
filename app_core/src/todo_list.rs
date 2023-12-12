@@ -21,7 +21,7 @@ pub enum Effect {
     Render(ViewModel),
 }
 
-pub(crate) fn process_event(event: Event, model: &mut TodoListModel) -> Vec<Effect> {
+pub(crate) fn process_mod_event(event: Event, model: &mut TodoListModel) -> Vec<Effect> {
     match event {
         Event::AddTodo(todo) => model.items.push(todo),
         Event::RemoveTodo(todo_pos) => {
@@ -31,6 +31,9 @@ pub(crate) fn process_event(event: Event, model: &mut TodoListModel) -> Vec<Effe
     }
     vec![Effect::Render(view(model))]
 }
+
+// pub(crate) fn process_read_event(event: Event, model: &TodoListModel) -> Vec<Effect> {
+// }
 
 pub(crate) fn view(model: &TodoListModel) -> ViewModel {
     let count = model.items.len();
@@ -51,7 +54,7 @@ mod tests {
         let mut model = TodoListModel::default();
 
         // Call 'add'
-        let effects = /*todo_list.*/update(Event::AddTodo("test the list".into()), &mut model);
+        let effects = process_event(Event::AddTodo("test the list".into()), &mut model);
 
         // Check update asked us to `Render`
         let actual_effect = &effects[0];
@@ -74,7 +77,7 @@ mod tests {
         };
 
         // Call 'add'
-        let effects = /*todo_list.*/update(Event::RemoveTodo(1), &mut model);
+        let effects = process_event(Event::RemoveTodo(1), &mut model);
 
         // Check update asked us to `Render`
         let actual_effect = &effects[0];
@@ -97,7 +100,7 @@ mod tests {
         model.items.push("clean me".into());
 
         // Call 'add'
-        let effects = /*todo_list.*/update(Event::CleanList, &mut model);
+        let effects = process_event(Event::CleanList, &mut model);
 
         // Check update asked us to `Render`
         let actual_effect = &effects[0];

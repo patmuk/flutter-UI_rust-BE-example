@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shell_flutter/ffi.dart';
-import 'bridge_definitions.dart';
+import 'bridge/ffi.dart';
 
 void main() {
   runApp(const MyApp());

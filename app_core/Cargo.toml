@@ -13,5 +13,8 @@ log = "0.4"
 
 flutter_rust_bridge = "1"
 
+# handles the app state with a mutex
+parking_lot = { version = "0.12", features = ["serde"] }
+
 [build-dependencies]
 flutter_rust_bridge_codegen = { workspace = true}

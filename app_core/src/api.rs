@@ -1,33 +1,35 @@
-use std::sync::RwLock;
+use flutter_rust_bridge::{support::lazy_static, frb};
+use parking_lot::RwLock;
+// probably not needed, rust borrowing rules should be enought and concurrency should be handeled by flutter-rust-bridge
+// use std::sync::RwLock;
 
-use flutter_rust_bridge::support::lazy_static;
-
-use crate::todo_list::{self, TodoListModel};
 pub use crate::todo_list::{Effect, Event, ViewModel};
+use crate::todo_list::{TodoListModel, self};
+
+// holds the complete state of the app, as a global static variable
+#[derive(Default)]
+#[frb(non_final)]
+struct AppState {
+    // pub model: Box<TodoListModel>,
+    pub model: TodoListModel,
+}
+// initializes the app_state only at first call
+// The app state is behind a mutex to avoid race conditions
 
 lazy_static! {
-    static ref MODEL: RwLock<TodoListModel> = RwLock::new(TodoListModel::default());
+    static ref APP_STATE: RwLock<AppState> = RwLock::new(AppState::default());
 }
-
-
+            
 
 pub fn process_event(event: Event) -> Vec<Effect> {
-    todo_list::process_event(event, &mut MODEL.write().unwrap())
+    todo_list::process_mod_event(event, &mut APP_STATE.write().model)
 }
 
-// pub fn handle_response(uuid: &[u8], data: &[u8]) -> Vec<u8> {
-//     todo!();
-// }
-
-pub fn view() -> ViewModel {
-    todo_list::view(&MODEL.read().unwrap())
+pub fn view() -> ViewModel {    
+    todo_list::view(&APP_STATE.read().model)
 }
 
-// test method "greet"
-pub fn greet(name: String) -> String {
-// pub fn greet(name: &str) -> String {
-    return format!("Hello {}!", name);
-}
+
 
 // This is the entry point of your Rust library.
 // When adding new code to your project, note that only items used
