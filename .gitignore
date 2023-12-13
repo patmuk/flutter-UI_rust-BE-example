@@ -1,5 +1,6 @@
-target
+**/target/**
 **/bridge_generated*
 **/bridge_definitions.*
 **/.DS_Store
 **/generated/**
+shell_flutter/.metadata
