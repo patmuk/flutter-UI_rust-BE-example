@@ -1,4 +1,8 @@
+use std::{fs::File, io::{Write, self}};
+
+use anyhow::Context;
 use flutter_rust_bridge::{support::lazy_static, frb};
+use serde::{Serialize, Deserialize};
 use parking_lot::RwLock;
 // probably not needed, rust borrowing rules should be enought and concurrency should be handeled by flutter-rust-bridge
 // use std::sync::RwLock;
@@ -7,22 +11,72 @@ pub use crate::todo_list::{Effect, Event, ViewModel};
 use crate::todo_list::{TodoListModel, self};
 
 // holds the complete state of the app, as a global static variable
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize, Debug)]
 #[frb(non_final)]
 struct AppState {
     // pub model: Box<TodoListModel>,
     pub model: TodoListModel,
 }
 // initializes the app_state only at first call
-// The app state is behind a mutex to avoid race conditions
-
+// The app state is behind a mutex to avoid data conditions, and static, to be globally available to all threads
 lazy_static! {
-    static ref APP_STATE: RwLock<AppState> = RwLock::new(AppState::default());
+    // TODO handle, if state cannot be loaded!
+    static ref APP_STATE: RwLock<AppState> = RwLock::new(load_app_state().unwrap());
 }
-            
+
+// handle app_state persistence
+const APP_STATE_FILE_PATH: &str = "app_state_model.bin";
+// get the last persisted app state, if any exists
+    fn load_app_state() -> anyhow::Result<AppState> {
+        let app_state: AppState;
+    // Attempt to read the file
+     match std::fs::read(APP_STATE_FILE_PATH) {
+    Ok(buffer) => {
+        // If successful, deserialize and display the struct
+        let model: TodoListModel =  bincode::deserialize(&buffer)?;
+        app_state = AppState { model };
+        // println!("{:?}", app_state);
+    }
+        Err(err) if err.kind() == io::ErrorKind::NotFound => {
+        // If the file does not exist, create a default struct
+        app_state = AppState::default();
+        // println!("File does not exist. Using default struct: {:?}", app_state);
+    }
+    Err(err) => {
+        // Handle other errors
+        // eprintln!("Error reading file: {}", err);
+        return Err(anyhow::Error::new(err));
+    }
+    }
+    Ok(app_state)
+}
+
+/// Stores the app's state in a file.
+///
+/// # Errors
+///
+/// This function will return an error if anything goes wrong
+fn persist_app_state() -> anyhow::Result<()> {
+    let serialized_model: Vec<u8> = bincode::serialize(&(APP_STATE.read().model))
+        .context("Error serializing the model")?;
+
+    // Write the serialized data to the file
+    let mut file = File::create(APP_STATE_FILE_PATH)
+        .context("Error creating the app state file")?;
+    file.write_all(&serialized_model)
+        .context("Error writing to the app state file")?;
+
+    Ok(())    
+    // let serialized_model = serde_json::to_string(&app_state.model).unwrap();
+    // let mut file = File::create("app_state.json").unwrap();
+    // file.write_all(serialized_model.as_bytes()).unwrap();
+}
 
 pub fn process_event(event: Event) -> Vec<Effect> {
-    todo_list::process_mod_event(event, &mut APP_STATE.write().model)
+    let result = todo_list::process_mod_event(event, &mut APP_STATE.write().model);
+    // TODO persist less ofter
+    persist_app_state().unwrap();
+    result
 }
 
 pub fn view() -> ViewModel {    

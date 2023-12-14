@@ -1,4 +1,6 @@
-#[derive(Default)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Default,Serialize, Deserialize, Debug)]
 pub(crate) struct TodoListModel {
     items: Vec<String>,
 }
@@ -54,7 +56,7 @@ mod tests {
         let mut model = TodoListModel::default();
 
         // Call 'add'
-        let effects = process_event(Event::AddTodo("test the list".into()), &mut model);
+        let effects = process_mod_event(Event::AddTodo("test the list".into()), &mut model);
 
         // Check update asked us to `Render`
         let actual_effect = &effects[0];
@@ -77,7 +79,7 @@ mod tests {
         };
 
         // Call 'add'
-        let effects = process_event(Event::RemoveTodo(1), &mut model);
+        let effects = process_mod_event(Event::RemoveTodo(1), &mut model);
 
         // Check update asked us to `Render`
         let actual_effect = &effects[0];
@@ -100,7 +102,7 @@ mod tests {
         model.items.push("clean me".into());
 
         // Call 'add'
-        let effects = process_event(Event::CleanList, &mut model);
+        let effects = process_mod_event(Event::CleanList, &mut model);
 
         // Check update asked us to `Render`
         let actual_effect = &effects[0];
