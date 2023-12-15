@@ -1,4 +1,4 @@
-use app_core::api::{self, process_event, view, Effect, ViewModel};
+use app_core::api::{self, Effect, ViewModel};
 use std::{io, num::ParseIntError, process};
 
 fn main() {
@@ -26,12 +26,13 @@ fn main() {
             }
             Ok(_) if user_input.starts_with('a') => {
                 let todo = user_input.split_at(2).1.trim();
-                let effects = process_event(api::Event::AddTodo(todo.to_string()));
+                // let app = api::A::new();
+                let effects = api::process_event(api::Event::AddTodo(todo.to_string()));
                 hande_effects(effects);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('v') => {
-                hande_effects(vec![Effect::Render(view())]);
+                hande_effects(vec![Effect::Render(api::view())]);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('r') => {
@@ -40,7 +41,7 @@ fn main() {
                     Ok(index) => {
                         if index > 0 {
                             println!("\nRemoving todo at index {}\n", index);
-                            let effects = process_event(api::Event::RemoveTodo(index));
+                            let effects = api::process_event(api::Event::RemoveTodo(index));
                             hande_effects(effects);
                         } else {
                             println!("\nGive me a positive number, not {}\n", index);
@@ -53,11 +54,12 @@ fn main() {
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('c') => {
-                let effects = process_event(api::Event::CleanList);
+                let effects = api::process_event(api::Event::CleanList);
                 hande_effects(effects);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('q') => {
+                api::shutdown();
                 process::exit(0);
             }
             Ok(_) => {
@@ -68,6 +70,7 @@ fn main() {
         };
     }
 }
+
 
 fn hande_effects(effects: Vec<Effect>) {
     effects.iter().for_each(|effect| match effect {

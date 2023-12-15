@@ -1,54 +1,39 @@
-use std::{fs::File, io::{Write, self}};
-
+use std::{
+    fs::File,
+    io::{self, Write},
+};
 use anyhow::Context;
-use flutter_rust_bridge::{support::lazy_static, frb};
-use serde::{Serialize, Deserialize};
+use flutter_rust_bridge::{frb, support::lazy_static, RustOpaque};
+// not needed by FRB, but needed to handle write access on this global variable!
+use once_cell::sync::Lazy;
 use parking_lot::RwLock;
-// probably not needed, rust borrowing rules should be enought and concurrency should be handeled by flutter-rust-bridge
-// use std::sync::RwLock;
 
+use serde::{Deserialize, Serialize};
+// implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
+use log::{debug, info, LevelFilter};
+use oslog::OsLogger;
+
+use crate::todo_list::{self, TodoListModel};
 pub use crate::todo_list::{Effect, Event, ViewModel};
-use crate::todo_list::{TodoListModel, self};
 
-// holds the complete state of the app, as a global static variable
-#[derive(Default, Serialize, Deserialize, Debug)]
-#[frb(non_final)]
-struct AppState {
-    // pub model: Box<TodoListModel>,
-    pub model: TodoListModel,
-}
-// initializes the app_state only at first call
-// The app state is behind a mutex to avoid data conditions, and static, to be globally available to all threads
-lazy_static! {
-    // TODO handle, if state cannot be loaded!
-    static ref APP_STATE: RwLock<AppState> = RwLock::new(load_app_state().unwrap());
+// only pub functions to call
+/// instanciate the lazy static app state -
+/// call if you wnat to controll when the app state is initialized,
+/// which might take time (due to IO when loading the last saved state)
+pub fn init() {
+    // let _ = parking_lot::lock_api::RwLockWriteGuard::<'_, parking_lot::RawRwLock, AppState>::map(API.write(), |mut guard| *guard = AppState::new());
+    let _ = &*API;
 }
 
-// handle app_state persistence
-const APP_STATE_FILE_PATH: &str = "app_state_model.bin";
-// get the last persisted app state, if any exists
-    fn load_app_state() -> anyhow::Result<AppState> {
-        let app_state: AppState;
-    // Attempt to read the file
-     match std::fs::read(APP_STATE_FILE_PATH) {
-    Ok(buffer) => {
-        // If successful, deserialize and display the struct
-        let model: TodoListModel =  bincode::deserialize(&buffer)?;
-        app_state = AppState { model };
-        // println!("{:?}", app_state);
-    }
-        Err(err) if err.kind() == io::ErrorKind::NotFound => {
-        // If the file does not exist, create a default struct
-        app_state = AppState::default();
-        // println!("File does not exist. Using default struct: {:?}", app_state);
-    }
-    Err(err) => {
-        // Handle other errors
-        // eprintln!("Error reading file: {}", err);
-        return Err(anyhow::Error::new(err));
-    }
-    }
-    Ok(app_state)
+pub fn process_event(event: Event) -> Vec<Effect> {    
+    let result = todo_list::process_mod_event(event, &mut API.write().model);
+    // TODO too much IO?
+    persist_app_state().expect("Error persisting app state");
+    result
+}
+
+pub fn view() -> ViewModel {
+    todo_list::view(&API.read().model)
 }
 
 /// Stores the app's state in a file.
@@ -56,38 +41,87 @@ const APP_STATE_FILE_PATH: &str = "app_state_model.bin";
 /// # Errors
 ///
 /// This function will return an error if anything goes wrong
-fn persist_app_state() -> anyhow::Result<()> {
-    let serialized_model: Vec<u8> = bincode::serialize(&(APP_STATE.read().model))
-        .context("Error serializing the model")?;
-
+pub fn persist_app_state() -> anyhow::Result<()> {
+    let serialized_app_state: Vec<u8> =
+        bincode::serialize(&*API.read()).context("Error serializing the model")?;
     // Write the serialized data to the file
-    let mut file = File::create(APP_STATE_FILE_PATH)
-        .context("Error creating the app state file")?;
-    file.write_all(&serialized_model)
+    let mut file =
+        File::create(APP_STATE_FILE_PATH).context("Error creating the app state file")?;
+    file.write_all(&serialized_app_state)
         .context("Error writing to the app state file")?;
-
-    Ok(())    
-    // let serialized_model = serde_json::to_string(&app_state.model).unwrap();
-    // let mut file = File::create("app_state.json").unwrap();
-    // file.write_all(serialized_model.as_bytes()).unwrap();
+    debug!(
+        "debug: Persisted app state to file: {}",
+        APP_STATE_FILE_PATH
+    );
+    info!("info: Persisted app state to file: {}", APP_STATE_FILE_PATH);
+    Ok(())
 }
 
-pub fn process_event(event: Event) -> Vec<Effect> {
-    let result = todo_list::process_mod_event(event, &mut APP_STATE.write().model);
-    // TODO persist less ofter
-    persist_app_state().unwrap();
-    result
+pub fn shutdown() {
+    persist_app_state().expect("Error persisting app state");
 }
 
-pub fn view() -> ViewModel {    
-    todo_list::view(&APP_STATE.read().model)
+// handle app_state persistence
+const APP_STATE_FILE_PATH: &str = "./app_state_model.bin";
+
+// initializes the app_state only at first call
+// The app state is behind a mutex to avoid data conditions, and static, to be globally available to all threads
+// lazy_static! {
+// static ref IS_LOG_INITIALIZED: RwLock<bool> = RwLock::new(false);
+// static ref API: RwLock<AppState> = RwLock::new(AppState::new());
+// }
+static API: Lazy<RwLock<AppState>> =
+    Lazy::new(|| RwLock::new(AppState::new()));
+
+//Mutable statics are safe to access
+// #[dynamic(lazy, finalize)]
+// static mut AppState: AppState = AppState::new();
+
+// holds the complete state of the app, as a global static variable
+#[derive(Default, Serialize, Deserialize, Debug)]
+// #[frb(non_final)]
+struct AppState{
+    model: TodoListModel,
 }
 
-
-
-// This is the entry point of your Rust library.
-// When adding new code to your project, note that only items used
-// here will be transformed to their Dart equivalents.
+impl AppState {
+    fn new() -> Self {
+        //configures the logger
+        OsLogger::new("com.example")
+            .level_filter(LevelFilter::Debug)
+            .category_level_filter("Settings", LevelFilter::Trace)
+            .init()
+            .unwrap();
+        // TODO handle error cases
+        AppState::load().unwrap()
+    }
+    // get the last persisted app state, if any exists
+    // this function can only be called once, as it will initialize the app state
+    // if it does not exist
+    fn load() -> anyhow::Result<AppState> {
+        let app_state: AppState;
+        // Attempt to read the file
+        match std::fs::read(APP_STATE_FILE_PATH) {
+            Ok(buffer) => {
+                // If successful, deserialize and display the struct
+                app_state = bincode::deserialize(&buffer)?;
+                // println!("{:?}", app_state);
+            }
+            Err(err) if err.kind() == io::ErrorKind::NotFound => {
+                // If the file does not exist, create a default struct
+                app_state = AppState::default();
+                // println!("File does not exist. Using default struct: {:?}", app_state);
+            }
+            Err(err) => {
+                // Handle other errors
+                eprintln!("Error reading file: {}", err);
+                // panic!("Error reading file: {}", err);
+                return Err(anyhow::Error::new(err));
+            }
+        }
+        Ok(app_state)
+    }
+}
 
 // A plain enum without any fields. This is similar to Dart- or C-style enums.
 // flutter_rust_bridge is capable of generating code for enums with fields
