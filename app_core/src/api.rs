@@ -18,10 +18,10 @@ pub use crate::todo_list::{Effect, Event, ViewModel};
 
 // only pub functions to call
 /// instanciate the lazy static app state -
-/// call if you wnat to controll when the app state is initialized,
+/// call if you want to control when the app state is initialized,
 /// which might take time (due to IO when loading the last saved state)
+/// otherwise it is called automatically when the lazy reference is accessed the first time
 pub fn init() {
-    // let _ = parking_lot::lock_api::RwLockWriteGuard::<'_, parking_lot::RawRwLock, AppState>::map(API.write(), |mut guard| *guard = AppState::new());
     let _ = &*API;
 }
 
@@ -68,10 +68,6 @@ const APP_STATE_FILE_PATH: &str = "./app_state_model.bin";
 // }
 static API: Lazy<RwLock<AppState>> =
     Lazy::new(|| RwLock::new(AppState::new()));
-
-//Mutable statics are safe to access
-// #[dynamic(lazy, finalize)]
-// static mut AppState: AppState = AppState::new();
 
 // holds the complete state of the app, as a global static variable
 #[derive(Default, Serialize, Deserialize, Debug)]
