@@ -45,14 +45,17 @@ The configuration in app_core is enough, so logs can be writte nfrom a shell (se
 ### see the logs in MacOS
 The log messages can be found via comand line or Console.app
 #### Command line
-'''
-log stream --process=app_core --level debug
-'''
+'log stream --predicate="subsystem contains 'com.example.todo_app'" --level debug'
 will show the log output in real-time.
-'--process' refers to the process (i.e. crate name) that was executed:
-"app_core" if started from 'app_core/src/main.rs' or "shell_cli" if started from 'shell_cli/src/main.rs'.
 '--level' is needed to set the log level, the default is "info". Note that "debug" is not Rust's logging system's debug level, but outputs "trace" log messages as well.
-One can filter for a spcific log message with a predicate:
+The '--predicate' "subsystem contains 'com.example.todo_app'" filters for whichever string you provided in the constructor of the logger (`OsLogger::new("com.example.todo_app")`).
+
+One could filter for the process, like:
+`log stream --process=app_core --level debug`
+but this depends on how the app was started:
+"app_core" if started from 'app_core/src/main.rs' or "shell_cli" if started from 'shell_cli/src/main.rs'.
+
+One can filter for a spcific log message using the predicate:
 '''
 log stream --predicate 'eventMessage contains "Persisted"'
 '''
@@ -62,8 +65,20 @@ In the Console.app one needs to apply similar filters.
 On the left pannel select your device.
 In the search filed in the upper-left corner one can enter 
 '''
+subsystem:com.example.todo_app
+'''
+Or
+'''
 process:app_core
 '''
 to filter for the executed app.
 
+The log level can be changed by the menu `Action -> Include Debug Messages`
+
 ### see the logs in the iPhone Simulator
+You can use either the command line or Console.app:
+
+#### Command Line
+Use the exact same command as above. If not filtering for the subsystem but the process the name is `Runner`.
+#### Console.app
+Exactly like above, but select the Simulator in "Devices" on the left pannel.
