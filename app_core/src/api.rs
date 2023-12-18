@@ -3,14 +3,14 @@ use std::{
     io::{self, Write},
 };
 use anyhow::Context;
-use flutter_rust_bridge::{frb, support::lazy_static, RustOpaque};
+// use flutter_rust_bridge::{frb, support::lazy_static, RustOpaque};
 // not needed by FRB, but needed to handle write access on this global variable!
 use once_cell::sync::Lazy;
 use parking_lot::RwLock;
 
 use serde::{Deserialize, Serialize};
 // implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
-use log::{debug, info, LevelFilter};
+use log::{LevelFilter, debug, info, error};
 use oslog::OsLogger;
 
 use crate::todo_list::{self, TodoListModel};
@@ -49,11 +49,7 @@ pub fn persist_app_state() -> anyhow::Result<()> {
         File::create(APP_STATE_FILE_PATH).context("Error creating the app state file")?;
     file.write_all(&serialized_app_state)
         .context("Error writing to the app state file")?;
-    debug!(
-        "debug: Persisted app state to file: {}",
-        APP_STATE_FILE_PATH
-    );
-    info!("info: Persisted app state to file: {}", APP_STATE_FILE_PATH);
+    debug!("Persisted app state to file: {}", APP_STATE_FILE_PATH);
     Ok(())
 }
 
@@ -87,13 +83,16 @@ struct AppState{
 impl AppState {
     fn new() -> Self {
         //configures the logger
-        OsLogger::new("com.example")
-            .level_filter(LevelFilter::Debug)
-            .category_level_filter("Settings", LevelFilter::Trace)
-            .init()
-            .unwrap();
+        OsLogger::new("com.example.todo_app")
+        .level_filter(LevelFilter::Trace)
+        .category_level_filter("Settings", LevelFilter::Trace)
+        .init()
+        .unwrap();
+        debug!("initializing the Rust lib");
         // TODO handle error cases
-        AppState::load().unwrap()
+        let app_state = AppState::load().unwrap();
+        info!("Initialization finished, log level is {:?}", log::max_level());
+        app_state
     }
     // get the last persisted app state, if any exists
     // this function can only be called once, as it will initialize the app state
@@ -105,17 +104,15 @@ impl AppState {
             Ok(buffer) => {
                 // If successful, deserialize and display the struct
                 app_state = bincode::deserialize(&buffer)?;
-                // println!("{:?}", app_state);
             }
             Err(err) if err.kind() == io::ErrorKind::NotFound => {
                 // If the file does not exist, create a default struct
                 app_state = AppState::default();
-                // println!("File does not exist. Using default struct: {:?}", app_state);
             }
             Err(err) => {
                 // Handle other errors
+                error!("Error reading file: {}", err);
                 eprintln!("Error reading file: {}", err);
-                // panic!("Error reading file: {}", err);
                 return Err(anyhow::Error::new(err));
             }
         }
@@ -126,6 +123,7 @@ impl AppState {
 // A plain enum without any fields. This is similar to Dart- or C-style enums.
 // flutter_rust_bridge is capable of generating code for enums with fields
 // (@freezed classes in Dart and tagged unions in C).
+#[derive(Debug)]
 pub enum Platform {
     Unknown,
     Android,
