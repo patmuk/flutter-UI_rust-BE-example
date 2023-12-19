@@ -9,16 +9,20 @@ edition = "2021"
 crate-type = ["lib", "staticlib", "cdylib"]
 
 [dependencies]
-log = "0.4"
-
 flutter_rust_bridge = { version = "1", features = ["zero-copy"] }
+
+thiserror = "^1.0.51"
+
+log = "^0.4"
+oslog = "^0.2.0"
+
 serde = "^1.0.154"
 bincode = "^1.3.3"
+
 # handles the app state with a mutex
 once_cell = "^1.19.0"
 parking_lot = { version = "0.12", features = ["serde"] }
-anyhow = "^1.0.75"
-oslog = "^0.2.0"
+
 
 [build-dependencies]
 flutter_rust_bridge_codegen = { workspace = true}
