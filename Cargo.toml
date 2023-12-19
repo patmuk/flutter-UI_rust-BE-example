@@ -10,5 +10,3 @@ keywords = ["photos", "sharring"]
 
 [workspace.dependencies]
 thiserror = "^1.0.40"
-anyhow = "^1.0.69"
-flutter_rust_bridge_codegen = "^1.82.4"

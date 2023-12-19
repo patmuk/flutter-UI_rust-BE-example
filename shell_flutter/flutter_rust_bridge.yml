@@ -1,0 +1,8 @@
+rust_input: ../app_core/src/api.rs
+rust_root: ../app_core
+rust_output: ../app_core/src/bridge/generated/mod.rs
+dart_output: lib/bridge/generated/bridge_generated.dart
+no_add_mod_to_lib: true
+c_output: ios/Runner/generated/bridge_generated.h
+dart_format_line_length: 120
+dumb_all: true
