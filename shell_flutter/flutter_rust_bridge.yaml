@@ -1,4 +1,5 @@
-rust_input: rust/src/api/**/*.rs
-rust_root: rust
-# rust_output: app_core/src/bridge/generated
+rust_input: ../app_core/src/api.rs
+rust_root: ../app_core
+rust_output: ../app_core/src/bridge/generated/mod.rs
 dart_output: lib/bridge/generated
+add_mod_to_lib: false

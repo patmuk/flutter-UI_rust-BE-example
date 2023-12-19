@@ -1,8 +1,7 @@
 default: gen lint
 
-gen:
+gen: mkdir_generated
     cd shell_flutter && flutter pub get
-    cd shell_flutter && mkdir -p lib/bridge/generated
     cd shell_flutter && flutter_rust_bridge_codegen generate --config-file flutter_rust_bridge.yaml
 
 lint:
@@ -13,11 +12,17 @@ clean:
     cd shell_flutter && flutter clean
     cd app_core && cargo clean
 
+mkdir_generated:
+    mkdir -p app_core/src/bridge/generated/*
+    mkdir -p shell_flutter/ios/Runner/generated/*
+    mkdir -p shell_flutter/macos/Runner/generated/*
+    mkdir -p shell_flutter/lib/bridge/generated/*
+
 clean_gen:
-    rm -rf app_core/src/bridge/generated
-    rm -rf shell_flutter/ios/Runner/generated
-    rm -rf shell_flutter/macos/Runner/generated
-    rm -rf shell_flutter/lib/bridge/generated
+    rm -rf app_core/src/bridge/generated/*
+    rm -rf shell_flutter/ios/Runner/generated/*
+    rm -rf shell_flutter/macos/Runner/generated/*
+    rm -rf shell_flutter/lib/bridge/generated/*
 
 clean_all: clean clean_gen
 
