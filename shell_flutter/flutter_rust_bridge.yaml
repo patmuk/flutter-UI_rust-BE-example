@@ -1,2 +1,4 @@
 rust_input: rust/src/api/**/*.rs
-dart_output: lib/src/rust
+rust_root: rust
+# rust_output: app_core/src/bridge/generated
+dart_output: lib/bridge/generated

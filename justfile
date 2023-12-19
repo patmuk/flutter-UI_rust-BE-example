@@ -2,7 +2,8 @@ default: gen lint
 
 gen:
     cd shell_flutter && flutter pub get
-    cd shell_flutter && flutter_rust_bridge_codegen generate --config-file flutter_rust_bridge.yml
+    cd shell_flutter && mkdir -p lib/bridge/generated
+    cd shell_flutter && flutter_rust_bridge_codegen generate --config-file flutter_rust_bridge.yaml
 
 lint:
     cd app_core && cargo fmt

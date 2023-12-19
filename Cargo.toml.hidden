@@ -1,5 +1,5 @@
 [workspace]
-members = ["app_core", "shell_cli"]
+members = ["shell_flutter/app_core", "shell_cli"]
 
 [workspace.package]
 authors = ["PSTT"]
