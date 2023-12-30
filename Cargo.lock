@@ -122,6 +122,7 @@ dependencies = [
  "oslog",
  "parking_lot",
  "serde",
+ "serial_test",
  "thiserror",
 ]
 

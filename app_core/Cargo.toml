@@ -24,5 +24,8 @@ once_cell = "^1.19.0"
 parking_lot = { version = "0.12", features = ["serde"] }
 
 
+[dev-dependencies]
+serial_test = "2.0.0"
+
 [build-dependencies]
 flutter_rust_bridge_codegen = "^2.0.0-dev.2"

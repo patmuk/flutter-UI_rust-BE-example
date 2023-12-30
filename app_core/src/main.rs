@@ -1,3 +1,5 @@
+use std::path::Path;
+
 // initializes and logs a test message using OS logger
 use app_core::api::{self, Effect, AppConfig};
 
@@ -10,7 +12,7 @@ fn main() {
     // As this attempts to load the app state from disk, it could take a while for IO.
     
     // optionally set up the file path to store the app state
-    api::setup(AppConfig{app_state_file_path: "./test_app_state.bin".to_string()});
+    api::setup("./test_app_state.bin".to_string());
 
     api::process_event(api::Event::AddTodo("Test todo".to_string()));
 

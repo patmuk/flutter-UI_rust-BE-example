@@ -13,10 +13,10 @@ clean:
     cd app_core && cargo clean
 
 mkdir_generated:
-    mkdir -p app_core/src/bridge/generated/*
-    mkdir -p shell_flutter/ios/Runner/generated/*
-    mkdir -p shell_flutter/macos/Runner/generated/*
-    mkdir -p shell_flutter/lib/bridge/generated/*
+    mkdir -p app_core/src/bridge/generated
+    mkdir -p shell_flutter/ios/Runner/generated
+    mkdir -p shell_flutter/macos/Runner/generated
+    mkdir -p shell_flutter/lib/bridge/generated
 
 clean_gen:
     rm -rf app_core/src/bridge/generated/*

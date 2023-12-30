@@ -10,3 +10,5 @@ keywords = ["photos", "sharring"]
 
 [workspace.dependencies]
 thiserror = "^1.0.40"
+# needed by the frb generated code
+anyhow = "^1.0.77"
