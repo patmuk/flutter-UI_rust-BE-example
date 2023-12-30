@@ -3,6 +3,7 @@ default: gen lint
 gen: mkdir_generated
     cd shell_flutter && flutter pub get
     cd shell_flutter && flutter_rust_bridge_codegen generate --config-file flutter_rust_bridge.yaml
+    cd shell_flutter && dart run build_runner build
 
 lint:
     cd app_core && cargo fmt
@@ -31,9 +32,6 @@ serve *args='':
 
 build:
     cargo lipo
-    cp target/universal/debug/libapp_core.a shell_flutter/ios/Runner/generated/.
     
-run:
-    just build
+run: build
     cd shell_flutter && flutter run
-# vim:expandtab:sw=4:ts=4
