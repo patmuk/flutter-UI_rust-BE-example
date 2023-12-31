@@ -7,11 +7,10 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 // implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
-use log::{debug, error, info, LevelFilter};
-use oslog::OsLogger;
+use log::{debug, error, info, trace};
 
 pub use crate::todo_list::{Effect, Event, ViewModel};
-use crate::{api::AppConfig, todo_list::TodoListModel};
+use crate::{api::AppConfig, todo_list::TodoListModel, ensure_logger_is_set_up};
 
 /// Stores the app's state in a file.
 ///
@@ -19,7 +18,7 @@ use crate::{api::AppConfig, todo_list::TodoListModel};
 ///
 /// This function will return an error if anything goes wrong
 pub fn persist_app_state(app_state: &AppState, path: &Path) -> Result<(), io::Error> {
-    debug!("persisting app state\n{app_state:?}\n to {:?}", path);
+    trace!("persisting app state:\n  {app_state:?}\n to {:?}", path);
 
     let serialized_app_state: Vec<u8> =
         bincode::serialize(app_state).expect("bincode.serialzation itself should not result in an error, \
@@ -52,13 +51,8 @@ pub struct AppState {
 
 impl AppState {
     pub(crate) fn new(app_config: &AppConfig) -> Self {
-        //configures the logger
-        OsLogger::new("com.example.todo_app")
-            .level_filter(LevelFilter::Trace)
-            .category_level_filter("Settings", LevelFilter::Trace)
-            .init()
-            .unwrap();
-        debug!("initializing the Rust lib");
+        ensure_logger_is_set_up();
+        debug!("creating the app state from persisted or default values");
         let app_state;
         match load(&app_config.app_state_file_path) {
             Err(AppStateLoadError::ReadFile(err, path)) if err.kind() == IoErrorKind::NotFound => {
@@ -90,11 +84,11 @@ pub enum AppStateLoadError {
 
 #[cfg(test)]
 mod tests {
-    // don't execute the tests in parallel, as file access would lead to race conditions 
+    // don't execute the tests in parallel, as file access would lead to race conditions
     use serial_test::serial;
     use std::fs::{create_dir_all, File};
-    use std::io::Write;
     use std::io::ErrorKind as IoErrorKind;
+    use std::io::Write;
     use std::path::PathBuf;
 
     use crate::todo_list::process_mod_event;
@@ -187,11 +181,8 @@ mod tests {
             create_dir_all(parent).unwrap();
         }
         std::fs::write(&*TEST_FILE, "corrupted").unwrap();
-        
         let result = load(&TEST_FILE);
-        
         assert!(&result.is_err());
-        
         use bincode::ErrorKind;
         assert!(matches!(
             result,
