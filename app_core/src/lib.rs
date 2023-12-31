@@ -3,7 +3,7 @@ pub mod app_state;
 mod bridge;
 mod todo_list;
 
-use log::{debug, LevelFilter, SetLoggerError};
+use log::{debug, LevelFilter};
 use once_cell::sync::OnceCell;
 use oslog::OsLogger;
 
