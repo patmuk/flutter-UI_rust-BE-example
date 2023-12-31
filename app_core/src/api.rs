@@ -1,6 +1,6 @@
 use crate::{
     app_state::{self, AppState},
-    todo_list,
+    todo_list, ensure_logger_is_set_up,
 };
 
 use std::path::PathBuf;
@@ -20,6 +20,7 @@ pub use crate::todo_list::{Effect, Event, ViewModel};
 /// which might take time (due to IO when loading the last saved state)
 /// otherwise it is called automatically when the lazy reference is accessed the first time
 pub fn init() {
+    ensure_logger_is_set_up();
     let _ = &*API;
 }
 
@@ -29,6 +30,9 @@ pub fn init() {
 // pub fn setup(app_config: AppConfig) -> Result<(), io::Error> {
 // pub fn setup(app_config: AppConfig) {
 pub fn setup(path: String) {
+    ensure_logger_is_set_up();
+    debug!("Overwriting default setup:\n  - setting the app_state_storage_path to {path:?}");
+    trace!("Overwriting default setup:\n  - setting the app_state_storage_path to {path:?}");
     let app_config = AppConfig {
         app_state_file_path: PathBuf::from(path),
     };
@@ -57,7 +61,6 @@ static APP_CONFIG: OnceCell<AppConfig> = OnceCell::new();
 
 pub fn process_event(event: Event) -> Vec<Effect> {
     debug!("Processing event: {:?}", event);
-    trace!("got thus trace log message?");
     let effects = todo_list::process_mod_event(event, &mut API.write().model);
     debug!("Processed event, got the effects {:?}", effects);
     // TODO too much IO?
@@ -70,7 +73,7 @@ pub fn view() -> ViewModel {
 }
 
 // pub fn persist_app_state() -> Result<(), std::io::Error> {
-pub fn persist_app_state(){
+pub fn persist_app_state() {
     let app_config = APP_CONFIG
         .get()
         .expect("AppConfig must be set, error in this lib's logic flow!");
@@ -79,6 +82,7 @@ pub fn persist_app_state(){
 
 // pub fn shutdown() -> Result<(), std::io::Error> {
 pub fn shutdown() {
+    debug!("shutting down the app");
     persist_app_state()
 }
 

@@ -40,6 +40,8 @@ dependencies:
     path: rust_builder
   flutter_rust_bridge: 2.0.0-dev.2
 
+  path_provider: ^2.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

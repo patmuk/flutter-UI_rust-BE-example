@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:shell_flutter/bridge/generated/api.dart' as api;
 import 'package:shell_flutter/bridge/generated/frb_generated.dart';
-
 import 'bridge/generated/todo_list.dart';
+import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
   await RustLib.init();
   runApp(const MyApp());
+  final Directory appSupportDir = await getApplicationSupportDirectory();
+  api.setup(path: appSupportDir.path);
 }
 
 class MyApp extends StatelessWidget {
