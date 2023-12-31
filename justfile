@@ -1,37 +1,41 @@
 default: gen lint
 
 gen: mkdir_generated
-    cd shell_flutter && flutter pub get
-    cd shell_flutter && flutter_rust_bridge_codegen generate --config-file flutter_rust_bridge.yaml
-    cd shell_flutter && dart run build_runner build
+  cd shell_flutter && flutter pub get
+  cd shell_flutter && flutter_rust_bridge_codegen generate --config-file flutter_rust_bridge.yaml
+  cd shell_flutter && dart run build_runner build
 
 lint:
-    cd app_core && cargo fmt
-    cd shell_flutter && dart format .
+  cd app_core && cargo fmt
+  cd shell_flutter && dart format .
 
 clean:
-    cd shell_flutter && flutter clean
-    cd app_core && cargo clean
+  cd shell_flutter && flutter clean
+  cd app_core && cargo clean
 
 mkdir_generated:
-    mkdir -p app_core/src/bridge/generated
-    mkdir -p shell_flutter/ios/Runner/generated
-    mkdir -p shell_flutter/macos/Runner/generated
-    mkdir -p shell_flutter/lib/bridge/generated
+  mkdir -p app_core/src/bridge/generated
+  mkdir -p shell_flutter/ios/Runner/generated
+  mkdir -p shell_flutter/macos/Runner/generated
+  mkdir -p shell_flutter/lib/bridge/generated
 
 clean_gen:
-    rm -rf app_core/src/bridge/generated/*
-    rm -rf shell_flutter/ios/Runner/generated/*
-    rm -rf shell_flutter/macos/Runner/generated/*
-    rm -rf shell_flutter/lib/bridge/generated/*
+  rm -rf app_core/src/bridge/generated/*
+  rm -rf shell_flutter/ios/Runner/generated/*
+  rm -rf shell_flutter/macos/Runner/generated/*
+  rm -rf shell_flutter/lib/bridge/generated/*
 
 clean_all: clean clean_gen
 
 serve *args='':
-    cd shell_flutter && flutter pub run flutter_rust_bridge:serve {{args}}
+  cd shell_flutter && flutter pub run flutter_rust_bridge:serve {{args}}
 
-build:
-    cargo lipo
-    
+build: 
+  cargo lipo
+
 run: build
-    cd shell_flutter && flutter run
+  cd shell_flutter && flutter run
+
+run_fresh: clean gen run
+
+run_fresh_all: clean_all gen run
