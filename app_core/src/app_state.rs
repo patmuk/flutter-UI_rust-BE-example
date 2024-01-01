@@ -18,7 +18,7 @@ use crate::{api::AppConfig, ensure_logger_is_set_up, todo_list::TodoListModel};
 /// # Errors
 ///
 /// This function will return an error if anything goes wrong
-pub fn persist_app_state(app_state: &AppState, path: &Path) -> Result<(), io::Error> {
+pub(crate) fn persist_app_state(app_state: &AppState, path: &Path) -> Result<(), io::Error> {
     trace!("persisting app state:\n  {app_state:?}\n to {:?}", path);
 
     let serialized_app_state: Vec<u8> =
@@ -46,7 +46,7 @@ fn load(path: &Path) -> Result<AppState, AppStateLoadError> {
 // holds the complete state of the app, as a global static variable
 #[derive(Default, Serialize, Deserialize, Debug)]
 #[frb(opaque)]
-pub struct AppState {
+pub(crate) struct AppState {
     pub(crate) model: TodoListModel,
 }
 

@@ -8,9 +8,11 @@ import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
   await RustLib.init();
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
   final Directory appSupportDir = await getApplicationSupportDirectory();
-  api.setup(path: appSupportDir.path);
+  final stateFile = File('${appSupportDir.path}/app_state.bin');
+  runApp(const MyApp());
+  api.setup(path: stateFile.path);
 }
 
 class MyApp extends StatelessWidget {
