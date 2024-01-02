@@ -48,9 +48,13 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _processEvent(Event event) async {
     var effects = await api.processEvent(event: event);
     for (Effect effect in effects) {
-      effect.when(render: (ViewModel viewModel) => setState(() {}));
+      effect.when(
+          render: (ViewModel viewModel) => setState(() {
+                // triggers a refresh
+                // setting viewModel is only needed, in no FutureBuilder to execute api.view() would be called
+                this.viewModel = viewModel;
+              }));
     }
-    // triggers a refresh
   }
 
   final TextEditingController textController = TextEditingController();
@@ -91,7 +95,9 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          // use 'setState' for triggering a refresh, which calling the future
+          // use 'setState' for triggering a refresh, which triggers calling the future
+          // note that calling api.view() is for demonstration only, as setState already
+          // updates the view model
           FutureBuilder(
             future: api.view(),
             builder: (context, snapshot) {
