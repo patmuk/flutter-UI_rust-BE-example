@@ -95,10 +95,17 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          // use 'setState' for triggering a refresh, which triggers calling the future
+        _buildTodoViewList_withFuture(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTodoViewList_withFuture(){
+              // use 'setState' for triggering a refresh, which triggers calling the future
           // note that calling api.view() is for demonstration only, as setState already
           // updates the view model
-          FutureBuilder(
+          return FutureBuilder(
             future: api.view(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -140,9 +147,6 @@ class _MainScreenState extends State<MainScreen> {
                 );
               }
             },
-          ),
-        ],
-      ),
-    );
+          );
   }
 }
