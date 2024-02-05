@@ -4,11 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type = ["lib", "staticlib", "cdylib"]
+crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies]
-flutter_rust_bridge = "^2.0.0-dev.2"
-
+flutter_rust_bridge = "=2.0.0-dev.22"
 thiserror = "^1.0.51"
 
 log = "^0.4"
@@ -22,4 +21,4 @@ parking_lot = { version = "0.12", features = ["serde"] }
 
 
 [dev-dependencies]
-serial_test = "2.0.0"
+serial_test = "3.0.0"

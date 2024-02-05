@@ -1,8 +1,7 @@
 **/target/**
-**/bridge_generated*
-**/bridge_definitions.*
+**/frb_generated/**
 **/.DS_Store
-**/generated/**
 shell_flutter/.metadata
 shell_cli/app_state_model.bin
 app_core/app_state_model.bin
+app_core/test_app_state.bin

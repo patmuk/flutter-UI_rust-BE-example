@@ -1,1 +1,1 @@
-pub mod generated;
+pub mod frb_generated;

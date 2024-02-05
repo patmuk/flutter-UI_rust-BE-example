@@ -1,5 +1,5 @@
 pub mod api;
-pub mod app_state;
+mod app_state;
 mod bridge;
 mod todo_list;
 

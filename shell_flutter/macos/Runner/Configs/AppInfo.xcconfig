@@ -8,7 +8,7 @@
 PRODUCT_NAME = shell_flutter
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.shellFlutter
+PRODUCT_BUNDLE_IDENTIFIER = de.mukherjee.www.shellFlutter
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2024 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024 de.mukherjee.www. All rights reserved.

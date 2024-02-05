@@ -1,15 +1,12 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-#[derive(Default,Serialize, Deserialize, Debug)]
+use crate::api::todo_list_api::ViewModel;
+
+#[derive(Default, Serialize, Deserialize, Debug)]
 pub(crate) struct TodoListModel {
-    items: Vec<String>,
+    pub(crate) items: Vec<String>,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct ViewModel {
-    pub items: Vec<String>,
-    pub count: usize,
-}
 #[derive(Debug, PartialEq, Eq)]
 pub enum Event {
     AddTodo(String),
@@ -34,7 +31,7 @@ pub(crate) fn process_mod_event(event: Event, model: &mut TodoListModel) -> Vec<
     vec![Effect::Render(view(model))]
 }
 
-// pub(crate) fn process_read_event(event: Event, model: &TodoListModel) -> Vec<Effect> {
+// fn process_read_event(event: Event, model: &TodoListModel) -> Vec<Effect> {
 // }
 
 pub(crate) fn view(model: &TodoListModel) -> ViewModel {

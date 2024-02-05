@@ -5,13 +5,13 @@ use std::{
     path::PathBuf,
 };
 
-use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 // implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
 use log::{debug, error, info, trace};
 
-pub use crate::todo_list::{Effect, Event, ViewModel};
-use crate::{api::AppConfig, ensure_logger_is_set_up, todo_list::TodoListModel};
+use crate::todo_list::TodoListModel;
+// use crate::{api::lifecycle::AppConfig, ensure_logger_is_set_up, todo_list::TodoListModel};
+use crate::{api::lifecycle::AppConfig, ensure_logger_is_set_up};
 
 /// Stores the app's state in a file.
 ///
@@ -45,7 +45,6 @@ fn load(path: &Path) -> Result<AppState, AppStateLoadError> {
 
 // holds the complete state of the app, as a global static variable
 #[derive(Default, Serialize, Deserialize, Debug)]
-#[frb(opaque)]
 pub(crate) struct AppState {
     pub(crate) model: TodoListModel,
 }
@@ -92,6 +91,7 @@ mod tests {
     use std::io::Write;
     use std::path::PathBuf;
 
+    use crate::api::todo_list_api::Event;
     use crate::todo_list::process_mod_event;
     use crate::todo_list::view;
 
@@ -114,7 +114,7 @@ mod tests {
     fn create_test_app_state() -> AppState {
         let mut app_state = AppState::default();
         process_mod_event(
-            super::Event::AddTodo("Test setup todo".to_string()),
+            Event::AddTodo("Test setup todo".to_string()),
             &mut app_state.model,
         );
         app_state
@@ -142,7 +142,7 @@ mod tests {
         persist_app_state(&original, &TEST_FILE).unwrap();
         let mut changed = AppState::default();
         process_mod_event(
-            super::Event::AddTodo("Changed todo".to_string()),
+            Event::AddTodo("Changed todo".to_string()),
             &mut changed.model,
         );
         persist_app_state(&changed, &TEST_FILE).unwrap();
@@ -165,7 +165,7 @@ mod tests {
 
         let mut changed = AppState::default();
         process_mod_event(
-            super::Event::AddTodo("Changed todo".to_string()),
+            Event::AddTodo("Changed todo".to_string()),
             &mut changed.model,
         );
         persist_app_state(&changed, &TEST_FILE).unwrap();
