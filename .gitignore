@@ -5,3 +5,4 @@ shell_flutter/.metadata
 shell_cli/app_state_model.bin
 app_core/app_state_model.bin
 app_core/test_app_state.bin
+**/logs/**
