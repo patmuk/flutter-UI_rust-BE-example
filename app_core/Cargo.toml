@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies]
-flutter_rust_bridge = "=2.0.0-dev.22"
+flutter_rust_bridge = "=2.0.0-dev.32"
 thiserror = "^1.0.51"
 
 log = "^0.4"
@@ -23,5 +23,5 @@ parking_lot = { version = "0.12", features = ["serde"] }
 serial_test = "3.0.0"
 
 [build-dependencies]
-flutter_rust_bridge_codegen = "=2.0.0-dev.22"
+flutter_rust_bridge_codegen = "=2.0.0-dev.32"
 anyhow = "1.0"
