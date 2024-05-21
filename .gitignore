@@ -6,3 +6,17 @@ shell_cli/app_state_model.bin
 app_core/app_state_model.bin
 app_core/test_app_state.bin
 **/logs/**
+.toolchain/android/AVD/android-34-pixel_8.ini
+.toolchain/android/AVD/android-34-pixel_8.avd/config.ini
+.toolchain/android/AVD/android-34-pixel_8.avd/userdata.img
+.direnv/flake-profile-a5d5b61aa8a61b7d9d765e1daf971a9a578f1cfa
+.direnv/flake-profile-a5d5b61aa8a61b7d9d765e1daf971a9a578f1cfa.rc
+.direnv/bin/nix-direnv-reload
+.direnv/flake-inputs/0qd773b63yg8435w8hpm13zqz7iipcbs-source
+.direnv/flake-inputs/cb1gs888vfqxawvc65q1dk6jzbayh3wz-source
+.direnv/flake-inputs/dmwlijzsml2l2yikfifm47g4qxfw9kgd-source
+.direnv/flake-inputs/dwkh0r9jmkmz4xjgg04vdh9ykafl21iq-source
+.direnv/flake-inputs/na7sykizsgkzh9i3wc8m8pz5xfqib2rv-source
+.direnv/flake-inputs/pgid9c9xfcrbqx2giry0an0bi0df7s5c-source
+.direnv/flake-inputs/vykp5cim3dn5x0bc699wsmyjlkvv02ar-source
+.direnv/flake-inputs/yj1wxm9hh8610iyzqnz75kvs6xl8j3my-source

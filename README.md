@@ -2,6 +2,13 @@
 
 In general: read the [manual](https://cjycode.com/flutter_rust_bridge/)
 
+## about nix
+The needed toolchain is installed via nix (flake). Activate with `direnv allow` or `nix develop`. 
+
+### toolchain only in cli
+Nix (flake) installs the toolchain, which includes the environment variables such (as ANDROID_SDK_ROOT) only in the cli.
+TO [have these available](https://discourse.nixos.org/t/flutter-in-vscode-does-not-see-my-android-device-but-flutter-from-the-terminal-does/20754), start codium from a flake directory. 
+
 ## install
 
 Follow the [Quickstart](https://cjycode.com/flutter_rust_bridge/quickstart.html)
