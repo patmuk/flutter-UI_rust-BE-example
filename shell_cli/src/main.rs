@@ -1,5 +1,5 @@
 // use app_core::api::{self, Effect, ViewModel};
-use app_core::api::{
+use app_core::application::api::{
     lifecycle::shutdown,
     todo_list_api::{process_event, view, Effect, Event, ViewModel},
 };
