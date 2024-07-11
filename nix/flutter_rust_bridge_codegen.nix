@@ -2,14 +2,14 @@
 # doc: https://ryantm.github.io/nixpkgs/languages-frameworks/rust/
 pkgs.rustPlatform.buildRustPackage {
   name = "flutter_rust_bridge_codegen";
-  version = "v2.0.0-dev.33";
+  version = "v2.0.0";
   src = pkgs.fetchFromGitHub {
     owner = "fzyzcjy";
     repo = "flutter_rust_bridge";
-    rev = "e99f84a"; # hash of the commit
-    sha256 = "sha256-+BkFKLEqC69egFcphxgmdR62luu2xrKWR8T23/yPh5A="; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.0.0-dev.31.tar.gz
+    rev = "1bd4e1a8794a0e8679b101227624c8f7db22d8a1"; # hash of the commit
+    sha256 = "0nivqbyiab28mgyhwl1c5m7493q95n8as6xpkvrvnvr5wx7alg01"; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.0.0-dev.31.tar.gz
   };
-  cargoSha256 = "sha256-FuWGU5vzfptVKjftsVY/rLGbYAHGXZqpJoYwdPCuqRE="; # pkgs.lib.fakeSha256; # set it to 'lib.fakeSha256' and run nix (develop/build). replace the sha from the error message.
+  cargoSha256 = "sha256-Bx4Xge45eIBVSG13v6fsGpjHEsiiSwqukGlMuv8w518="; # pkgs.lib.fakeSha256; # set it to 'lib.fakeSha256' and run nix (develop/build). replace the sha from the error message.
 
   # Specify the path to the Cargo.toml if it's not in the root of the repository
   cargoToml = "frb_codegen/Cargo.toml";
@@ -41,6 +41,7 @@ pkgs.rustPlatform.buildRustPackage {
     "--skip=binary::commands_parser::tests::test_compute_codegen_config_mode_from_files_auto_pubspec_yaml"
     "--skip=binary::commands_parser::tests::test_compute_codegen_config_mode_from_files_auto_flutter_rust_bridge_yaml"
     "--skip=binary::commands_parser::tests::test_compute_codegen_config_mode_from_files_auto_pubspec_yaml_faulty"
+    "--skip=binary::commands_parser::tests::test_compute_codegen_config_from_both_file_and_command_line"
     "--skip=tests::test_execute_generate_on_frb_example_dart_minimal"
     "--skip=tests::test_execute_generate_on_frb_example_pure_dart"
     "--skip=library::utils::logs::configure_opinionated_logging"

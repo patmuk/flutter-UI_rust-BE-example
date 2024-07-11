@@ -49,7 +49,7 @@
         local_flutter_path = "${local_toolchain_path}/flutter-local";
         local_SDK_path = "${local_toolchain_path}/android";
         local_AVD_path = "${local_SDK_path}/AVD";
-        flutter_version = "3.19.6";
+        flutter_version = "latest";
         flutter-local = import ./nix/flutter-local.nix {
           inherit pkgs local_flutter_path flutter_version;
         };

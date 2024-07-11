@@ -7,8 +7,12 @@
 # check the url in https://docs.flutter.dev/release/archive?tab=macos
 # leave `hash = ""` and run `nix develop`. The error message will tell the correct hash value.
 rec {
-  latest_version = "3.19.6";
+  latest_version = "3.22.2";
 
+  flutterSource-aarch64-darwin-3_22_2 = pkgs.fetchurl {
+    url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.22.2-stable.zip";
+    hash = "sha256-1pgHHdxArPbrc6aHMwa5hwJDLUFRmun97PF27w3IbOM=";
+  };
   flutterSource-aarch64-darwin-3_19_6 = pkgs.fetchurl {
     url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.6-stable.zip";
     hash = "sha256-TmEUDfSWUr+PweMXUqb6hRj6TwW8bkxrywHI3/bZv48=";
@@ -37,6 +41,9 @@ rec {
         desired_version="${latest_version}"
       fi
       case $desired_version in
+        "3.22.2")
+          flutter_source="${flutterSource-aarch64-darwin-3_22_2}"
+        ;;
         "3.19.6")
           flutter_source="${flutterSource-aarch64-darwin-3_19_6}"
         ;;
