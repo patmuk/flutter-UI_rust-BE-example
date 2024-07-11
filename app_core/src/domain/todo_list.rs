@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::api::todo_list_api::ViewModel;
+use crate::application::api::todo_list_api::ViewModel;
 
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub(crate) struct TodoListModel {
@@ -10,7 +10,7 @@ pub(crate) struct TodoListModel {
 #[derive(Debug, PartialEq, Eq)]
 pub enum Event {
     AddTodo(String),
-    RemoveTodo(usize),
+    RemoveTodo(u32),
     CleanList,
 }
 
@@ -24,7 +24,7 @@ pub(crate) fn process_mod_event(event: Event, model: &mut TodoListModel) -> Vec<
     match event {
         Event::AddTodo(todo) => model.items.push(todo),
         Event::RemoveTodo(todo_pos) => {
-            model.items.remove(todo_pos - 1);
+            model.items.remove((todo_pos - 1).try_into().unwrap());
         }
         Event::CleanList => model.items = vec![],
     }
@@ -35,7 +35,7 @@ pub(crate) fn process_mod_event(event: Event, model: &mut TodoListModel) -> Vec<
 // }
 
 pub(crate) fn view(model: &TodoListModel) -> ViewModel {
-    let count = model.items.len();
+    let count: u32 = model.items.len().try_into().unwrap();
     ViewModel {
         items: model.items.clone(),
         count,

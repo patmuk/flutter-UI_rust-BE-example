@@ -2,7 +2,7 @@ default: gen lint
 
 gen: mkdir_generated
   cd shell_flutter && flutter pub get
-  cd shell_flutter && flutter_rust_bridge_codegen generate --config-file flutter_rust_bridge.yaml
+  flutter_rust_bridge_codegen generate --config-file flutter_rust_bridge.yaml
   # cd shell_flutter && dart run build_runner build
 
 lint:
@@ -14,11 +14,11 @@ clean:
   cd app_core && cargo clean
 
 mkdir_generated:
-  mkdir -p app_core/src/bridge/frb_generated
+  mkdir -p app_core/src/application/bridge/frb_generated
   mkdir -p shell_flutter/lib/bridge/frb_generated
 
 clean_generated:
-  rm -rf app_core/src/bridge/frb_generated/*
+  rm -rf app_core/src/application/bridge/frb_generated/*
   rm -rf shell_flutter/lib/bridge/frb_generated/*
 
 clean_all: clean_generated clean

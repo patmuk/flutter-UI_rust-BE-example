@@ -1,7 +1,5 @@
-pub mod api;
-mod app_state;
-mod bridge;
-mod todo_list;
+pub mod application;
+pub mod domain;
 
 use log::{debug, LevelFilter};
 use once_cell::sync::OnceCell;

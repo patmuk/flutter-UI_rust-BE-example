@@ -1,6 +1,6 @@
+use crate::domain::app_state::{self, AppState};
 use crate::ensure_logger_is_set_up;
-
-use crate::app_state::{self, AppState};
+use flutter_rust_bridge::frb;
 
 use std::path::PathBuf;
 // use flutter_rust_bridge::{frb, support::lazy_static, RustOpaque};
@@ -43,6 +43,7 @@ pub fn setup(path: String) {
 }
 // app state storage location
 #[derive(Debug)]
+#[frb(non_opaque)]
 pub struct AppConfig {
     pub app_state_file_path: PathBuf,
 }

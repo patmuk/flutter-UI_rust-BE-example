@@ -1,5 +1,8 @@
 // use app_core::api::{self, Effect, ViewModel};
-use app_core::api::{lifecycle::shutdown, todo_list_api::{Event, process_event, Effect, view, ViewModel}};
+use app_core::api::{
+    lifecycle::shutdown,
+    todo_list_api::{process_event, view, Effect, Event, ViewModel},
+};
 use std::{io, num::ParseIntError, process};
 
 fn main() {
@@ -37,7 +40,7 @@ fn main() {
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('r') => {
-                let index: Result<usize, ParseIntError> = user_input.split_at(2).1.trim().parse();
+                let index: Result<u32, ParseIntError> = user_input.split_at(2).1.trim().parse();
                 match index {
                     Ok(index) => {
                         if index > 0 {
@@ -71,7 +74,6 @@ fn main() {
         };
     }
 }
-
 
 fn hande_effects(effects: Vec<Effect>) {
     effects.iter().for_each(|effect| match effect {

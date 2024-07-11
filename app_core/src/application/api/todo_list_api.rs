@@ -1,13 +1,13 @@
 use log::debug;
 
-use crate::api::lifecycle::{self, API};
-use crate::todo_list::process_mod_event;
-pub use crate::todo_list::{Effect, Event};
+use crate::application::api::lifecycle::{self, API};
+use crate::domain::todo_list::process_mod_event;
+pub use crate::domain::todo_list::{Effect, Event};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct ViewModel {
     pub items: Vec<String>,
-    pub count: usize,
+    pub count: u32,
 }
 
 pub fn process_event(event: Event) -> Vec<Effect> {
@@ -20,5 +20,5 @@ pub fn process_event(event: Event) -> Vec<Effect> {
 }
 
 pub fn view() -> ViewModel {
-    crate::todo_list::view(&API.read().model)
+    crate::domain::todo_list::view(&API.read().model)
 }

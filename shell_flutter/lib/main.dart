@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'package:shell_flutter/bridge/frb_generated/api/lifecycle.dart'
+import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart'
     as lifecycle;
-import 'package:shell_flutter/bridge/frb_generated/api/todo_list_api.dart'
+import 'package:shell_flutter/bridge/frb_generated/application/api/todo_list_api.dart'
     as todo_list_api;
-import 'bridge/frb_generated/todo_list.dart';
+import 'bridge/frb_generated/domain/todo_list.dart';
 import 'package:shell_flutter/bridge/frb_generated/frb_generated.dart';
 
 import 'package:path_provider/path_provider.dart';

@@ -9,9 +9,9 @@ use serde::{Deserialize, Serialize};
 // implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
 use log::{debug, error, info, trace};
 
-use crate::todo_list::TodoListModel;
+use crate::domain::todo_list::TodoListModel;
 // use crate::{api::lifecycle::AppConfig, ensure_logger_is_set_up, todo_list::TodoListModel};
-use crate::{api::lifecycle::AppConfig, ensure_logger_is_set_up};
+use crate::{application::api::lifecycle::AppConfig, ensure_logger_is_set_up};
 
 /// Stores the app's state in a file.
 ///
@@ -91,9 +91,9 @@ mod tests {
     use std::io::Write;
     use std::path::PathBuf;
 
-    use crate::api::todo_list_api::Event;
-    use crate::todo_list::process_mod_event;
-    use crate::todo_list::view;
+    use crate::application::api::todo_list_api::Event;
+    use crate::domain::todo_list::process_mod_event;
+    use crate::domain::todo_list::view;
 
     use super::{AppState, AppStateLoadError};
 
