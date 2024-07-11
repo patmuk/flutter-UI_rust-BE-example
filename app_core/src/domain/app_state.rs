@@ -34,11 +34,10 @@ pub(crate) fn persist_app_state(app_state: &AppState, path: &Path) -> Result<(),
 // get the last persisted app state from a file, if any exists, otherwise creates a new app state
 // this function is only called once, in the initialization/app state constructor
 fn load(path: &Path) -> Result<AppState, AppStateLoadError> {
-    let app_state: AppState;
     debug!("loading the app state from {path:?}");
     let loaded =
         std::fs::read(path).map_err(|error| AppStateLoadError::ReadFile(error, path.to_owned()))?;
-    app_state = bincode::deserialize(&loaded)
+    let app_state = bincode::deserialize(&loaded)
         .map_err(|e| AppStateLoadError::DeserializationError(e, path.to_path_buf()))?;
     Ok(app_state)
 }
@@ -53,18 +52,17 @@ impl AppState {
     pub(crate) fn new(app_config: &AppConfig) -> Self {
         ensure_logger_is_set_up();
         debug!("creating the app state from persisted or default values");
-        let app_state;
-        match load(&app_config.app_state_file_path) {
+        let app_state = match load(&app_config.app_state_file_path) {
             Err(AppStateLoadError::ReadFile(err, path)) if err.kind() == IoErrorKind::NotFound => {
                 info!("No app state file found in {:?}, creating new state", &path);
-                app_state = AppState::default();
+                AppState::default()
             }
             Err(err) => {
                 error!("Error reading file, creating a new state: {}", err);
-                app_state = AppState::default();
+                AppState::default()
             }
-            Ok(loaded_app_state) => app_state = loaded_app_state,
-        }
+            Ok(loaded_app_state) => loaded_app_state,
+        };
         info!(
             "Initialization finished, log level is {:?}",
             log::max_level()
@@ -108,7 +106,7 @@ mod tests {
     /// Clean up the test directory after running tests
     fn cleanup_test_file() {
         if TEST_FILE.exists() {
-            std::fs::remove_dir_all(&*TEST_FILE.parent().unwrap()).unwrap();
+            std::fs::remove_dir_all(TEST_FILE.parent().unwrap()).unwrap();
         }
     }
     fn create_test_app_state() -> AppState {
@@ -219,7 +217,7 @@ mod tests {
         cleanup_test_file();
         assert!(!TEST_FILE.exists());
 
-        let result = load(&*TEST_FILE);
+        let result = load(&TEST_FILE);
 
         assert!(result.is_err());
         assert!(

@@ -1,6 +1,5 @@
 use crate::domain::app_state::{self, AppState};
 use crate::ensure_logger_is_set_up;
-use flutter_rust_bridge::frb;
 
 use std::path::PathBuf;
 // use flutter_rust_bridge::{frb, support::lazy_static, RustOpaque};
@@ -49,10 +48,9 @@ pub struct AppConfig {
 
 impl Default for AppConfig {
     fn default() -> Self {
-        let app_config = AppConfig {
+        AppConfig {
             app_state_file_path: PathBuf::from("./app_state_model.bin"),
-        };
-        app_config
+        }
     }
 }
 
@@ -63,7 +61,7 @@ pub fn persist_app_state() {
     let app_config = APP_CONFIG
         .get()
         .expect("AppConfig must be set, error in this lib's logic flow!");
-    app_state::persist_app_state(&*API.read(), &app_config.app_state_file_path).unwrap();
+    app_state::persist_app_state(&API.read(), &app_config.app_state_file_path).unwrap();
 }
 
 // pub fn shutdown() -> Result<(), std::io::Error> {
@@ -74,8 +72,5 @@ pub fn shutdown() {
 
 // initializes the app_state only at first call
 // The app state is behind a mutex to avoid data conditions, and static, to be globally available to all threads
-pub(crate) static API: Lazy<RwLock<AppState>> = Lazy::new(|| {
-    RwLock::new(AppState::new(
-        APP_CONFIG.get_or_init(|| AppConfig::default()),
-    ))
-});
+pub(crate) static API: Lazy<RwLock<AppState>> =
+    Lazy::new(|| RwLock::new(AppState::new(APP_CONFIG.get_or_init(AppConfig::default))));

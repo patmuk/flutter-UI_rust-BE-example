@@ -78,7 +78,7 @@ fn main() {
 fn hande_effects(effects: Vec<Effect>) {
     effects.iter().for_each(|effect| match effect {
         Effect::Render(view_model) => {
-            print_todo_list(&view_model);
+            print_todo_list(view_model);
         }
     });
 }
