@@ -1,8 +1,8 @@
 // use std::path::Path;
 
-use app_core::api::lifecycle;
-use app_core::api::todo_list_api;
-use app_core::api::todo_list_api::Effect;
+use app_core::application::api::lifecycle;
+use app_core::application::api::todo_list_api;
+use app_core::application::api::todo_list_api::Effect;
 
 // initializes and logs a test message using OS logger
 // use app_core::api::lifecycle;

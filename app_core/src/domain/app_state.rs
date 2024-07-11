@@ -160,7 +160,7 @@ mod tests {
         }
         File::create(&*TEST_FILE)
             .unwrap()
-            .write(b"corrupted")
+            .write_all(b"corrupted")
             .unwrap();
 
         let mut changed = AppState::default();
