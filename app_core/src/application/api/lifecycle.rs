@@ -43,7 +43,6 @@ pub fn setup(path: String) {
 }
 // app state storage location
 #[derive(Debug)]
-#[frb(non_opaque)]
 pub struct AppConfig {
     pub app_state_file_path: PathBuf,
 }

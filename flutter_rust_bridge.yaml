@@ -4,3 +4,6 @@ rust_output: 'app_core/src/application/bridge/frb_generated/mod.rs'
 dart_output: 'shell_flutter/lib/bridge/frb_generated'
 add_mod_to_lib: false
 enable_lifetime: false
+
+rust_preamble: |
+  use std::path::PathBuf;
