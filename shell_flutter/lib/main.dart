@@ -1,23 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:shell_flutter/state_handler.dart';
 
-import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart'
-    as lifecycle;
-import 'package:shell_flutter/bridge/frb_generated/application/api/todo_list_api.dart'
-    as todo_list_api;
 import 'bridge/frb_generated/domain/todo_list.dart';
-import 'package:shell_flutter/bridge/frb_generated/frb_generated.dart';
-
-import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
-  await RustLib.init();
-  WidgetsFlutterBinding.ensureInitialized();
-  final Directory appSupportDir = await getApplicationSupportDirectory();
-  final stateFile = File('${appSupportDir.path}/app_state.bin');
+  await StateHandler.createSingleton();
   runApp(const MyApp());
-  await lifecycle.setup(path: stateFile.path);
 }
 
 class MyApp extends StatelessWidget {
@@ -31,35 +19,15 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MainScreen(title: 'Flutter-rust-bridge crux style Demo'),
+      home: MainScreen(title: 'Flutter-rust-bridge crux style Demo'),
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key, required this.title});
+class MainScreen extends StatelessWidget {
+  MainScreen({super.key, required this.title});
 
   final String title;
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  late todo_list_api.ViewModel viewModel;
-
-  // this triggers the button event in the rust lib
-  Future<void> _processEvent(Event event) async {
-    var effects = await todo_list_api.processEvent(event: event);
-    for (Effect effect in effects) {
-      effect.when(
-          render: (todo_list_api.ViewModel viewModel) => setState(() {
-                // triggers a refresh
-                // setting viewModel is only needed, in no FutureBuilder to execute api.view() would be called
-                this.viewModel = viewModel;
-              }));
-    }
-  }
 
   final TextEditingController textController = TextEditingController();
 
@@ -68,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Column(
         children: [
@@ -85,36 +53,34 @@ class _MainScreenState extends State<MainScreen> {
                   maxLines: null,
                   onSubmitted: (value) {
                     // Add your action here
-                    _processEvent(Event.addTodo(value));
+                    StateHandler.singleton
+                        .processCommand(Command.addTodo(value));
                     textController.clear();
                   },
                 ),
               ),
               ElevatedButton(
                 onPressed: () {
-                  _processEvent(Event_AddTodo(textController.text));
+                  StateHandler.singleton
+                      .processCommand(Command_AddTodo(textController.text));
                   textController.clear();
                 },
                 child: const Text("Add Todo"),
               ),
             ],
           ),
-          _buildTodoViewList_withFuture(),
+          _buildTodoViewList(),
         ],
       ),
     );
   }
 
-  Widget _buildTodoViewList_withFuture() {
-    // use 'setState' for triggering a refresh, which triggers calling the future
-    // note that calling api.view() is for demonstration only, as setState already
-    // updates the view model
-    return FutureBuilder(
-      future: todo_list_api.view(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          viewModel = snapshot.data!;
-          if (viewModel.count == 0) {
+  Widget _buildTodoViewList() {
+    // listens for the state stored in StateHandler
+    return ValueListenableBuilder(
+        valueListenable: StateHandler.singleton.todoListModel,
+        builder: (context, todoListModel, _) {
+          if (todoListModel.items.isEmpty) {
             return const Center(
               child: Text("No Todo's in the List!"),
             );
@@ -123,7 +89,7 @@ class _MainScreenState extends State<MainScreen> {
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount: viewModel.count,
+                itemCount: todoListModel.items.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                       title: Row(
@@ -131,26 +97,17 @@ class _MainScreenState extends State<MainScreen> {
                       ElevatedButton(
                         child: const Icon(Icons.remove),
                         onPressed: () {
-                          _processEvent(Event.removeTodo(index + 1));
+                          StateHandler.singleton
+                              .processCommand(Command.removeTodo(index + 1));
                         },
                       ),
-                      Text(' ${index + 1}.: ${viewModel.items[index]}'),
+                      Text(' ${index + 1}.: ${todoListModel.items[index]}'),
                     ],
                   ));
                 },
               ),
             );
           }
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+        });
   }
 }

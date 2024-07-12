@@ -1,7 +1,9 @@
-// use app_core::api::{self, Effect, ViewModel};
-use app_core::application::api::{
-    lifecycle::shutdown,
-    todo_list_api::{process_event, view, Effect, Event, ViewModel},
+use app_core::{
+    application::api::{
+        lifecycle::{self, shutdown},
+        todo_list_api::{process_command, process_query, Command, Effect, Query},
+    },
+    domain::todo_list::TodoListModel,
 };
 use std::{io, num::ParseIntError, process};
 
@@ -22,6 +24,12 @@ fn main() {
                           q  ................. to quit\n\
                           =====================\n";
     println!("{}", USAGE);
+    lifecycle::init();
+    let effects = process_query(Query::GetModel);
+    let Effect::Render(initial_todo_list) = effects.first().unwrap();
+    println!("Loaded Todo List:\n");
+    print_todo_list(initial_todo_list);
+
     loop {
         match stdin.read_line(&mut user_input) {
             Ok(_) if user_input.starts_with('h') => {
@@ -30,13 +38,13 @@ fn main() {
             }
             Ok(_) if user_input.starts_with('a') => {
                 let todo = user_input.split_at(2).1.trim();
-                // let app = api::A::new();
-                let effects = process_event(Event::AddTodo(todo.to_string()));
+                let effects = process_command(Command::AddTodo(todo.to_string()));
                 hande_effects(effects);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('v') => {
-                hande_effects(vec![Effect::Render(view())]);
+                let effects = process_query(Query::GetModel);
+                hande_effects(effects);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('r') => {
@@ -45,7 +53,7 @@ fn main() {
                     Ok(index) => {
                         if index > 0 {
                             println!("\nRemoving todo at index {}\n", index);
-                            let effects = process_event(Event::RemoveTodo(index));
+                            let effects = process_command(Command::RemoveTodo(index));
                             hande_effects(effects);
                         } else {
                             println!("\nGive me a positive number, not {}\n", index);
@@ -58,7 +66,7 @@ fn main() {
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('c') => {
-                let effects = process_event(Event::CleanList);
+                let effects = process_command(Command::CleanList);
                 hande_effects(effects);
                 user_input.clear();
             }
@@ -77,14 +85,14 @@ fn main() {
 
 fn hande_effects(effects: Vec<Effect>) {
     effects.iter().for_each(|effect| match effect {
-        Effect::Render(view_model) => {
-            print_todo_list(view_model);
+        Effect::Render(model) => {
+            print_todo_list(model);
         }
     });
 }
 
-fn print_todo_list(todo_list: &ViewModel) {
-    println!("\nTodo List with {} items:", todo_list.count);
+fn print_todo_list(todo_list: &TodoListModel) {
+    println!("\nTodo List with {} items:", todo_list.items.len());
     todo_list
         .items
         .iter()

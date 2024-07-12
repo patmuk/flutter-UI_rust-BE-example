@@ -1,44 +1,50 @@
 use serde::{Deserialize, Serialize};
 
-use crate::application::api::todo_list_api::ViewModel;
+use crate::application::api::lifecycle::API;
 
-#[derive(Default, Serialize, Deserialize, Debug)]
-pub(crate) struct TodoListModel {
-    pub(crate) items: Vec<String>,
+// TODO remove clone and handle references!
+#[derive(Default, Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+pub struct TodoListModel {
+    pub items: Vec<String>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum Event {
+pub enum Command {
     AddTodo(String),
     RemoveTodo(u32),
     CleanList,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum Query {
+    GetModel,
+}
+
 // requests to the shell, aka Capabilities aka Effects
 #[derive(Debug, PartialEq, Eq)]
 pub enum Effect {
-    Render(ViewModel),
+    Render(TodoListModel),
 }
 
-pub(crate) fn process_mod_event(event: Event, model: &mut TodoListModel) -> Vec<Effect> {
-    match event {
-        Event::AddTodo(todo) => model.items.push(todo),
-        Event::RemoveTodo(todo_pos) => {
+pub(crate) fn process_command_todo_list(
+    command: Command,
+    model: &mut TodoListModel,
+) -> Vec<Effect> {
+    match command {
+        Command::AddTodo(todo) => model.items.push(todo),
+        Command::RemoveTodo(todo_pos) => {
             model.items.remove((todo_pos - 1).try_into().unwrap());
         }
-        Event::CleanList => model.items = vec![],
+        Command::CleanList => model.items = vec![],
     }
-    vec![Effect::Render(view(model))]
+    // TODO use reference, not clone
+    vec![Effect::Render(model.clone())]
 }
 
-// fn process_read_event(event: Event, model: &TodoListModel) -> Vec<Effect> {
-// }
-
-pub(crate) fn view(model: &TodoListModel) -> ViewModel {
-    let count: u32 = model.items.len().try_into().unwrap();
-    ViewModel {
-        items: model.items.clone(),
-        count,
+pub(crate) fn process_query_todo_list(query: Query) -> Vec<Effect> {
+    match query {
+        // TODO use reference, not clone
+        Query::GetModel => vec![Effect::Render(API.read().model.clone())],
     }
 }
 
@@ -53,21 +59,17 @@ mod tests {
         let mut model = TodoListModel::default();
 
         // Call 'add'
-        let effects = process_mod_event(Event::AddTodo("test the list".into()), &mut model);
+        let effects =
+            process_command_todo_list(Command::AddTodo("test the list".into()), &mut model);
 
-        // Check update asked us to `Render`
-        let actual_effect = &effects[0];
-        let expected_effect = Effect::Render(view(&model));
-        assert_eq!(actual_effect, &expected_effect);
-
-        // Make sure the view matches our expectations
-        let actual_view = /*&todo_list.*/view(&model);
-        let expected_view = ViewModel {
-            items: vec!["test the list".into()],
-            count: 1,
+        let expected_model = TodoListModel {
+            items: vec![String::from("test the list")],
         };
-        assert_eq!(actual_view, expected_view);
+        let expected_effect = Effect::Render(expected_model);
+        let actual_effect = &effects[0];
+        assert_eq!(actual_effect, &expected_effect);
     }
+
     #[test]
     fn remove_todo() {
         // let todo_list = AppTester::<TodoList, _>::default();
@@ -76,20 +78,12 @@ mod tests {
         };
 
         // Call 'add'
-        let effects = process_mod_event(Event::RemoveTodo(1), &mut model);
+        let effects = process_command_todo_list(Command::RemoveTodo(1), &mut model);
 
-        // Check update asked us to `Render`
+        let expected_model = TodoListModel { items: vec![] };
         let actual_effect = &effects[0];
-        let expected_effect = Effect::Render(view(&model));
+        let expected_effect = Effect::Render(expected_model);
         assert_eq!(actual_effect, &expected_effect);
-
-        // Make sure the view matches our expectations
-        let actual_view = /*&todo_list.*/view(&model);
-        let expected_view = ViewModel {
-            items: vec![],
-            count: 0,
-        };
-        assert_eq!(actual_view, expected_view);
     }
     #[test]
     fn clean_list() {
@@ -99,19 +93,11 @@ mod tests {
         model.items.push("clean me".into());
 
         // Call 'add'
-        let effects = process_mod_event(Event::CleanList, &mut model);
+        let effects = process_command_todo_list(Command::CleanList, &mut model);
 
-        // Check update asked us to `Render`
+        let expected_model = TodoListModel { items: vec![] };
         let actual_effect = &effects[0];
-        let expected_effect = Effect::Render(view(&model));
+        let expected_effect = Effect::Render(expected_model);
         assert_eq!(actual_effect, &expected_effect);
-
-        // Make sure the view matches our expectations
-        let actual_view = /*&todo_list.*/view(&model);
-        let expected_view = ViewModel {
-            items: vec![],
-            count: 0,
-        };
-        assert_eq!(actual_view, expected_view);
     }
 }

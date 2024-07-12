@@ -1,3 +1,17 @@
+# implemented paradigms
+## basis: Crux and Flutter-Rust-Bridge (FRB)
+### Flutter-Rust-Bridge (FRB)
+ [FBR](https://github.com/fzyzcjy/flutter_rust_bridge) is a tool that allows to use Flutter and Rust together. It provides a bridge between the two languages.
+ It does not enforce any pardigm, it simply offers to call rust functions from dart and vice versa.
+### Crux
+ [Crux](https://red-badger.com/crux) has the same goal of enabling the use of Rust for the business logic, but doesn't support Flutter (yet) as a Frontend. Instead it suggest to use the platforms native UI.
+ Crux is oppinionated in that it requres an event driven approach. However, I like this a lot, thus I implemented it in this example project.
+ ## CQRS
+ [CQRS](https://en.wikipedia.org/wiki/Command_Query_Responsibility_Segregation) is a pattern that allows to seperate the business logic from the UI. 
+ This is how I refined the Event-Driven appraoch: I split the Events into Commands (for Events that change the state) and Queries (that don't). Both return Effects for side effects, that need to be executed on the shell. Though these are limited to Render effects in case of Queries. The Commands can return Render Effects as well (which is against the strict CQRS definition). This is done so that we don't have to take care of the order (as a Command and a Query for the expected result could be returned in any order).
+ ## where is the View Model?
+ Since a ViewModel takes care of processing inputs from the UI, we don't need it: Any input from the UI is converted to a Command or a Query by the `StateHandler.dart`, which takes care of processing the Effects and updates values the UI listens to as well (which are kind of ViewModel instances).
+
 # How to
 
 In general: read the [manual](https://cjycode.com/flutter_rust_bridge/)

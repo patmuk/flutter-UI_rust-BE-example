@@ -18,16 +18,22 @@ fn main() {
     // optionally set up the file path to store the app state
     lifecycle::setup("./test_app_state.bin".to_string());
 
-    todo_list_api::process_event(todo_list_api::Event::AddTodo("Test todo".to_string()));
-
-    let view = todo_list_api::view();
-    println!("Todos: {:?}", view.items);
+    // following CQRS, this is how to query for the state
+    let effects = todo_list_api::process_query(todo_list_api::Query::GetModel);
+    println!("Loaded Todos: {:?}", effects.first().unwrap());
 
     // following the crux-style, one should not call view() directly, but evaluate the Effect, which tells
     // the caller ('shell') what to do (in this case render the viewModel):
-    let effects = todo_list_api::process_event(todo_list_api::Event::AddTodo(
+    let effects = todo_list_api::process_command(todo_list_api::Command::AddTodo(
         "Proper Test todo".to_string(),
     ));
+    handle_effects(&effects);
+
+    // if possible call this function to clean up, like wrting the app's state to disk
+    lifecycle::shutdown();
+}
+
+fn handle_effects(effects: &Vec<Effect>) {
     for effect in effects {
         match effect {
             Effect::Render(view) => {
@@ -35,6 +41,4 @@ fn main() {
             }
         }
     }
-    // if possible call this function to clean up, like wrting the app's state to disk
-    lifecycle::shutdown();
 }

@@ -89,9 +89,8 @@ mod tests {
     use std::io::Write;
     use std::path::PathBuf;
 
-    use crate::application::api::todo_list_api::Event;
-    use crate::domain::todo_list::process_mod_event;
-    use crate::domain::todo_list::view;
+    use crate::application::api::todo_list_api::Command;
+    use crate::domain::todo_list::process_command_todo_list;
 
     use super::{AppState, AppStateLoadError};
 
@@ -111,14 +110,14 @@ mod tests {
     }
     fn create_test_app_state() -> AppState {
         let mut app_state = AppState::default();
-        process_mod_event(
-            Event::AddTodo("Test setup todo".to_string()),
+        process_command_todo_list(
+            Command::AddTodo("Test setup todo".to_string()),
             &mut app_state.model,
         );
         app_state
     }
     fn assert_eq_app_states(left: &AppState, right: &AppState) {
-        assert_eq!(view(&left.model), view(&right.model));
+        assert_eq!(&left.model, &right.model);
     }
 
     #[test]
@@ -139,8 +138,8 @@ mod tests {
         let original = create_test_app_state();
         persist_app_state(&original, &TEST_FILE).unwrap();
         let mut changed = AppState::default();
-        process_mod_event(
-            Event::AddTodo("Changed todo".to_string()),
+        process_command_todo_list(
+            Command::AddTodo("Changed todo".to_string()),
             &mut changed.model,
         );
         persist_app_state(&changed, &TEST_FILE).unwrap();
@@ -162,8 +161,8 @@ mod tests {
             .unwrap();
 
         let mut changed = AppState::default();
-        process_mod_event(
-            Event::AddTodo("Changed todo".to_string()),
+        process_command_todo_list(
+            Command::AddTodo("Changed todo".to_string()),
             &mut changed.model,
         );
         persist_app_state(&changed, &TEST_FILE).unwrap();
