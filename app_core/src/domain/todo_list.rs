@@ -18,12 +18,14 @@ pub enum Command {
 #[derive(Debug, PartialEq, Eq)]
 pub enum Query {
     GetModel,
+    AllTodos,
 }
 
 // requests to the shell, aka Capabilities aka Effects
 #[derive(Debug, PartialEq, Eq)]
 pub enum Effect {
     Render(TodoListModel),
+    RenderTodoList(Vec<String>),
 }
 
 pub(crate) fn process_command_todo_list(
@@ -31,20 +33,29 @@ pub(crate) fn process_command_todo_list(
     model: &mut TodoListModel,
 ) -> Vec<Effect> {
     match command {
-        Command::AddTodo(todo) => model.items.push(todo),
+        Command::AddTodo(todo) => {
+            model.items.push(todo);
+            // TODO use reference, not clone
+            vec![Effect::RenderTodoList(model.items.clone())]
+        }
         Command::RemoveTodo(todo_pos) => {
             model.items.remove((todo_pos - 1).try_into().unwrap());
+            // TODO use reference, not clone
+            vec![Effect::Render(model.clone())]
         }
-        Command::CleanList => model.items = vec![],
+        Command::CleanList => {
+            model.items = vec![];
+            // TODO use reference, not clone
+            vec![Effect::Render(model.clone())]
+        }
     }
-    // TODO use reference, not clone
-    vec![Effect::Render(model.clone())]
 }
 
 pub(crate) fn process_query_todo_list(query: Query) -> Vec<Effect> {
     match query {
         // TODO use reference, not clone
         Query::GetModel => vec![Effect::Render(API.read().model.clone())],
+        Query::AllTodos => vec![Effect::RenderTodoList(API.read().model.items.clone())],
     }
 }
 

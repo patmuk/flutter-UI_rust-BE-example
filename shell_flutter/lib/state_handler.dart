@@ -20,8 +20,12 @@ class StateHandler {
   static bool isInitialised = false;
 
   /// ViewModels, observed by the UI
-  final ValueNotifier<TodoListModel> todoListModel =
+  // for completeness, this is the whole model - not used in the UI
+  late final ValueNotifier<TodoListModel> todoListModel =
       ValueNotifier(TodoListModel(items: List.empty()));
+  // for more fine-granular UI updates, we create a listener for individual fields
+  // of the TodoListModel.
+  final ValueNotifier<List<String>> todoListItems = ValueNotifier([]);
 
   // private Factory, so async can be used (not possible in a constructor or factory)
   // call only once to create the singleton
@@ -39,6 +43,9 @@ class StateHandler {
     await lifecycle.init();
 
     singleton = StateHandler._singletonConstructor();
+    // initialise all Listeners with the loaded model
+    // by calling the respective querries
+    // the value is set by _handleEffects() automatically
     singleton.processQuery(Query.getModel);
     return singleton;
   }
@@ -57,14 +64,18 @@ class StateHandler {
 void _handleEffects(List<Effect> effects) {
   for (var effect in effects) {
     switch (effect) {
-      case Effect_Render effectRender:
+      case Effect_Render effectValue:
         // update the value and trigger a UI repaint
-        StateHandler.singleton.todoListModel.value = effectRender.field0;
-      default:
-        // No Effect to take care of - or worse unknown effect!
-        //TODO handle gracefully
-        stderr.writeln("received unknown Effect $effect\n");
-        exit(1);
+        // note that only the reference is copied, not the whole list!
+        StateHandler.singleton.todoListModel.value = effectValue.field0;
+        // as the fields might have changed, their Listeners need to be updated as well!
+        StateHandler.singleton.todoListItems.value = effectValue.field0.items;
+        break;
+      case Effect_RenderTodoList effectValue:
+        // update the value and trigger a UI repaint
+        // note that only the reference is copied, not the whole list!
+        StateHandler.singleton.todoListItems.value = effectValue.field0;
+        break;
     }
   }
 }

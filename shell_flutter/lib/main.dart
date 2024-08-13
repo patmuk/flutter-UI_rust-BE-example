@@ -78,9 +78,9 @@ class MainScreen extends StatelessWidget {
   Widget _buildTodoViewList() {
     // listens for the state stored in StateHandler
     return ValueListenableBuilder(
-        valueListenable: StateHandler.singleton.todoListModel,
-        builder: (context, todoListModel, _) {
-          if (todoListModel.items.isEmpty) {
+        valueListenable: StateHandler.singleton.todoListItems,
+        builder: (context, todoListItems, _) {
+          if (todoListItems.isEmpty) {
             return const Center(
               child: Text("No Todo's in the List!"),
             );
@@ -89,7 +89,7 @@ class MainScreen extends StatelessWidget {
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                itemCount: todoListModel.items.length,
+                itemCount: todoListItems.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                       title: Row(
@@ -101,7 +101,7 @@ class MainScreen extends StatelessWidget {
                               .processCommand(Command.removeTodo(index + 1));
                         },
                       ),
-                      Text(' ${index + 1}.: ${todoListModel.items[index]}'),
+                      Text(' ${index + 1}.: ${todoListItems[index]}'),
                     ],
                   ));
                 },
