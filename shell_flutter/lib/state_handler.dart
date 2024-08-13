@@ -20,7 +20,6 @@ class StateHandler {
   static bool isInitialised = false;
 
   /// ViewModels, observed by the UI
-  // late ValueNotifier<TodoListModel> todoListModel;
   final ValueNotifier<TodoListModel> todoListModel =
       ValueNotifier(TodoListModel(items: List.empty()));
 
