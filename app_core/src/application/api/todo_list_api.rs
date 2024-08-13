@@ -17,7 +17,5 @@ pub fn process_query(query: Query) -> Vec<Effect> {
     debug!("Processing query: {:?}", query);
     let effects = process_query_todo_list(query);
     debug!("Processed query, got the effects {:?}", effects);
-    // TODO too much IO?
-    lifecycle::persist_app_state(); //.unwrap_or_else(|err| error!("Error persisting app state: {:?}", err));
     effects
 }
