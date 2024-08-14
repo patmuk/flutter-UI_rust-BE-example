@@ -39,6 +39,9 @@ fn handle_effects(effects: &Vec<Effect>) {
             Effect::Render(view) => {
                 println!("Rendering view: {:?}", view);
             }
+            Effect::RenderTodoList(items) => {
+                println!("Rendering view: {:?}", items);
+            }
         }
     }
 }
