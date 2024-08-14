@@ -26,9 +26,10 @@ fn main() {
     println!("{}", USAGE);
     lifecycle::init();
     let effects = process_query(Query::GetModel);
-    let Effect::Render(initial_todo_list) = effects.first().unwrap();
-    println!("Loaded Todo List:\n");
-    print_todo_list(initial_todo_list);
+    if let Effect::Render(initial_todo_list) = effects.first().unwrap() {
+        println!("Loaded Todo List:\n");
+        print_todo_list(initial_todo_list);
+    }
 
     loop {
         match stdin.read_line(&mut user_input) {
@@ -88,13 +89,18 @@ fn hande_effects(effects: Vec<Effect>) {
         Effect::Render(model) => {
             print_todo_list(model);
         }
+        Effect::RenderTodoList(items) => {
+            print_todo_list_items(items);
+        }
     });
 }
 
 fn print_todo_list(todo_list: &TodoListModel) {
-    println!("\nTodo List with {} items:", todo_list.items.len());
-    todo_list
-        .items
+    print_todo_list_items(&todo_list.items)
+}
+fn print_todo_list_items(todo_list_items: &Vec<String>) {
+    println!("\nTodo List with {} items:", todo_list_items.len());
+    todo_list_items
         .iter()
         .enumerate()
         .for_each(|(index, item)| {
