@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::application::api::lifecycle::API;
-
 // TODO remove clone and handle references!
 #[derive(Default, Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
 pub struct TodoListModel {
@@ -24,6 +22,9 @@ pub enum Query {
 // requests to the shell, aka Capabilities aka Effects
 #[derive(Debug, PartialEq, Eq)]
 pub enum Effect {
+    // parameters need to be owned - as they are taken from
+    // the APP_STATE. This is guarded by a mutex to handle concurrent access.
+    // Either we pass the whole mutex or we clone selected subfields
     Render(TodoListModel),
     RenderTodoList(Vec<String>),
 }
@@ -35,27 +36,25 @@ pub(crate) fn process_command_todo_list(
     match command {
         Command::AddTodo(todo) => {
             model.items.push(todo);
-            // TODO use reference, not clone
             vec![Effect::RenderTodoList(model.items.clone())]
         }
         Command::RemoveTodo(todo_pos) => {
             model.items.remove((todo_pos - 1).try_into().unwrap());
-            // TODO use reference, not clone
-            vec![Effect::Render(model.clone())]
+            vec![Effect::RenderTodoList(model.items.clone())]
         }
         Command::CleanList => {
             model.items = vec![];
-            // TODO use reference, not clone
-            vec![Effect::Render(model.clone())]
+            vec![Effect::RenderTodoList(model.items.clone())]
         }
     }
 }
 
-pub(crate) fn process_query_todo_list(query: Query) -> Vec<Effect> {
+pub(crate) fn process_query_todo_list(query: Query, model: &TodoListModel) -> Vec<Effect> {
     match query {
-        // TODO use reference, not clone
-        Query::GetModel => vec![Effect::Render(API.read().model.clone())],
-        Query::AllTodos => vec![Effect::RenderTodoList(API.read().model.items.clone())],
+        // need to use clone here, as the RWLock is mutex guarding the value.
+        // So either pass the RWLock or clone the model
+        Query::GetModel => vec![Effect::Render(model.clone())],
+        Query::AllTodos => vec![Effect::RenderTodoList(model.items.clone())],
     }
 }
 

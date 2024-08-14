@@ -19,7 +19,8 @@ use log::{debug, error, trace};
 /// otherwise it is called automatically when the lazy reference is accessed the first time
 pub fn init() {
     ensure_logger_is_set_up();
-    let _ = &*API;
+    // let _ = &*API;
+    let _ = &*APP_STATE;
 }
 
 /// call to overwrite default values.
@@ -61,7 +62,7 @@ pub fn persist_app_state() {
     let app_config = APP_CONFIG
         .get()
         .expect("AppConfig must be set, error in this lib's logic flow!");
-    app_state::persist_app_state(&API.read(), &app_config.app_state_file_path).unwrap();
+    app_state::persist_app_state(&APP_STATE.read(), &app_config.app_state_file_path).unwrap();
 }
 
 // pub fn shutdown() -> Result<(), std::io::Error> {
@@ -72,5 +73,9 @@ pub fn shutdown() {
 
 // initializes the app_state only at first call
 // The app state is behind a mutex to avoid data conditions, and static, to be globally available to all threads
-pub(crate) static API: Lazy<RwLock<AppState>> =
-    Lazy::new(|| RwLock::new(AppState::new(APP_CONFIG.get_or_init(AppConfig::default))));
+// This is needed, as a static mut cannot be modified by save code, the mutex makes this possible
+pub(crate) static APP_STATE: Lazy<RwLock<AppState>> = Lazy::new(|| {
+    RwLock::new(AppState::load_or_new(
+        APP_CONFIG.get_or_init(AppConfig::default),
+    ))
+});

@@ -49,7 +49,7 @@ pub(crate) struct AppState {
 }
 
 impl AppState {
-    pub(crate) fn new(app_config: &AppConfig) -> Self {
+    pub(crate) fn load_or_new(app_config: &AppConfig) -> Self {
         ensure_logger_is_set_up();
         debug!("creating the app state from persisted or default values");
         let app_state = match load(&app_config.app_state_file_path) {
