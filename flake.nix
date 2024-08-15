@@ -42,8 +42,9 @@
         AVD_package = "system-images;android-34;aosp_atd;arm64-v8a";
         pinnedJDK = pkgs.jdk17;
         xcode_version = "15.3.0";
+        frb_version = "latest";
         flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
-          inherit pkgs;
+          inherit pkgs frb_version;
         };
         local_toolchain_path = "$PWD/.toolchain";
         local_flutter_path = "${local_toolchain_path}/flutter-local";

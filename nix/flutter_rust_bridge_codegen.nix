@@ -1,15 +1,44 @@
-{ pkgs ? import <nixpkgs> { } }:
+{ pkgs ? import <nixpkgs> { }, frb_version }:
 # doc: https://ryantm.github.io/nixpkgs/languages-frameworks/rust/
-pkgs.rustPlatform.buildRustPackage {
+let
+  latest_version = "v2.2.0";
+  desired_version = if (frb_version == null || frb_version == "latest") then latest_version else frb_version;
+
+  frb_source =
+    if (desired_version == "v2.2.0") then
+      pkgs.fetchFromGitHub
+        {
+          owner = "fzyzcjy";
+          repo = "flutter_rust_bridge";
+          rev = "42f8102622fd6abd1945f2f037e876ee7bc0daae"; # hash of the commit
+          sha256 = "17v8nn3lidniiwc5xl6sds07bmkhszrq86fnf1zpw35x4w7zamr3"; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.2.0.tar.gz
+        }
+    else if (desired_version == "v2.1.0") then
+      pkgs.fetchFromGitHub
+        {
+          owner = "fzyzcjy";
+          repo = "flutter_rust_bridge";
+          rev = "4a81440596e59bf3f771ba074bd2b5a3e355ff31"; # hash of the commit
+          sha256 = "197rzyzlvh28r9xvdi9d9ns88zknhf8kswhwj3y2nkwsa8v5x9j0"; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.1.0.tar.gz
+        } else
+      "Unknown frb version: ${desired_version}";
+
+  # pkgs.lib.fakeSha256; # set it to 'lib.fakeSha256' and run nix (develop/build). replace the sha from the error message.
+  frb_cargoSha256 =
+    if (desired_version == "v2.2.0") then
+      "sha256-viHZjZ2cItQNbHxKyf9pPZ0jbNfdd3t0KKvqQxvwlSs="
+    else if (desired_version == "v2.1.0") then
+      "sha256-/6chfWkiYd8mas3xaK5AsIJJjsSTzW0vXUVSHrgi3HI="
+    else
+      "Unknown frb version: ${desired_version}";
+
+in
+pkgs.rustPlatform.buildRustPackage
+{
   name = "flutter_rust_bridge_codegen";
-  version = "v2.1.0";
-  src = pkgs.fetchFromGitHub {
-    owner = "fzyzcjy";
-    repo = "flutter_rust_bridge";
-    rev = "4a81440596e59bf3f771ba074bd2b5a3e355ff31"; # hash of the commit
-    sha256 = "sha256-QKZeNlKaTyv8kBxyPZGDdn6EtE0txbZ7ykjATb//+aQ="; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.0.0-dev.31.tar.gz
-  };
-  cargoSha256 = "sha256-/6chfWkiYd8mas3xaK5AsIJJjsSTzW0vXUVSHrgi3HI="; # pkgs.lib.fakeSha256; # set it to 'lib.fakeSha256' and run nix (develop/build). replace the sha from the error message.
+  version = desired_version;
+  src = frb_source;
+  cargoSha256 = frb_cargoSha256;
 
   # Specify the path to the Cargo.toml if it's not in the root of the repository
   cargoToml = "frb_codegen/Cargo.toml";
