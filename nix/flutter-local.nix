@@ -9,30 +9,39 @@
 rec {
   latest_version = "3.24.0";
   desired_version = if (flutter_version == null || flutter_version == "latest") then latest_version else flutter_version;
-  desired_version_ = builtins.replaceStrings [ "." ] [ "_" ] desired_version;
 
-  flutter_source = "flutterSource-aarch64-darwin-${desired_version_}";
-
-  flutterSource-aarch64-darwin-3_24_0 = pkgs.fetchurl {
-    url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.24.0-stable.zip";
-    hash = "sha256-lKtzuIpKmWxOuTBkSDjQhjkYy8SgOagUTMr+Lhys0wQ=";
-  };
-  flutterSource-aarch64-darwin-3_22_2 = pkgs.fetchurl {
-    url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.22.2-stable.zip";
-    hash = "sha256-1pgHHdxArPbrc6aHMwa5hwJDLUFRmun97PF27w3IbOM=";
-  };
-  flutterSource-aarch64-darwin-3_19_6 = pkgs.fetchurl {
-    url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.6-stable.zip";
-    hash = "sha256-TmEUDfSWUr+PweMXUqb6hRj6TwW8bkxrywHI3/bZv48=";
-  };
-  flutterSource-aarch64-darwin-3_19_5 = pkgs.fetchurl {
-    url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.5-stable.zip";
-    hash = "sha256-HXHsHs2bzt9Xaqp6cUyK/S/Qk028jqCfSx3DF31HX/Q=";
-  };
-  flutterSource-aarch64-darwin-3_19_4 = pkgs.fetchurl {
-    url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.4-stable.zip";
-    hash = "sha256-3WRnvepBcH2fQ70+ZeI+jVEZYJLF1JJQehe2Pd9ew/U=";
-  };
+  flutter_source =
+    if desired_version == "3.24.0" then
+      pkgs.fetchurl
+        {
+          url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.24.0-stable.zip";
+          hash = "sha256-lKtzuIpKmWxOuTBkSDjQhjkYy8SgOagUTMr+Lhys0wQ=";
+        } else
+      if desired_version == "3.22.2" then
+        pkgs.fetchurl
+          {
+            url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.22.2-stable.zip";
+            hash = "sha256-1pgHHdxArPbrc6aHMwa5hwJDLUFRmun97PF27w3IbOM=";
+          } else
+        if desired_version == "3.19.6" then
+          pkgs.fetchurl
+            {
+              url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.6-stable.zip";
+              hash = "sha256-TmEUDfSWUr+PweMXUqb6hRj6TwW8bkxrywHI3/bZv48=";
+            } else
+          if desired_version == "3.19.5" then
+            pkgs.fetchurl
+              {
+                url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.5-stable.zip";
+                hash = "sha256-HXHsHs2bzt9Xaqp6cUyK/S/Qk028jqCfSx3DF31HX/Q=";
+              } else
+            if desired_version == "3.19.4" then
+              pkgs.fetchurl
+                {
+                  url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.19.4-stable.zip";
+                  hash = "sha256-3WRnvepBcH2fQ70+ZeI+jVEZYJLF1JJQehe2Pd9ew/U=";
+                } else
+              "Unknown flutter version: ${desired_version}";
 
   unpack_flutter = pkgs.writeShellApplication {
     name = "unpack_flutter";
