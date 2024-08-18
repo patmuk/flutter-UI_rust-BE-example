@@ -21,7 +21,8 @@ pub static INSTANCE: OnceLock<Lifecycle> = OnceLock::new();
 /// otherwise it is called automatically when the lazy reference is accessed the first time
 pub fn init() {
     // let _ = &*API;
-    let _ = &*APP_STATE;
+    // let _ = &*APP_STATE;
+    get_state();
 }
 
 /// call to overwrite default values.
@@ -41,7 +42,6 @@ pub fn setup(path: String) {
         .unwrap_or_else(|err| error!("Error setting the App Configuration: {:?}", err));
 }
 // app state storage location
->>>>>>> 62ee355890 (removes logging setup, as this is now build into frb)
 #[derive(Debug)]
 pub struct Lifecycle {
     app_state_lock: AppStateLock,
@@ -61,8 +61,6 @@ impl Lifecycle {
 }
 
 pub fn setup(path: Option<String>) {
-    ensure_logger_is_set_up();
-
     let app_config = match path {
         Some(path) => {
             debug!(

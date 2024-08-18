@@ -1,31 +1,18 @@
 use log::debug;
 
-pub use crate::domain::todo_list::Effect;
-pub use crate::domain::todo_list::{Command, Query};
-use crate::{
-    application::api::lifecycle::Lifecycle,
-    domain::todo_list::{process_command_todo_list, process_query_todo_list},
-};
+use crate::application::api::lifecycle::{self, get_state};
+use crate::domain::todo_list::{process_command_todo_list, process_query_todo_list};
+pub use crate::domain::todo_list::{Command, Effect, Query};
 
 // pub fn process_command<'a>(command: Command) -> Vec<Effect<'a>> {
 pub fn process_command(command: Command) -> Result<Vec<Effect>, std::io::Error> {
     //&'static TodoListModel {
     debug!("Processing command: {:?}", command);
-    // let lifecycle = Lifecycle::get();
-    let lifecycle = &mut Lifecycle::get();
-    let mut app_state = lifecycle.get_lock().write();
-    // TODO remove clone()
-    let model = &mut app_state.model;
-    let effect = process_command_todo_list(command, model);
-    debug!(
-        "Processed command, new model {:?}",
-        &effect.first().unwrap()
-    ); // &model);
-       // debug!("Processed command, new model {:?}", &app_state.model);
-       // TODO too much IO?
-    lifecycle.persist_app_state()?;
-    // lifecycle::persist_app_state(&app_state);
-    Ok(effect)
+    let effects = process_command_todo_list(command, &mut get_state().write().model);
+    debug!("Processed command, got the effects {:?}", effects);
+    // TODO too much IO?
+    lifecycle::persist_app_state(); //.unwrap_or_else(|err| error!("Error persisting app state: {:?}", err));
+    effects
 }
 
 pub fn process_query(query: Query) -> Vec<Effect> {
