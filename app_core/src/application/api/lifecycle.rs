@@ -1,6 +1,8 @@
 use crate::domain::app_state::{self, AppState};
 use crate::ensure_logger_is_set_up;
 
+use flutter_rust_bridge::frb;
+// use parking_lot::lock_api::RwLock;
 use std::path::PathBuf;
 use std::sync::{LazyLock, OnceLock};
 // use flutter_rust_bridge::{frb, support::lazy_static, RustOpaque};
@@ -20,7 +22,8 @@ use log::{debug, error, trace};
 pub fn init() {
     ensure_logger_is_set_up();
     // let _ = &*API;
-    let _ = &*APP_STATE;
+    // let _ = &*APP_STATE;
+    get_state();
 }
 
 /// call to overwrite default values.
@@ -62,7 +65,7 @@ pub fn persist_app_state() {
     let app_config = APP_CONFIG
         .get()
         .expect("AppConfig must be set, error in this lib's logic flow!");
-    app_state::persist_app_state(&APP_STATE.read(), &app_config.app_state_file_path).unwrap();
+    app_state::persist_app_state(&get_state().read(), &app_config.app_state_file_path).unwrap();
 }
 
 // pub fn shutdown() -> Result<(), std::io::Error> {

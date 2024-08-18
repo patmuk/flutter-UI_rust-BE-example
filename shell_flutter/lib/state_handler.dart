@@ -41,7 +41,6 @@ class StateHandler {
     await lifecycle.setup(path: stateFile.path);
     // load the state
     await lifecycle.init();
-
     singleton = StateHandler._singletonConstructor();
     // initialise all Listeners with the loaded model
     // by calling the respective querries

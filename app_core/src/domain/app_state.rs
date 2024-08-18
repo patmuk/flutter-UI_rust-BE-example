@@ -44,7 +44,7 @@ fn load(path: &Path) -> Result<AppState, AppStateLoadError> {
 
 // holds the complete state of the app, as a global static variable
 #[derive(Default, Serialize, Deserialize, Debug)]
-pub(crate) struct AppState {
+pub struct AppState {
     pub(crate) model: TodoListModel,
 }
 
