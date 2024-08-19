@@ -20,30 +20,30 @@ pub enum Query {
 
 // requests to the shell, aka Capabilities aka Effects
 #[derive(Debug, PartialEq, Eq)]
-pub enum Effect<'a> {
+pub enum Effect {
     // parameters need to be owned - as they are taken from
     // the APP_STATE. This is guarded by a mutex to handle concurrent access.
     // Either we pass the whole mutex or we clone selected subfields
-    Render(&'a TodoListModel),
-    RenderTodoList(&'a Vec<String>),
+    Render,
+    RenderTodoList,
 }
 
 pub(crate) fn process_command_todo_list(
     command: Command,
-    model: &'static mut TodoListModel,
+    model: &mut TodoListModel,
 ) -> Vec<Effect> {
     match command {
         Command::AddTodo(todo) => {
             model.items.push(todo);
-            vec![Effect::RenderTodoList(&model.items)]
+            vec![Effect::RenderTodoList]
         }
         Command::RemoveTodo(todo_pos) => {
             model.items.remove((todo_pos - 1).try_into().unwrap());
-            vec![Effect::RenderTodoList(&model.items)]
+            vec![Effect::RenderTodoList]
         }
         Command::CleanList => {
             model.items = vec![];
-            vec![Effect::RenderTodoList(&model.items)]
+            vec![Effect::RenderTodoList]
         }
     }
 }
@@ -52,8 +52,8 @@ pub(crate) fn process_query_todo_list(query: Query, model: &TodoListModel) -> Ve
     match query {
         // need to use clone here, as the RWLock is mutex guarding the value.
         // So either pass the RWLock or clone the model
-        Query::GetModel => vec![Effect::Render(&model)],
-        Query::AllTodos => vec![Effect::RenderTodoList(&model.items)],
+        Query::GetModel => vec![Effect::Render],
+        Query::AllTodos => vec![Effect::RenderTodoList],
     }
 }
 
@@ -74,9 +74,10 @@ mod tests {
         let expected_model = TodoListModel {
             items: vec![String::from("test the list")],
         };
-        let expected_effect = Effect::Render(&expected_model);
+        let expected_effect = Effect::Render;
         let actual_effect = &effects[0];
         assert_eq!(actual_effect, &expected_effect);
+        assert_eq!(model, expected_model);
     }
 
     #[test]
@@ -91,8 +92,9 @@ mod tests {
 
         let expected_model = TodoListModel { items: vec![] };
         let actual_effect = &effects[0];
-        let expected_effect = Effect::Render(&expected_model);
+        let expected_effect = Effect::Render;
         assert_eq!(actual_effect, &expected_effect);
+        assert_eq!(model, expected_model);
     }
     #[test]
     fn clean_list() {
@@ -106,7 +108,8 @@ mod tests {
 
         let expected_model = TodoListModel { items: vec![] };
         let actual_effect = &effects[0];
-        let expected_effect = Effect::Render(&expected_model);
+        let expected_effect = Effect::Render;
         assert_eq!(actual_effect, &expected_effect);
+        assert_eq!(model, expected_model);
     }
 }
