@@ -17,20 +17,6 @@ use crate::{application::api::lifecycle::AppConfig, ensure_logger_is_set_up};
 ///
 /// # Errors
 ///
-/// This function will return an error if anything goes wrong
-pub(crate) fn persist_app_state(app_state: &AppState, path: &Path) -> Result<(), io::Error> {
-    trace!("persisting app state:\n  {app_state:?}\n to {:?}", path);
-
-    let serialized_app_state: Vec<u8> =
-        bincode::serialize(app_state).expect("bincode.serialzation itself should not result in an error, \
-                                                    unless the contract with serde is not respected!");
-    if let Some(parent) = path.parent() {
-        create_dir_all(parent)?;
-    }
-    File::create(path)?.write_all(&serialized_app_state)?;
-    debug!("Persisted app state to file: {path:?}");
-    Ok(())
-}
 // get the last persisted app state from a file, if any exists, otherwise creates a new app state
 // this function is only called once, in the initialization/app state constructor
 fn load(path: &Path) -> Result<AppState, AppStateLoadError> {
@@ -45,7 +31,7 @@ fn load(path: &Path) -> Result<AppState, AppStateLoadError> {
 // holds the complete state of the app, as a global static variable
 #[derive(Default, Serialize, Deserialize, Debug)]
 pub struct AppState {
-    pub(crate) model: TodoListModel,
+    pub model: TodoListModel,
 }
 
 impl AppState {
@@ -68,6 +54,20 @@ impl AppState {
             log::max_level()
         );
         app_state
+    }
+    /// This function will return an error if anything goes wrong
+    pub(crate) fn persist(&self, path: &Path) -> Result<(), io::Error> {
+        trace!("persisting app state:\n  {self:?}\n to {:?}", path);
+
+        let serialized_app_state: Vec<u8> =
+        bincode::serialize(self).expect("bincode.serialzation itself should not result in an error, \
+                                                    unless the contract with serde is not respected!");
+        if let Some(parent) = path.parent() {
+            create_dir_all(parent)?;
+        }
+        File::create(path)?.write_all(&serialized_app_state)?;
+        debug!("Persisted app state to file: {path:?}");
+        Ok(())
     }
 }
 
@@ -95,7 +95,7 @@ mod tests {
     use super::{AppState, AppStateLoadError};
 
     // Importing functions to test
-    use super::{load, persist_app_state};
+    use super::load;
 
     /// Path to the temporary test directory
     use once_cell::sync::Lazy;
@@ -124,7 +124,7 @@ mod tests {
     #[serial]
     fn read_existing_file() {
         let original = create_test_app_state();
-        persist_app_state(&original, &TEST_FILE).unwrap();
+        original.persist(&TEST_FILE);
 
         let loaded = load(&TEST_FILE).unwrap();
 
@@ -136,13 +136,13 @@ mod tests {
     #[serial]
     fn overwrite_existing_file() {
         let original = create_test_app_state();
-        persist_app_state(&original, &TEST_FILE).unwrap();
+        original.persist(&TEST_FILE);
         let mut changed = AppState::default();
         process_command_todo_list(
             Command::AddTodo("Changed todo".to_string()),
             &mut changed.model,
         );
-        persist_app_state(&changed, &TEST_FILE).unwrap();
+        changed.persist(&TEST_FILE);
 
         let loaded = load(&TEST_FILE).unwrap();
         assert_eq_app_states(&changed, &loaded);
@@ -165,7 +165,7 @@ mod tests {
             Command::AddTodo("Changed todo".to_string()),
             &mut changed.model,
         );
-        persist_app_state(&changed, &TEST_FILE).unwrap();
+        changed.persist(&TEST_FILE);
 
         let loaded = load(&TEST_FILE).unwrap();
         assert_eq_app_states(&changed, &loaded);
@@ -204,7 +204,7 @@ mod tests {
         assert!(!TEST_FILE.exists());
         let new_app_state = create_test_app_state();
 
-        persist_app_state(&new_app_state, &TEST_FILE).unwrap();
+        new_app_state.persist(&TEST_FILE);
 
         assert!(TEST_FILE.exists());
         cleanup_test_file();

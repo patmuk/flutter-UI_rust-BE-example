@@ -74,7 +74,7 @@ mod tests {
         let expected_model = TodoListModel {
             items: vec![String::from("test the list")],
         };
-        let expected_effect = Effect::Render;
+        let expected_effect = Effect::RenderTodoList;
         let actual_effect = &effects[0];
         assert_eq!(actual_effect, &expected_effect);
         assert_eq!(model, expected_model);
@@ -92,7 +92,7 @@ mod tests {
 
         let expected_model = TodoListModel { items: vec![] };
         let actual_effect = &effects[0];
-        let expected_effect = Effect::Render;
+        let expected_effect = Effect::RenderTodoList;
         assert_eq!(actual_effect, &expected_effect);
         assert_eq!(model, expected_model);
     }
@@ -108,7 +108,7 @@ mod tests {
 
         let expected_model = TodoListModel { items: vec![] };
         let actual_effect = &effects[0];
-        let expected_effect = Effect::Render;
+        let expected_effect = Effect::RenderTodoList;
         assert_eq!(actual_effect, &expected_effect);
         assert_eq!(model, expected_model);
     }

@@ -1,11 +1,11 @@
 use app_core::{
     application::api::{
-        lifecycle::{self, shutdown},
+        lifecycle::{self, shutdown, APP_STATE},
         todo_list_api::{process_command, process_query, Command, Query},
     },
     domain::todo_list::{Effect, TodoListModel},
 };
-use std::{io, num::ParseIntError, process};
+use std::{borrow::Borrow, io, num::ParseIntError, process};
 
 fn main() {
     let mut user_input = String::new();
@@ -88,7 +88,10 @@ fn main() {
 fn hande_effects(effects: Vec<Effect>) {
     effects.iter().for_each(|effect| match effect {
         Effect::Render => {
-            print_todo_list(lifecycle::get_state().read());
+            print_todo_list(&APP_STATE);
+            // let model_rwlock = lifecycle::get_state();
+            // let model = model_rwlock.read();
+            // print_todo_list(&model);
         }
         Effect::RenderTodoList => {
             print_todo_list_items(lifecycle::get_state().items);

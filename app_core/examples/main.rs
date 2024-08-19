@@ -36,11 +36,14 @@ fn main() {
 fn handle_effects(effects: &Vec<Effect>) {
     for effect in effects {
         match effect {
-            Effect::Render(view) => {
-                println!("Rendering view: {:?}", view);
+            Effect::Render => {
+                println!("Rendering view: {:?}", lifecycle::get_state().read().model);
             }
-            Effect::RenderTodoList(items) => {
-                println!("Rendering view: {:?}", items);
+            Effect::RenderTodoList => {
+                println!(
+                    "Rendering view: {:?}",
+                    lifecycle::get_state().read().model.items
+                );
             }
         }
     }
