@@ -1,6 +1,6 @@
 use app_core::{
     application::api::{
-        lifecycle::{self, shutdown, APP_STATE},
+        lifecycle::{self, get_state, shutdown},
         todo_list_api::{process_command, process_query, Command, Query},
     },
     domain::todo_list::{Effect, TodoListModel},
