@@ -8,11 +8,13 @@ pub use crate::domain::todo_list::{Command, Effect, Query};
 pub fn process_command(command: Command) -> Result<Vec<Effect>, std::io::Error> {
     //&'static TodoListModel {
     debug!("Processing command: {:?}", command);
-    let effects = process_command_todo_list(command, &mut get_state().write().model);
-    debug!("Processed command, got the effects {:?}", effects);
+    let app_state = &mut get_state().write();
+    let model = &mut app_state.model;
+    let effect = process_command_todo_list(command, model);
+    debug!("Processed command, new model {:?}", model);
     // TODO too much IO?
-    lifecycle::persist_app_state(); //.unwrap_or_else(|err| error!("Error persisting app state: {:?}", err));
-    effects
+    lifecycle::persist_app_state(&app_state);
+    effect
 }
 
 pub fn process_query(query: Query) -> Vec<Effect> {
