@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shell_flutter/bridge/frb_generated/application/api/todo_list_api.dart'
     as todo_list_api;
@@ -63,14 +64,16 @@ class StateHandler {
 void _handleEffects(List<Effect> effects) {
   for (var effect in effects) {
     switch (effect) {
-      case Effect_Render effectValue:
+      case Effect.render:
         // update the value and trigger a UI repaint
         // note that only the reference is copied, not the whole list!
+
+        var lock = lifecycle.getState();
         StateHandler.singleton.todoListModel.value = effectValue.field0;
         // as the fields might have changed, their Listeners need to be updated as well!
         StateHandler.singleton.todoListItems.value = effectValue.field0.items;
         break;
-      case Effect_RenderTodoList effectValue:
+      case Effect.renderTodoList:
         // update the value and trigger a UI repaint
         // note that only the reference is copied, not the whole list!
         StateHandler.singleton.todoListItems.value = effectValue.field0;
