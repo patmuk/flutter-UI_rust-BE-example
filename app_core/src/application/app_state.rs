@@ -5,6 +5,7 @@ use std::{
     path::PathBuf,
 };
 
+use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 // implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
 use log::{debug, error, info, trace};
