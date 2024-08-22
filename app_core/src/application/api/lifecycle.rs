@@ -5,10 +5,11 @@ use flutter_rust_bridge::frb;
 use std::io;
 // use parking_lot::lock_api::RwLock;
 use std::path::PathBuf;
-use std::sync::{LazyLock, OnceLock};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{LazyLock, OnceLock, RwLock};
 // use flutter_rust_bridge::{frb, support::lazy_static, RustOpaque};
 // not needed by FRB, but needed to handle write access on this global variable!
-use parking_lot::RwLock;
+// use parking_lot::RwLock;
 
 // implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
 use log::{debug, error, trace};
@@ -20,31 +21,52 @@ use log::{debug, error, trace};
 /// call if you want to control when the app state is initialized,
 /// which might take time (due to IO when loading the last saved state)
 /// otherwise it is called automatically when the lazy reference is accessed the first time
-pub fn init() {
+pub fn init<'a>() -> AppStateReference<'a> {
+    if (IS_INITIALIZED.load(Ordering::Relaxed)) {
+        panic!("already initialized!");
+    }
     ensure_logger_is_set_up();
     // let _ = &*API;
     // let _ = &*APP_STATE;
-    get_state();
+    // get_state();
+    let mut app_config = APP_CONFIG.get();
+    // let app_config = APP_CONFIG.get().get_or_insert(&AppConfig::default());
+    let app_state = AppState::load_or_new(app_config.get_or_insert(&AppConfig::default()));
+    APP_STATE.set(RwLock::new(app_state));
+    let app_state_ref = AppStateReference {
+        lock: APP_STATE.get().expect("app_state has been set"),
+    };
+    IS_INITIALIZED.store(true, Ordering::Relaxed);
+    app_state_ref
 }
+
+static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 /// call to overwrite default values.
 /// Doesn't trigger initialization.
 // TODO implement after v2 upgrade
 // pub fn setup(app_config: AppConfig) -> Result<(), io::Error> {
 // pub fn setup(app_config: AppConfig) {
-pub fn setup(path: String) {
+pub fn setup(path: Option<String>) {
     ensure_logger_is_set_up();
-    debug!("Overwriting default setup:\n  - setting the app_state_storage_path to {path:?}");
-    trace!("Overwriting default setup:\n  - setting the app_state_storage_path to {path:?}");
-    let app_config = AppConfig {
-        app_state_file_path: PathBuf::from(path),
-    };
 
-    // TODO propper error handling!
-    APP_CONFIG
-        .set(app_config)
-        .unwrap_or_else(|err| error!("Error setting the App Configuration: {:?}", err));
+    let app_config = match path {
+        Some(path) => {
+            debug!(
+                "Overwriting default setup:\n  - setting the app_state_storage_path to {path:?}"
+            );
+            AppConfig {
+                app_state_file_path: PathBuf::from(path),
+            }
+        }
+        None => {
+            debug!("Using default path in setup");
+            AppConfig::default()
+        }
+    };
+    APP_CONFIG.set(app_config);
 }
+
 // app state storage location
 #[derive(Debug)]
 pub struct AppConfig {
@@ -61,6 +83,17 @@ impl Default for AppConfig {
 
 static APP_CONFIG: OnceLock<AppConfig> = OnceLock::new();
 
+#[frb(non_opaque)]
+pub struct AppConfigReference<'a> {
+    app_config: &'a AppConfig,
+}
+
+pub fn get_app_config_ref<'a>() -> AppConfigReference<'a> {
+    AppConfigReference {
+        app_config: APP_CONFIG.get().expect("App config not set up yet"),
+    }
+}
+
 // TODO implement Error handling!
 // pub fn persist_app_state() -> Result<(), std::io::Error> {
 pub fn persist_app_state(app_state: &AppState) {
@@ -75,68 +108,62 @@ pub fn persist_app_state(app_state: &AppState) {
 /// TODO implent timeout and throw an error?
 pub fn shutdown() -> Result<(), io::Error> {
     debug!("shutting down the app");
-    match APP_STATE.get() {
-        None => Ok(()), //if the state has not been initialized, no need to persist!
-        Some(app_state_lock) => {
-            app_state_lock.read().persist(
-                &APP_CONFIG
-                    .get_or_init(AppConfig::default)
-                    .app_state_file_path,
-            );
-            Ok(())
-        }
+    if let Some(app_state) = APP_STATE.get() {
+        app_state.read().expect("no error").persist(
+            &APP_CONFIG
+                .get_or_init(AppConfig::default)
+                .app_state_file_path,
+        )
+    } else {
+        // if the app state has not been set (e.g. init() not called),
+        // no need to persist!
+        Ok(())
     }
 }
 
 // initializes the app_state only at first call
 // The app state is behind a mutex to avoid data conditions, and static, to be globally available to all threads
 // This is needed, as a static mut cannot be modified by save code, the mutex makes this possible
-pub(crate) static APP_STATE: LazyLock<RwLock<AppState>> = LazyLock::new(|| {
-    RwLock::new(AppState::load_or_new(
-        APP_CONFIG.get_or_init(AppConfig::default),
-    ))
-});
-pub fn get_state() -> &'static RwLock<AppState> {
-    APP_STATE.get_or_init(init_app_state)
-}
-// pub fn get_state_mut() -> &'static mut AppState {
-//     match (APP_STATE.get_mut()) {
-//         Some(app_state) => {
-//             return app_state;
-//         }
-//         None => {
-//             APP_STATE
-//                 .set(init_app_state())
-//                 .expect("APP_STATE has not been set before,");
-//             get_state_mut()
-//         }
-//     }
-//     // APP_STATE.get_or_init(|| {
-//     //     let mut app_state = init_app_state();
-//     //     persist_app_state()
-//     //    .expect("Error persisting the app state");
-//     // }
+// pub(crate) static APP_STATE: LazyLock<RwLock<AppState>> = LazyLock::new(|| {
+//     RwLock::new(AppState::load_or_new(
+//         APP_CONFIG.get().expect("setup() has bee called before"),
+//     ))
+// });
+#[frb(non_opaque)]
+pub static APP_STATE: OnceLock<RwLock<AppState>> = OnceLock::new();
+
+// pub fn init_app_state_lock() {
+//     // let app_state = APP_STATE.get().expect("setup() has bee called before");
+//     // let app_state = APP_STATE;
+//     APP_STATE_LOCK
+//         .set(AppStateLock { lock: APP_STATE })
+//         .expect("setup() has bee called before");
 // }
-//&RwLockReadGuard<AppState> {
-//     match APP_STATE.get() {
-//         Some(app_state) => {
-//             debug!("App State already exists, returning it");
-//             &app_state
-//         }
-//         None => {
-//             init_app_state();
-//             get_state()
-//         }
-//     }
-// }
-fn init_app_state() -> RwLock<AppState> {
-    RwLock::new(AppState::load_or_new(
-        APP_CONFIG.get_or_init(AppConfig::default),
-    ))
-    // APP_STATE
-    //     .set(app_state)
-    //     .expect("APP_STATE hasn't been set before");
+
+// static APP_STATE_LOCK: OnceLock<AppStateLock> = OnceLock::new();
+
+/// transfer object
+#[derive(Debug)]
+#[frb(non_opaque)]
+pub struct AppStateReference<'a> {
+    #[frb(non_opaque)]
+    pub lock: &'a RwLock<AppState>,
 }
+
+pub fn get_app_state_ref<'a>() -> AppStateReference<'a> {
+    AppStateReference {
+        lock: APP_STATE.get().expect("App state not set up yet"),
+    }
+}
+// impl AppStateLock {
+// pub fn load_or_new(app_config: AppConfig) -> AppStateLock {
+//     *APP_STATE_LOCK.get_or_init(|| AppStateLock {
+//         lock: RwLock::new(AppState::load_or_new(&app_config)),
+//     })
+// }
+
+// }
+
 // pub fn get_state() -> &'static RwLock<AppState> {
 //     //&RwLockReadGuard<AppState> {
 //     match APP_STATE.get() {
@@ -161,5 +188,4 @@ fn init_app_state() -> RwLock<AppState> {
 //     ))
 // });
 
-static APP_STATE: OnceCell<RwLock<AppState>> = OnceCell::new();
 // static APP_STATE: OnceCell<RwLock<AppState>> = OnceCell::new();

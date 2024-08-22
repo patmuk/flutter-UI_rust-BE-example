@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart';
+import 'package:shell_flutter/bridge/frb_generated/domain/app_state.dart';
 import 'package:shell_flutter/state_handler.dart';
 
 import 'bridge/frb_generated/domain/todo_list.dart';

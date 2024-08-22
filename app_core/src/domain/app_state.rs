@@ -5,6 +5,7 @@ use std::{
     path::PathBuf,
 };
 
+use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 // implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
 use log::{debug, error, info, trace};
@@ -30,12 +31,13 @@ fn load(path: &Path) -> Result<AppState, AppStateLoadError> {
 
 // holds the complete state of the app, as a global static variable
 #[derive(Default, Serialize, Deserialize, Debug)]
+#[frb(non_opaque)]
 pub struct AppState {
     pub model: TodoListModel,
 }
 
 impl AppState {
-    pub(crate) fn load_or_new(app_config: &AppConfig) -> Self {
+    pub fn load_or_new(app_config: &AppConfig) -> Self {
         ensure_logger_is_set_up();
         debug!("creating the app state from persisted or default values");
         let app_state = match load(&app_config.app_state_file_path) {

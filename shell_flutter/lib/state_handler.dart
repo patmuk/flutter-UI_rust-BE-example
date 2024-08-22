@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart';
 import 'package:shell_flutter/bridge/frb_generated/application/api/todo_list_api.dart'
     as todo_list_api;
 import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart'
@@ -19,6 +20,9 @@ class StateHandler {
   /// runtime error, if not initialized by calling _createSingleton()
   static late final StateHandler singleton;
   static bool isInitialised = false;
+
+  // the app's state
+  static late final app_state_ref;
 
   /// ViewModels, observed by the UI
   // for completeness, this is the whole model - not used in the UI
@@ -46,7 +50,15 @@ class StateHandler {
     // initialise all Listeners with the loaded model
     // by calling the respective querries
     // the value is set by _handleEffects() automatically
-    singleton.processQuery(Query.getModel);
+    // singleton.processQuery(Query.getModel);
+
+    var appConfigRef = await lifecycle.getAppConfigRef();
+    appConfigRef.appConfig.appStateFilePath;
+    var app_state_ref = await lifecycle.getAppStateRef();
+    app_state_ref.lock;
+    // app_state_lock =
+    //     await AppStateLock.loadOrNew(appConfig: appConfigRef.appConfig);
+
     return singleton;
   }
 
@@ -63,21 +75,21 @@ class StateHandler {
 
 void _handleEffects(List<Effect> effects) {
   for (var effect in effects) {
-    switch (effect) {
-      case Effect.render:
-        // update the value and trigger a UI repaint
-        // note that only the reference is copied, not the whole list!
+    // switch (effect) {
+    //   case Effect.render:
+    //     // update the value and trigger a UI repaint
+    //     // note that only the reference is copied, not the whole list!
 
-        var lock = lifecycle.getState();
-        StateHandler.singleton.todoListModel.value = effectValue.field0;
-        // as the fields might have changed, their Listeners need to be updated as well!
-        StateHandler.singleton.todoListItems.value = effectValue.field0.items;
-        break;
-      case Effect.renderTodoList:
-        // update the value and trigger a UI repaint
-        // note that only the reference is copied, not the whole list!
-        StateHandler.singleton.todoListItems.value = effectValue.field0;
-        break;
-    }
+    //     // var lock = lifecycle.getState();
+    //     // StateHandler.singleton.todoListModel.value = effectValue.field0;
+    //     // as the fields might have changed, their Listeners need to be updated as well!
+    //     StateHandler.singleton.todoListItems.value = effectValue.field0.items;
+    //     break;
+    //   case Effect.renderTodoList:
+    //     // update the value and trigger a UI repaint
+    //     // note that only the reference is copied, not the whole list!
+    //     StateHandler.singleton.todoListItems.value = effectValue.field0;
+    //     break;
+    // }
   }
 }
