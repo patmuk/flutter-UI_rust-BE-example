@@ -2,9 +2,9 @@ use crate::domain::app_state::{self, AppState};
 use crate::ensure_logger_is_set_up;
 
 use std::path::PathBuf;
+use std::sync::{LazyLock, OnceLock};
 // use flutter_rust_bridge::{frb, support::lazy_static, RustOpaque};
 // not needed by FRB, but needed to handle write access on this global variable!
-use once_cell::sync::{Lazy, OnceCell};
 use parking_lot::RwLock;
 
 // implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
@@ -55,7 +55,7 @@ impl Default for AppConfig {
     }
 }
 
-static APP_CONFIG: OnceCell<AppConfig> = OnceCell::new();
+static APP_CONFIG: OnceLock<AppConfig> = OnceLock::new();
 
 // pub fn persist_app_state() -> Result<(), std::io::Error> {
 pub fn persist_app_state() {
@@ -74,7 +74,7 @@ pub fn shutdown() {
 // initializes the app_state only at first call
 // The app state is behind a mutex to avoid data conditions, and static, to be globally available to all threads
 // This is needed, as a static mut cannot be modified by save code, the mutex makes this possible
-pub(crate) static APP_STATE: Lazy<RwLock<AppState>> = Lazy::new(|| {
+pub(crate) static APP_STATE: LazyLock<RwLock<AppState>> = LazyLock::new(|| {
     RwLock::new(AppState::load_or_new(
         APP_CONFIG.get_or_init(AppConfig::default),
     ))
