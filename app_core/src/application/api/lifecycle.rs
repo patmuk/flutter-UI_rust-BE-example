@@ -1,4 +1,6 @@
+use crate::application::bridge::frb_generated::{RustAutoOpaque, RustOpaque};
 use crate::domain::app_state::{self, AppState};
+use crate::domain::todo_list::TodoListModel;
 
 use std::io;
 use std::path::PathBuf;
@@ -19,32 +21,54 @@ pub static INSTANCE: OnceLock<Lifecycle> = OnceLock::new();
 /// call if you want to control when the app state is initialized,
 /// which might take time (due to IO when loading the last saved state)
 /// otherwise it is called automatically when the lazy reference is accessed the first time
-pub fn init<'a>() -> AppStateReference<'a> {
-    if (IS_INITIALIZED.load(Ordering::Relaxed)) {
-        panic!("already initialized!");
-    }
-    ensure_logger_is_set_up();
-    // let _ = &*API;
-    // let _ = &*APP_STATE;
-    // get_state();
-    let mut app_config = APP_CONFIG.get();
-    // let app_config = APP_CONFIG.get().get_or_insert(&AppConfig::default());
-    let app_state = AppState::load_or_new(app_config.get_or_insert(&AppConfig::default()));
-    APP_STATE.set(RwLock::new(app_state));
-    let app_state_ref = AppStateReference {
-        lock: APP_STATE.get().expect("app_state has been set"),
-    };
-    IS_INITIALIZED.store(true, Ordering::Relaxed);
-    app_state_ref
-}
+// pub fn init<'a>() -> AppStateReference<'a> {
+
+// #[frb(opaque)]
+// struct GlobalState {
+//     pub app_state: OnceLock<AppState>,
+// }
+
+// impl GlobalState {
+//     fn new() -> Self {
+//         GlobalState {
+//             app_state: OnceLock::new(),
+//         }
+//     }
+// }
+
+// #[frb(opaque)]
+// pub struct State {
+//     pub display: Vec<u32>,
+// }
+
+// impl State {
+//     fn new(display: Vec<u32>) -> Self {
+//         State { display }
+//     }
+// }
+
+// pub static STATE: RustAutoOpaque<State> = RustAutoOpaque::new(State::new(vec![42]));
+// pub static STATE: RustAutoOpaque<State> = RustAutoOpaque::new(State { display: 42 });
+// pub static APP_STATE: RustAutoOpaque<GlobalState> = RustAutoOpaque::new(GlobalState::new());
+
+// pub fn get_field_to_display<'a>() -> &'a u32 {
+//     STATE
+//         .read()
+//         .expect("state is initialized")
+//         .display
+//         .first()
+//         .unwrap()
+// }
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
+
+static APP_CONFIG: OnceLock<AppConfig> = OnceLock::new();
+static APP_STATE: OnceLock<RwLock<AppState>> = OnceLock::new();
 
 /// call to overwrite default values.
 /// Doesn't trigger initialization.
 // TODO implement after v2 upgrade
 // pub fn setup(app_config: AppConfig) -> Result<(), io::Error> {
-// pub fn setup(app_config: AppConfig) {
 pub fn setup(path: Option<String>) {
     let app_config = match path {
         Some(path) => {
@@ -61,6 +85,28 @@ pub fn setup(path: Option<String>) {
         }
     };
     APP_CONFIG.set(app_config);
+}
+
+/// call to initialize the app.
+/// loads the app's state, which can be io-heavy
+pub fn init() {
+    if !IS_INITIALIZED.load(Ordering::Relaxed) {
+        let app_config = match APP_CONFIG.get() {
+            Some(app_config) => app_config,
+            None => &AppConfig::default(),
+        };
+
+        debug!("Initializing app with config: {:?}", app_config);
+        let app_state = AppState::load_or_new(app_config);
+        APP_STATE.set(RwLock::new(app_state));
+        IS_INITIALIZED.store(true, Ordering::Relaxed);
+    } else {
+        panic!("App already initialized");
+    }
+}
+
+pub fn get_app_state<'a>() -> &'a RwLock<AppState> {
+    APP_STATE.get().expect("App has been initialized")
 }
 
 // app state storage location
@@ -82,18 +128,16 @@ impl Lifecycle {
     }
 }
 
-static APP_CONFIG: OnceLock<AppConfig> = OnceLock::new();
+// // #[frb(non_opaque)]
+// pub struct AppConfigReference<'a> {
+//     app_config: &'a AppConfig,
+// }
 
-#[frb(non_opaque)]
-pub struct AppConfigReference<'a> {
-    app_config: &'a AppConfig,
-}
-
-pub fn get_app_config_ref<'a>() -> AppConfigReference<'a> {
-    AppConfigReference {
-        app_config: APP_CONFIG.get().expect("App config not set up yet"),
-    }
-}
+// pub fn get_app_config_ref<'a>() -> AppConfigReference<'a> {
+//     AppConfigReference {
+//         app_config: APP_CONFIG.get().expect("App config not set up yet"),
+//     }
+// }
 
 // TODO implement Error handling!
 // pub fn persist_app_state() -> Result<(), std::io::Error> {
@@ -131,9 +175,11 @@ pub fn shutdown() -> Result<(), io::Error> {
 //     RwLock::new(AppState::load_or_new(
 //         APP_CONFIG.get().expect("setup() has bee called before"),
 //     ))
+
 // });
-#[frb(non_opaque)]
-pub static APP_STATE: OnceLock<RwLock<AppState>> = OnceLock::new();
+
+// #[frb(RustOpaque)]
+// pub static APP_STATE: RustAutoOpaque<AppState> = RustAutoOpaque::new(AppState::default());
 
 // pub fn init_app_state_lock() {
 //     // let app_state = APP_STATE.get().expect("setup() has bee called before");
@@ -145,19 +191,17 @@ pub static APP_STATE: OnceLock<RwLock<AppState>> = OnceLock::new();
 
 // static APP_STATE_LOCK: OnceLock<AppStateLock> = OnceLock::new();
 
-/// transfer object
-#[derive(Debug)]
-#[frb(non_opaque)]
-pub struct AppStateReference<'a> {
-    #[frb(non_opaque)]
-    pub lock: &'a RwLock<AppState>,
-}
+// transfer object
+// #[derive(Debug)]
+// pub struct AppStateReference<'a> {
+//     pub lock: &'a RwLock<AppState>,
+// }
 
-pub fn get_app_state_ref<'a>() -> AppStateReference<'a> {
-    AppStateReference {
-        lock: APP_STATE.get().expect("App state not set up yet"),
-    }
-}
+// pub fn get_app_state_ref<'a>() -> AppStateReference<'a> {
+//     AppStateReference {
+//         lock: APP_STATE.get().expect("App state not set up yet"),
+//     }
+// }
 // impl AppStateLock {
 // pub fn load_or_new(app_config: AppConfig) -> AppStateLock {
 //     *APP_STATE_LOCK.get_or_init(|| AppStateLock {
