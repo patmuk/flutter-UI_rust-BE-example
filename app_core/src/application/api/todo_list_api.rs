@@ -1,48 +1,35 @@
+use std::borrow::Borrow;
+
 use log::debug;
 
-use crate::application::api::lifecycle::APP_STATE;
 pub use crate::domain::todo_list::Effect;
+use crate::domain::todo_list::{process_command_todo_list, process_query_todo_list};
 pub use crate::domain::todo_list::{Command, Query};
 use crate::{
-    application::api::lifecycle::get_app_state_ref,
-    domain::todo_list::{process_command_todo_list, process_query_todo_list},
-};
-use crate::{
-    application::api::lifecycle::{self},
+    application::api::lifecycle::{self, get_app_state},
     domain::app_state,
 };
 
-pub fn process_command(command: Command) -> Vec<Effect> {
+pub fn process_command<'a>(command: Command) -> Vec<Effect<'a>> {
     //&'static TodoListModel {
     debug!("Processing command: {:?}", command);
-    // TODO maybe get static, so object instanciation is avoided
-    // let app_state = &mut get_app_state_ref().lock.write();
-    let mut app_state = APP_STATE
-        .get()
-        .expect("app state has been initialized")
-        .write()
-        .unwrap();
+    let mut app_state = get_app_state().write().unwrap();
     let model = &mut app_state.model;
     let effect = process_command_todo_list(command, model);
-    debug!("Processed command, new model {:?}", model);
+    // debug!("Processed command, new model {:?}", effect.first().unwrap()); // &model);
+    let app_state = get_app_state().read().unwrap();
+    debug!("Processed command, new model {:?}", &app_state.model);
     // TODO too much IO?
-    lifecycle::persist_app_state(&app_state);
+    lifecycle::persist_app_state(app_state.borrow());
+    // lifecycle::persist_app_state(&app_state);
     effect
 }
 
-pub fn process_query(query: Query) -> Vec<Effect> {
+pub fn process_query<'a>(query: Query) -> Vec<Effect<'a>> {
     //&model {
     debug!("Processing query: {:?}", query);
     // let effects = process_query_todo_list(query, &get_state().read().model);
-    let effects = process_query_todo_list(
-        query,
-        &APP_STATE
-            .get()
-            .expect("app state has been initialized")
-            .read()
-            .unwrap()
-            .model,
-    );
+    let effects = process_query_todo_list(query, &get_app_state().read().unwrap().model);
     debug!("Processed query, got the effects {:?}", effects);
     effects
 }
