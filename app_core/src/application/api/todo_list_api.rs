@@ -2,25 +2,25 @@ use std::borrow::Borrow;
 
 use log::debug;
 
+use crate::application::api::lifecycle;
 pub use crate::domain::todo_list::Effect;
-use crate::domain::todo_list::{process_command_todo_list, process_query_todo_list};
 pub use crate::domain::todo_list::{Command, Query};
 use crate::{
-    application::api::lifecycle::{self, get_app_state},
-    domain::app_state,
+    application::api::lifecycle::Lifecycle,
+    domain::todo_list::{process_command_todo_list, process_query_todo_list},
 };
 
 pub fn process_command<'a>(command: Command) -> Vec<Effect<'a>> {
     //&'static TodoListModel {
     debug!("Processing command: {:?}", command);
-    let mut app_state = get_app_state().write().unwrap();
+    let lifecycle = Lifecycle::get();
+    let app_state = lifecycle.get_app_state();
     let model = &mut app_state.model;
     let effect = process_command_todo_list(command, model);
     // debug!("Processed command, new model {:?}", effect.first().unwrap()); // &model);
-    let app_state = get_app_state().read().unwrap();
     debug!("Processed command, new model {:?}", &app_state.model);
     // TODO too much IO?
-    lifecycle::persist_app_state(app_state.borrow());
+    lifecycle.persist_app_state();
     // lifecycle::persist_app_state(&app_state);
     effect
 }

@@ -12,7 +12,7 @@ use log::{debug, error, info, trace};
 
 use crate::domain::todo_list::TodoListModel;
 // use crate::{api::lifecycle::AppConfig, ensure_logger_is_set_up, todo_list::TodoListModel};
-use crate::{application::api::lifecycle::AppConfig, ensure_logger_is_set_up};
+use crate::ensure_logger_is_set_up;
 
 /// Stores the app's state in a file.
 ///
