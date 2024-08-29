@@ -63,12 +63,19 @@ pub static INSTANCE: OnceLock<Lifecycle> = OnceLock::new();
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 static APP_CONFIG: OnceLock<AppConfig> = OnceLock::new();
-static APP_STATE: OnceLock<RwLock<AppState>> = OnceLock::new();
+pub static INSTANCE: OnceLock<Lifecycle> = OnceLock::new();
 
-/// call to overwrite default values.
-/// Doesn't trigger initialization.
-// TODO implement after v2 upgrade
-// pub fn setup(app_config: AppConfig) -> Result<(), io::Error> {
+// pub fn get_app_state() -> Arc<AppState> {
+//     match INSTANCE.get() {
+//         Some(instance) => instance.get_app_state(),
+//         None => panic!("The Lifecycle has not been initialized"),
+//     }
+// }
+
+pub struct Lifecycle {
+    app_state: RwLock<AppState>,
+}
+
 pub fn setup(path: Option<String>) {
     let app_config = match path {
         Some(path) => {
@@ -87,23 +94,24 @@ pub fn setup(path: Option<String>) {
     APP_CONFIG.set(app_config);
 }
 
-/// call to initialize the app.
-/// loads the app's state, which can be io-heavy
-pub fn init() {
-    if !IS_INITIALIZED.load(Ordering::Relaxed) {
-        let app_config = match APP_CONFIG.get() {
-            Some(app_config) => app_config,
-            None => &AppConfig::default(),
-        };
+impl Lifecycle {
+    /// call to overwrite default values.
+    /// Doesn't trigger initialization.
+    // TODO implement after v2 upgrade
+    // pub fn setup(app_config: AppConfig) -> Result<(), io::Error> {
 
-        debug!("Initializing app with config: {:?}", app_config);
-        let app_state = AppState::load_or_new(app_config);
-        APP_STATE.set(RwLock::new(app_state));
-        IS_INITIALIZED.store(true, Ordering::Relaxed);
-    } else {
-        panic!("App already initialized");
-    }
-}
+    /// call to initialize the app.
+    /// loads the app's state, which can be io-heavy
+    pub fn init() -> &'static Self {
+        // if !IS_INITIALIZED.load(Ordering::Relaxed) {
+        match INSTANCE.get() {
+            Some(instance) => instance,
+            None => {
+                ensure_logger_is_set_up();
+                let app_config = match APP_CONFIG.get() {
+                    Some(app_config) => app_config,
+                    None => &AppConfig::default(),
+                };
 
 pub fn get_app_state<'a>() -> &'a RwLock<AppState> {
     APP_STATE.get().expect("App has been initialized")
@@ -126,43 +134,65 @@ impl Lifecycle {
     pub fn get_lock(&self) -> &RwLock<AppState> {
         &self.app_state_lock.lock
     }
-}
+    pub fn get() -> &'static Lifecycle {
+        &Self::init()
+    }
 
-// // #[frb(non_opaque)]
-// pub struct AppConfigReference<'a> {
-//     app_config: &'a AppConfig,
-// }
+    // pub fn read(self) -> &'static Self {
+    //     if !IS_INITIALIZED.load(Ordering::Relaxed) {
+    //         &Lifecycle::init()
+    //     } else {
+    //         &self
+    //     }
+    // }
 
-// pub fn get_app_config_ref<'a>() -> AppConfigReference<'a> {
-//     AppConfigReference {
-//         app_config: APP_CONFIG.get().expect("App config not set up yet"),
-//     }
-// }
+    // pub fn get_app_state(&self) -> Arc<AppState> {
+    //     // Arc::clone(&self.app_state)
+    // }
+    pub fn read_app_state(&self) -> &AppState {
+        &self.app_state.read()
+    }
 
-// TODO implement Error handling!
-// pub fn persist_app_state() -> Result<(), std::io::Error> {
-pub fn persist_app_state(app_state: &AppState) {
-    let app_config = APP_CONFIG
-        .get()
-        .expect("AppConfig must be set, error in this lib's logic flow!");
-    app_state.persist(&app_config.app_state_file_path).unwrap();
-}
+    // pub fn mut_borrow_app_state<'a>(self) -> &'a mut AppState {
+    //     &mut app_state
+    // }
 
-// pub fn shutdown() -> Result<(), std::io::Error> {
-/// Blocks, if RwLock<AppState> is in write use
-/// TODO implent timeout and throw an error?
-pub fn shutdown() -> Result<(), io::Error> {
-    debug!("shutting down the app");
-    if let Some(app_state) = APP_STATE.get() {
-        app_state.read().expect("no error").persist(
+    // TODO implement Error handling!
+    // pub fn persist_app_state(app_state: &AppState) {
+    pub fn persist_app_state(&self) -> Result<(), std::io::Error> {
+        let app_config = APP_CONFIG
+            .get()
+            .expect("AppConfig must be set, error in this lib's logic flow!");
+        self.app_state.persist(&app_config.app_state_file_path)
+    }
+
+    // pub fn shutdown() -> Result<(), std::io::Error> {
+    /// Blocks, if RwLock<AppState> is in write use
+    /// TODO implent timeout and throw an error?
+    pub fn shutdown(&self) -> Result<(), io::Error> {
+        debug!("shutting down the app");
+        // if INSTANCE.get().is_some() {
+        // if IS_INITIALIZED.load(Ordering::Relaxed) {
+        self.app_state.persist(
             &APP_CONFIG
-                .get_or_init(AppConfig::default)
+                .get()
+                .expect("Has been initialized.")
                 .app_state_file_path,
         )
-    } else {
-        // if the app state has not been set (e.g. init() not called),
-        // no need to persist!
-        Ok(())
+        // } else {
+        //     Ok(())
+        // }
+        // if let Some(app_state) = APP_STATE.get() {
+        //     app_state.read().expect("no error").persist(
+        //         &APP_CONFIG
+        //             .get_or_init(AppConfig::default)
+        //             .app_state_file_path,
+        //     )
+        // } else {
+        //     // if the app state has not been set (e.g. init() not called),
+        //     // no need to persist!
+        //     Ok(())
+        // }
     }
     pub fn get() -> &'static Lifecycle {
         &Self::init()
