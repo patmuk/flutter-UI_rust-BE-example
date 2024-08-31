@@ -1,14 +1,14 @@
 use crate::application::app_config::AppConfig;
-use crate::application::app_state::{self, AppState};
+use crate::application::app_state::AppState;
 use crate::ensure_logger_is_set_up;
 
 use std::io;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, OnceLock};
+use std::sync::OnceLock;
 
+use flutter_rust_bridge::frb;
 // implement logging, as shown in https://github.com/fzyzcjy/flutter_rust_bridge/issues/252
-use log::{debug, error, trace};
+use log::debug;
 use parking_lot::RwLock;
 
 // static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
@@ -24,7 +24,12 @@ pub static INSTANCE: OnceLock<Lifecycle> = OnceLock::new();
 // }
 
 pub struct Lifecycle {
-    app_state: RwLock<AppState>,
+    pub app_state_lock: AppStateLock,
+}
+
+#[frb(opaque)]
+pub struct AppStateLock {
+    pub lock: RwLock<(AppState)>,
 }
 
 pub fn setup(path: Option<String>) {
@@ -70,10 +75,12 @@ impl Lifecycle {
                 let app_state = AppState::load_or_new(app_config);
                 // IS_INITIALIZED.store(true, Ordering::Relaxed);
                 let lifecycle = Lifecycle {
-                    app_state: RwLock::new(app_state),
+                    app_state_lock: AppStateLock {
+                        lock: RwLock::new(app_state),
+                    },
                 };
                 INSTANCE.set(lifecycle);
-                &lifecycle
+                Lifecycle::get()
             }
         }
     }
@@ -92,9 +99,9 @@ impl Lifecycle {
     // pub fn get_app_state(&self) -> Arc<AppState> {
     //     // Arc::clone(&self.app_state)
     // }
-    pub fn read_app_state(&self) -> &AppState {
-        &self.app_state.read()
-    }
+    // pub fn read_app_state(&self) -> &AppState {
+    //     &self.app_state.read()
+    // }
 
     // pub fn mut_borrow_app_state<'a>(self) -> &'a mut AppState {
     //     &mut app_state
@@ -106,7 +113,10 @@ impl Lifecycle {
         let app_config = APP_CONFIG
             .get()
             .expect("AppConfig must be set, error in this lib's logic flow!");
-        self.app_state.persist(&app_config.app_state_file_path)
+        self.app_state_lock
+            .lock
+            .read()
+            .persist(&app_config.app_state_file_path)
     }
 
     // pub fn shutdown() -> Result<(), std::io::Error> {
@@ -116,7 +126,7 @@ impl Lifecycle {
         debug!("shutting down the app");
         // if INSTANCE.get().is_some() {
         // if IS_INITIALIZED.load(Ordering::Relaxed) {
-        self.app_state.persist(
+        self.app_state_lock.lock.read().persist(
             &APP_CONFIG
                 .get()
                 .expect("Has been initialized.")
