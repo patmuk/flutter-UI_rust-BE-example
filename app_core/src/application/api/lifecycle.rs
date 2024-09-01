@@ -23,13 +23,22 @@ pub static INSTANCE: OnceLock<Lifecycle> = OnceLock::new();
 //     }
 // }
 
+#[derive(Debug)]
 pub struct Lifecycle {
-    pub app_state_lock: AppStateLock,
+    app_state_lock: AppStateLock,
 }
 
+#[derive(Debug)]
 #[frb(opaque)]
-pub struct AppStateLock {
-    pub lock: RwLock<(AppState)>,
+struct AppStateLock {
+    lock: RwLock<(AppState)>,
+}
+
+// impl AppStateLock {
+impl Lifecycle {
+    pub fn get_lock(&self) -> &RwLock<AppState> {
+        &self.app_state_lock.lock
+    }
 }
 
 pub fn setup(path: Option<String>) {
@@ -49,7 +58,7 @@ pub fn setup(path: Option<String>) {
             AppConfig::default()
         }
     };
-    APP_CONFIG.set(app_config);
+    APP_CONFIG.set(app_config).expect("setup called only once");
 }
 
 impl Lifecycle {
@@ -79,7 +88,9 @@ impl Lifecycle {
                         lock: RwLock::new(app_state),
                     },
                 };
-                INSTANCE.set(lifecycle);
+                INSTANCE
+                    .set(lifecycle)
+                    .expect("logic in function prevents this dseet to be called twice");
                 Lifecycle::get()
             }
         }
