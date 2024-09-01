@@ -1,5 +1,5 @@
 pub mod application;
-mod domain;
+// mod domain;
 
 use log::{debug, LevelFilter};
 use once_cell::sync::OnceCell;
