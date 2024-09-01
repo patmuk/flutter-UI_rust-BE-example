@@ -16,3 +16,14 @@ impl AppState {
 pub struct Heavy {
     pub heavy: u32,
 }
+
+fn add_item(appstate: &mut AppState) {
+    appstate
+        .items
+        .push(RustAutoOpaque::new(Heavy { heavy: 10 }));
+}
+async fn display_first_item(appstate: &AppState) {
+    let fist_item = appstate.get_first_item();
+    let heavy = fist_item.read().await;
+    print!("The first item is {:?}", heavy);
+}
