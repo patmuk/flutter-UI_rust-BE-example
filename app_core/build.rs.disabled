@@ -9,7 +9,8 @@ fn main() -> anyhow::Result<()> {
 
     // Execute code generator with auto-detected config
     codegen::generate(
-        Config::from_config_file("../shell_flutter/flutter_rust_bridge.yaml")?.unwrap(),
+        Config::from_config_file("../shell_flutter/flutter_rust_bridge.yaml")?
+            .expect("Configuration flutter_rust_bridge.yaml could not be parsed"),
         Default::default(),
     )
 }
