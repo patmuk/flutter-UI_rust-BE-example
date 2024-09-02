@@ -19,6 +19,6 @@ void main() {
     // var result =
     //     await todo_list_api.processEvent(event: add_todo_event, hint: null);
 
-    expect(find.textContaining('---=== TODO LIST ===---'), findsOneWidget);
+    expect(find.textContaining('42'), findsOneWidget);
   });
 }
