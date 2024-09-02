@@ -11,9 +11,7 @@ use log::{debug, error, info, trace};
 
 use crate::domain::todo_list::TodoListModel;
 // use crate::{api::lifecycle::AppConfig, ensure_logger_is_set_up, todo_list::TodoListModel};
-use crate::ensure_logger_is_set_up;
-
-use super::app_config::AppConfig;
+use crate::application::api::lifecycle::AppConfig;
 
 /// Stores the app's state in a file.
 ///
@@ -38,8 +36,7 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub fn load_or_new(app_config: &AppConfig) -> Self {
-        ensure_logger_is_set_up();
+    pub(crate) fn load_or_new(app_config: &AppConfig) -> Self {
         debug!("creating the app state from persisted or default values");
         let app_state = match load(&app_config.app_state_file_path) {
             Err(AppStateLoadError::ReadFile(err, path)) if err.kind() == IoErrorKind::NotFound => {

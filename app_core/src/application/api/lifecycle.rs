@@ -1,6 +1,4 @@
-use crate::application::app_config::AppConfig;
-use crate::application::app_state::AppState;
-use crate::ensure_logger_is_set_up;
+use crate::domain::app_state::{self, AppState};
 
 use std::io;
 use std::path::PathBuf;
@@ -11,18 +9,39 @@ use flutter_rust_bridge::frb;
 use log::debug;
 use parking_lot::RwLock;
 
-// static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
+use log::{debug, error};
 
 static APP_CONFIG: OnceLock<AppConfig> = OnceLock::new();
 pub static INSTANCE: OnceLock<Lifecycle> = OnceLock::new();
 
-// pub fn get_app_state() -> Arc<AppState> {
-//     match INSTANCE.get() {
-//         Some(instance) => instance.get_app_state(),
-//         None => panic!("The Lifecycle has not been initialized"),
-//     }
-// }
+// only pub functions to call
+/// instanciate the lazy static app state -
+/// call if you want to control when the app state is initialized,
+/// which might take time (due to IO when loading the last saved state)
+/// otherwise it is called automatically when the lazy reference is accessed the first time
+pub fn init() {
+    // let _ = &*API;
+    let _ = &*APP_STATE;
+}
 
+/// call to overwrite default values.
+/// Doesn't trigger initialization.
+// TODO implement after v2 upgrade
+// pub fn setup(app_config: AppConfig) -> Result<(), io::Error> {
+// pub fn setup(app_config: AppConfig) {
+pub fn setup(path: String) {
+    debug!("Overwriting default setup:\n  - setting the app_state_storage_path to {path:?}");
+    let app_config = AppConfig {
+        app_state_file_path: PathBuf::from(path),
+    };
+
+    // TODO propper error handling!
+    APP_CONFIG
+        .set(app_config)
+        .unwrap_or_else(|err| error!("Error setting the App Configuration: {:?}", err));
+}
+// app state storage location
+>>>>>>> 62ee355890 (removes logging setup, as this is now build into frb)
 #[derive(Debug)]
 pub struct Lifecycle {
     app_state_lock: AppStateLock,

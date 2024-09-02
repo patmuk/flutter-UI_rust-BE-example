@@ -137,7 +137,6 @@ dependencies = [
  "flutter_rust_bridge_codegen",
  "log",
  "once_cell",
- "oslog 0.2.0",
  "parking_lot",
  "serde",
  "serial_test 3.0.0",
@@ -633,7 +632,7 @@ dependencies = [
  "js-sys",
  "lazy_static",
  "log",
- "oslog 0.1.0",
+ "oslog",
  "threadpool",
  "tokio",
  "wasm-bindgen",
@@ -1184,17 +1183,6 @@ checksum = "8343ce955f18e7e68c0207dd0ea776ec453035685395ababd2ea651c569728b3"
 dependencies = [
  "cc",
  "dashmap 4.0.2",
- "log",
-]
-
-[[package]]
-name = "oslog"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80d2043d1f61d77cb2f4b1f7b7b2295f40507f5f8e9d1c8bf10a1ca5f97a3969"
-dependencies = [
- "cc",
- "dashmap 5.5.3",
  "log",
 ]
 
