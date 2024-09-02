@@ -1,5 +1,6 @@
 [workspace]
-members = ["app_core", "shell_cli"]
+members = ["app_core"]
+# members = ["app_core", "shell_cli"]
 
 [workspace.package]
 authors = ["PSTT"]

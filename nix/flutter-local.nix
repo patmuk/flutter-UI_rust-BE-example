@@ -7,11 +7,16 @@
 # check the url in https://docs.flutter.dev/release/archive?tab=macos
 # leave `hash = ""` and run `nix develop`. The error message will tell the correct hash value.
 rec {
-  latest_version = "3.24.0";
+  latest_version = "3.24.1";
   desired_version = if (flutter_version == null || flutter_version == "latest") then latest_version else flutter_version;
 
   flutter_source =
-    if desired_version == "3.24.0" then
+    if desired_version == "3.24.1" then
+      pkgs.fetchurl
+        {
+          url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.24.1-stable.zip";
+          hash = "sha256-hHXmtkwPSEemKFR207P8tr2XKRXR6t71j/dpv62GFm8=";
+        } else if desired_version == "3.24.0" then
       pkgs.fetchurl
         {
           url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.24.0-stable.zip";
