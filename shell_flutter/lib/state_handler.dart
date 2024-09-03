@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:shell_flutter/bridge/frb_generated/application/state.dart';
 import 'package:shell_flutter/bridge/frb_generated/frb_generated.dart';
+import 'package:shell_flutter/bridge/frb_generated/state.dart';
 
 /// This singleton handles the state, and all communication with the lower layers (implemented in Rust).
 class StateHandler {

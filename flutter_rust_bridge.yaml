@@ -1,6 +1,6 @@
 rust_root: 'app_core'
-rust_input: 'crate::application::state'
-rust_output: 'app_core/src/application/bridge/frb_generated/mod.rs'
+rust_input: 'crate::state'
+rust_output: 'app_core/src/bridge/frb_generated/mod.rs'
 dart_output: 'shell_flutter/lib/bridge/frb_generated'
 add_mod_to_lib: false
 enable_lifetime: true
