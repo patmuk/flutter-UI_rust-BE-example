@@ -114,10 +114,10 @@ class MainScreen extends StatelessWidget {
         builder: (context, item, _) {
           if (item == null) {
             return const Center(
-              child: Text("THe List is empty!"),
+              child: Text("The List is empty!"),
             );
           } else {
-            return Expanded(child: Text('Last Item: ${item.heavy}'));
+            return Text('Last Item: ${item.heavy}');
           }
         });
   }
