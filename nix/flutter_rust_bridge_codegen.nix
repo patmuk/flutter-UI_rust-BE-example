@@ -11,8 +11,9 @@ let
           owner = "fzyzcjy";
           repo = "flutter_rust_bridge";
           rev = "c81a186cd7146b6be23799fac89b13eda616847e"; # hash of the commit
-          sha256 = "0rincqm8bzg3s04iwhyydzzkxxxpqqvqic2dyn8025f9jw85z9nd"; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.2.0.tar.gz
-        }
+          hash = "sha256-KaibvTCqxMFWNYD2vapD//G9cgEF6XX93//RChjnlIg="; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.2.0.tar.gz
+	  fetchSubmodules = true;
+	}
     else if (desired_version == "v2.2.0") then
       pkgs.fetchFromGitHub
         {
@@ -32,7 +33,7 @@ let
       "Unknown frb version: ${desired_version}";
 
   # pkgs.lib.fakeSha256; # set it to 'lib.fakeSha256' and run nix (develop/build). replace the sha from the error message.
-  frb_cargoSha256 =
+  frb_cargoHash =
     if (desired_version == "v2.3.0") then
       "sha256-ySPRNw6ugh9P67NBx017YB+rJ5+VU8n9BGIx+8e3uM4="
     else if (desired_version == "v2.2.0") then
@@ -48,7 +49,7 @@ pkgs.rustPlatform.buildRustPackage
   name = "flutter_rust_bridge_codegen";
   version = desired_version;
   src = frb_source;
-  cargoSha256 = frb_cargoSha256;
+  cargoHash = frb_cargoHash;
 
   # Specify the path to the Cargo.toml if it's not in the root of the repository
   cargoToml = "frb_codegen/Cargo.toml";

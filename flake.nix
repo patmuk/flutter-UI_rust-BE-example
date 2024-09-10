@@ -41,7 +41,7 @@
         );
         AVD_package = "system-images;android-34;aosp_atd;arm64-v8a";
         pinnedJDK = pkgs.jdk17;
-        xcode_version = "15.3.0";
+        xcode_version = "15.4.0";
         frb_version = "latest";
         flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
           inherit pkgs frb_version;
@@ -58,7 +58,7 @@
       {
         devShells. default = pkgs.mkShellNoCC
           {
-            name = "My-flutter-dev-shell";
+            name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
               just
               cocoapods
@@ -73,6 +73,10 @@
               export ANDROID_SDK_HOME="${local_SDK_path}";
               export ANDROID_EMULATOR_HOME="${local_SDK_path}";
               export ANDROID_AVD_HOME="${local_AVD_path}";
+	
+	      #  uncomment to enable flutter-rust-bridge-codegen logging
+	      #  export RUST_BACKTRACE=1
+	      #  export RUST_LOG="debug" 
 
               mkdir -p ${local_toolchain_path}
               # installs flutter locally, if not there already
