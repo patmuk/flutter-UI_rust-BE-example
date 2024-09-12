@@ -7,20 +7,30 @@
 # check the url in https://docs.flutter.dev/release/archive?tab=macos
 # leave `hash = ""` and run `nix develop`. The error message will tell the correct hash value.
 rec {
-  latest_version = "3.24.0";
+  latest_version = "3.24.2";
   desired_version = if (flutter_version == null || flutter_version == "latest") then latest_version else flutter_version;
 
   flutter_source =
-    if desired_version == "3.24.0" then
+    if desired_version == "3.24.2" then
       pkgs.fetchurl
         {
-          url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.24.0-stable.zip";
-          hash = "sha256-lKtzuIpKmWxOuTBkSDjQhjkYy8SgOagUTMr+Lhys0wQ=";
+          url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.24.2-stable.zip";
+          hash = "sha256-zmm9TyR2Mzi+zGcl0e2kqNnFPhvrwSl04y0qu5ojxnY=";
+        } else if desired_version == "3.24.0" then
+      pkgs.fetchurl
+        {
+          url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.24.0-stable.zip";
+          hash = "sha256-PEQ5hcnNpfaVmidMrd/rOOEXd/yO2Kaa5wChSF5t0lg=";
         } else if desired_version == "3.22.2" then
       pkgs.fetchurl
         {
-          url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.22.2-stable.zip";
-          hash = "sha256-1pgHHdxArPbrc6aHMwa5hwJDLUFRmun97PF27w3IbOM=";
+          url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.22.2-stable.zip";
+          hash = "sha256-P7XWSTbisLMvdpPX0jf6nkcIy3AOjJWyx5rAhV5x2xE=";
+        } else if desired_version == "3.22.0" then
+      pkgs.fetchurl
+        {
+          url = "https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.22.0-stable.zip";
+          hash = "sha256-76F64UFThwkYZ/NOJowdGqpx/9h1T+oIjo2VajmNv/E=";
         } else if desired_version == "3.19.6" then
       pkgs.fetchurl
         {
