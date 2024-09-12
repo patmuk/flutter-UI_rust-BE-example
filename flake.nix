@@ -5,13 +5,44 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    android-nixpkgs.url = "github:tadfisher/android-nixpkgs";
+    android-nixpkgs = {
+      url = "github:tadfisher/android-nixpkgs";
+      inputs = {
+        flake-utils.follows = "flake-utils";
+        nixpkgs.follows = "nixpkgs";
+        devshell.follows = "devshell";
+      };
+    };
+    devshell = {
+      url = "github:numtide/devshell";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
+    # share rust configuration with nix ... not really needed!
+    # rust-overlay = {
+    #   url = "github:oxalica/rust-overlay";
+    #   inputs = {
+    #     nixpkgs.follows = "nixpkgs";
+    #     flake-utils.follows = "flake-utils";
+    #   };
+    # };
+    # workaround (using the last working version)
+    # until https://github.com/NixOS/nixpkgs/issues/327836 and https://github.com/NixOS/nixpkgs/issues/242779 are fixed
+    # using last know version where swift wasn't broken
+    swift-nixpkgs.url = "github:nixos/nixpkgs?rev=2e92235aa591abc613504fde2546d6f78b18c0cd";
   };
 
-  outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
+  # outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, swift-nixpkgs, ... }:
+  outputs = { nixpkgs, flake-utils, android-nixpkgs, swift-nixpkgs, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
+        swift-pkgs = import swift-nixpkgs {
+          inherit system;
+        };
+        # overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs {
+          # inherit system overlays;
           inherit system;
           config = {
             allowUnfree = true;
@@ -20,6 +51,7 @@
             };
           };
         };
+        # rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
         androidCustomPackage = android-nixpkgs.sdk.${system} (
           sdkPkgs: with sdkPkgs; [
             cmdline-tools-latest
@@ -61,8 +93,9 @@
             name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
               just
+              # rustToolchain
               cocoapods
-              xcodes
+              swift-pkgs.xcodes
               pinnedJDK
               androidCustomPackage
               flutter_rust_bridge_codegen
@@ -70,30 +103,30 @@
             JAVA_HOME = pinnedJDK;
             ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
             shellHook = ''
-              export ANDROID_SDK_HOME="${local_SDK_path}";
-              export ANDROID_EMULATOR_HOME="${local_SDK_path}";
-              export ANDROID_AVD_HOME="${local_AVD_path}";
-	
-	      #  uncomment to enable flutter-rust-bridge-codegen logging
-	      #  export RUST_BACKTRACE=1
-	      #  export RUST_LOG="debug" 
+                            export ANDROID_SDK_HOME="${local_SDK_path}";
+                            export ANDROID_EMULATOR_HOME="${local_SDK_path}";
+                            export ANDROID_AVD_HOME="${local_AVD_path}";
+              	
+              	      #  uncomment to enable flutter-rust-bridge-codegen logging
+              	      #  export RUST_BACKTRACE=1
+              	      #  export RUST_LOG="debug" 
 
-              mkdir -p ${local_toolchain_path}
-              # installs flutter locally, if not there already
-              ${flutter-local.unpack_flutter}/bin/unpack_flutter
-              export PATH="${local_flutter_path}/flutter/bin:$PATH"
-              echo
-              # installs or checks for the right xcode version
-              echo "installing xcode ${xcode_version}"
-              xcodes install ${xcode_version} --experimental-unxip # --directory "$PWD/.xcode"
-              xcodes select ${xcode_version}
-              echo
-              echo "setup for android emulator" 
-              mkdir -p ${local_AVD_path}
-              avdmanager create avd --name android-34-pixel_8 --package '${AVD_package}' --device "pixel_8"
-              echo
-              #  GRADLE_USER_HOME=$HOME/gradle-user-home
-              #  GRADLE_HOME=$HOME/gradle-home
+                            mkdir -p ${local_toolchain_path}
+                            # installs flutter locally, if not there already
+                            ${flutter-local.unpack_flutter}/bin/unpack_flutter
+                            export PATH="${local_flutter_path}/flutter/bin:$PATH"
+                            echo
+                            # installs or checks for the right xcode version
+                            echo "installing xcode ${xcode_version}"
+                            xcodes install ${xcode_version} --experimental-unxip # --directory "$PWD/.xcode"
+                            xcodes select ${xcode_version}
+                            echo
+                            echo "setup for android emulator" 
+                            mkdir -p ${local_AVD_path}
+                            avdmanager create avd --name android-34-pixel_8 --package '${AVD_package}' --device "pixel_8"
+                            echo
+                            #  GRADLE_USER_HOME=$HOME/gradle-user-home
+                            #  GRADLE_HOME=$HOME/gradle-home
             '';
 
             # GRADLE_USER_HOME = " /home/admin0101/.gradle ";
