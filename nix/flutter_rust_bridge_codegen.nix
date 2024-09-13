@@ -1,19 +1,28 @@
 { pkgs ? import <nixpkgs> { }, frb_version }:
 # doc: https://ryantm.github.io/nixpkgs/languages-frameworks/rust/
 let
-  latest_version = "v2.3.0";
+  latest_version = "v2.4.0";
   desired_version = if (frb_version == null || frb_version == "latest") then latest_version else frb_version;
 
   frb_source =
-    if (desired_version == "v2.3.0") then
+    if (desired_version == "v2.4.0") then
+      pkgs.fetchFromGitHub
+        {
+          owner = "fzyzcjy";
+          repo = "flutter_rust_bridge";
+          rev = "f5a1bc34c15f4940d02866ed13e23b9a505d99d3"; # hash of the commit
+          hash = "sha256-yaUZIESfDgupzaL5xOi5ExptL1u9hhQ0ORQWMS/0xr8="; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.4.0.tar.gz
+          fetchSubmodules = true;
+        }
+    else if (desired_version == "v2.3.0") then
       pkgs.fetchFromGitHub
         {
           owner = "fzyzcjy";
           repo = "flutter_rust_bridge";
           rev = "c81a186cd7146b6be23799fac89b13eda616847e"; # hash of the commit
-          hash = "sha256-KaibvTCqxMFWNYD2vapD//G9cgEF6XX93//RChjnlIg="; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.2.0.tar.gz
-	  fetchSubmodules = true;
-	}
+          hash = "sha256-KaibvTCqxMFWNYD2vapD//G9cgEF6XX93//RChjnlIg="; # optained SHA-256 with nix-prefetch-url --unpack https://github.com/fzyzcjy/flutter_rust_bridge/archive/v2.3.0.tar.gz
+          fetchSubmodules = true;
+        }
     else if (desired_version == "v2.2.0") then
       pkgs.fetchFromGitHub
         {
@@ -34,7 +43,9 @@ let
 
   # pkgs.lib.fakeSha256; # set it to 'lib.fakeSha256' and run nix (develop/build). replace the sha from the error message.
   frb_cargoHash =
-    if (desired_version == "v2.3.0") then
+    if (desired_version == "v2.4.0") then
+      "sha256-bF2+oHM8R+upp6sgJ6al8O01AQYXIxYSCaoZmtTapWE="
+    else if (desired_version == "v2.3.0") then
       "sha256-ySPRNw6ugh9P67NBx017YB+rJ5+VU8n9BGIx+8e3uM4="
     else if (desired_version == "v2.2.0") then
       "sha256-viHZjZ2cItQNbHxKyf9pPZ0jbNfdd3t0KKvqQxvwlSs="
