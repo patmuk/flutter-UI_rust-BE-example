@@ -11,6 +11,7 @@ pub fn process_command(command: Command) -> Result<Vec<Effect>, std::io::Error> 
     let app_state = &mut lifecycle.app_state.write().unwrap();
     let effect = process_command_todo_list(command, &mut app_state.model);
     debug!("Processed command, new model {:?}", app_state.model);
+    app_state.mark_dirty();
     // persist change to not miss it
     app_state.persist(&lifecycle.app_config.app_state_file_path)?;
     Ok(effect)

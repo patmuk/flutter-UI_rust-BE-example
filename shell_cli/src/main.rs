@@ -1,9 +1,6 @@
-use app_core::{
-    application::api::{
-        lifecycle::{self, get_state, shutdown},
-        todo_list_api::{process_command, process_query, Command, Query},
-    },
-    domain::todo_list::{Effect, TodoListModel},
+use app_core::application::api::{
+    lifecycle,
+    todo_list_api::{process_command, process_query, Command, Query},
 };
 use std::{borrow::Borrow, io, num::ParseIntError, process};
 
@@ -24,9 +21,9 @@ fn main() {
                           q  ................. to quit\n\
                           =====================\n";
     println!("{}", USAGE);
-    lifecycle::init();
-    // let effects = process_query(Query::GetModel);
-    print_todo_list(&lifecycle::get_state().read().model);
+    Lifecycle::new();
+    let effects = process_query(AllTodos);
+    hande_effects(effects);
 
     loop {
         match stdin.read_line(&mut user_input) {
@@ -83,18 +80,12 @@ fn main() {
 
 fn hande_effects(effects: Vec<Effect>) {
     effects.iter().for_each(|effect| match effect {
-        Effect::Render => {
-            print_todo_list(&lifecycle::get_state().read().model);
-        }
         Effect::RenderTodoList => {
             print_todo_list_items(&lifecycle::get_state().read().model.items);
         }
     });
 }
 
-fn print_todo_list(todo_list: &TodoListModel) {
-    print_todo_list_items(&todo_list.items)
-}
 fn print_todo_list_items(todo_list_items: &[String]) {
     println!("\nTodo List with {} items:", todo_list_items.len());
     todo_list_items
