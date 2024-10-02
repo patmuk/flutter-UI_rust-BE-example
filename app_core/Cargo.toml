@@ -7,21 +7,16 @@ edition = "2021"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies]
-flutter_rust_bridge = "=2.3.0"
+flutter_rust_bridge = "=2.4.0"
 thiserror = "^1.0.51"
 
 log = "^0.4"
-oslog = "^0.2.0"
 serde = { version = "^1.0.154", features = ["derive"] }
 bincode = "^1.3.3"
-
-# handles the app state with a mutex
-once_cell = "^1.19.0"
-parking_lot = { version = "0.12", features = ["serde"] }
 
 [dev-dependencies]
 serial_test = "3.0.0"
 
 [build-dependencies]
-flutter_rust_bridge_codegen = "=2.3.0"
+flutter_rust_bridge_codegen = "=2.4.0"
 anyhow = "1.0"

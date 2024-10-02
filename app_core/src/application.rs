@@ -1,2 +1,2 @@
 pub mod api;
-mod bridge;
+pub mod bridge;

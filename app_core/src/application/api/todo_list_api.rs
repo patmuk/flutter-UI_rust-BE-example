@@ -1,35 +1,24 @@
-use std::borrow::Borrow;
-
-use log::debug;
-
+use crate::application::api::lifecycle::Lifecycle;
 pub use crate::domain::todo_list::Effect;
 use crate::domain::todo_list::{process_command_todo_list, process_query_todo_list};
-pub use crate::domain::todo_list::{Command, Query};
-use crate::{
-    application::api::lifecycle::{self, get_app_state},
-    domain::app_state,
-};
+use log::debug;
 
-pub fn process_command<'a>(command: Command) -> Vec<Effect<'a>> {
-    //&'static TodoListModel {
+pub use crate::domain::todo_list::{Command, Query};
+
+pub fn process_command(command: Command) -> Result<Vec<Effect>, std::io::Error> {
     debug!("Processing command: {:?}", command);
-    let mut app_state = get_app_state().write().unwrap();
-    let model = &mut app_state.model;
-    let effect = process_command_todo_list(command, model);
-    // debug!("Processed command, new model {:?}", effect.first().unwrap()); // &model);
-    let app_state = get_app_state().read().unwrap();
-    debug!("Processed command, new model {:?}", &app_state.model);
-    // TODO too much IO?
-    lifecycle::persist_app_state(app_state.borrow());
-    // lifecycle::persist_app_state(&app_state);
-    effect
+    let lifecycle = Lifecycle::get();
+    let app_state = &mut lifecycle.app_state.write().unwrap();
+    let effect = process_command_todo_list(command, &mut app_state.model);
+    debug!("Processed command, new model {:?}", app_state.model);
+    // persist change to not miss it
+    app_state.persist(&lifecycle.app_config.app_state_file_path)?;
+    Ok(effect)
 }
 
-pub fn process_query<'a>(query: Query) -> Vec<Effect<'a>> {
-    //&model {
+pub fn process_query(query: Query) -> Vec<Effect> {
     debug!("Processing query: {:?}", query);
-    // let effects = process_query_todo_list(query, &get_state().read().model);
-    let effects = process_query_todo_list(query, &get_app_state().read().unwrap().model);
+    let effects = process_query_todo_list(query, &Lifecycle::get().app_state.read().unwrap().model);
     debug!("Processed query, got the effects {:?}", effects);
     effects
 }

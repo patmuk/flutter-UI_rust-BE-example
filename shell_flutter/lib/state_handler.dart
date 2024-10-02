@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart';
 import 'package:shell_flutter/bridge/frb_generated/application/api/todo_list_api.dart'
     as todo_list_api;
 import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart'
@@ -26,11 +24,12 @@ class StateHandler {
 
   /// ViewModels, observed by the UI
   // for completeness, this is the whole model - not used in the UI
-  late final ValueNotifier<TodoListModel> todoListModel =
-      ValueNotifier(TodoListModel(items: List.empty()));
+  late final ValueNotifier<TodoListModel> todoListModel; // =
+  // ValueNotifier(TodoListModel(items: VecStringImpl));
+
   // for more fine-granular UI updates, we create a listener for individual fields
   // of the TodoListModel.
-  final ValueNotifier<List<String>> todoListItems = ValueNotifier([]);
+  // final ValueNotifier<List<String>> todoListItems = ValueNotifier(TodoListModel.);
 
   // private Factory, so async can be used (not possible in a constructor or factory)
   // call only once to create the singleton
@@ -50,12 +49,13 @@ class StateHandler {
     // initialise all Listeners with the loaded model
     // by calling the respective querries
     // the value is set by _handleEffects() automatically
-    // singleton.processQuery(Query.getModel);
+    var appState = await lifecycle.getAppState();
+    singleton.processQuery(Query.getModel);
 
-    var appConfigRef = await lifecycle.getAppConfigRef();
-    appConfigRef.appConfig.appStateFilePath;
-    var app_state_ref = await lifecycle.getAppStateRef();
-    app_state_ref.lock;
+    // var appConfigRef = await lifecycle.getAppConfigRef();
+    // appConfigRef.appConfig.appStateFilePath;
+    // var appState = await lifecycle.getAppState();
+    // appStateRef.lock;
     // app_state_lock =
     //     await AppStateLock.loadOrNew(appConfig: appConfigRef.appConfig);
 
@@ -63,6 +63,8 @@ class StateHandler {
   }
 
   Future<void> processCommand(Command command) async {
+    var appState = await lifecycle.getAppState();
+    await lifecycle.updateAppState(appState);
     var effects = await todo_list_api.processCommand(command: command);
     _handleEffects(effects);
   }
@@ -71,6 +73,15 @@ class StateHandler {
     var effects = await todo_list_api.processQuery(query: query);
     _handleEffects(effects);
   }
+  // Future<void> processCommand(Command command) async {
+  //   var effects = await todo_list_api.processCommand(command: command);
+  //   _handleEffects(effects);
+  // }
+
+  // Future<void> processQuery(Query query) async {
+  //   var effects = await todo_list_api.processQuery(query: query);
+  //   _handleEffects(effects);
+  // }
 }
 
 void _handleEffects(List<Effect> effects) {
