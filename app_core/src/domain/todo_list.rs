@@ -15,6 +15,12 @@ pub struct TodoListModel {
     pub items: RustAutoOpaque<Vec<String>>,
 }
 
+// impl TodoListModel {
+//     pub fn get_items(&self) -> &Vec<String> {
+//         &*self.items.blocking_read()
+//     }
+// }
+
 impl Default for TodoListModel {
     fn default() -> Self {
         TodoListModel {
