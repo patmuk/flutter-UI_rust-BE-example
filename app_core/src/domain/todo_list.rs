@@ -1,7 +1,9 @@
 use crate::application::bridge::frb_generated::RustAutoOpaque;
+use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
+#[frb]
 pub struct TodoListModel {
     /// the vector 'items' is the critical resource we want to protect for concurrent access.
     /// RustAutoOpaque<T> translates (simplified) to Arc<RwLock<T>> and thus can safely be sent between threads.
@@ -12,19 +14,34 @@ pub struct TodoListModel {
     /// You can wrap multiple fields in RustAutoOpaque's, but you cannot wrap sub-fields.
     /// Besides a compilation error (the trait `application::bridge::frb_generated::MoiArcValue` is not implemented for)
     /// you could easily run into a deadlock.
-    pub items: RustAutoOpaque<Vec<String>>,
+    pub items: Vec<RustAutoOpaque<TodoItem>>,
 }
 
-// impl TodoListModel {
-//     pub fn get_items(&self) -> &Vec<String> {
-//         &*self.items.blocking_read()
-//     }
-// }
+impl PartialEq for TodoListModel {
+    fn eq(&self, other: &Self) -> bool {
+        if self.items.len() != other.items.len() {
+            return false;
+        }
+        let matching = self
+            .items
+            .iter()
+            .zip(other.items.iter())
+            .filter(|&(own, other)| *own.blocking_read() == *other.blocking_read())
+            .count();
+        matching == self.items.len() && matching == other.items.len()
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[frb]
+pub struct TodoItem {
+    pub text: String,
+}
 
 impl Default for TodoListModel {
     fn default() -> Self {
         TodoListModel {
-            items: RustAutoOpaque::new(Vec::default()),
+            items: Vec::default(),
         }
     }
 }
@@ -34,7 +51,11 @@ impl Serialize for TodoListModel {
     where
         S: serde::Serializer,
     {
-        self.items.blocking_read().serialize(serializer)
+        self.items
+            .into_iter()
+            .map(|item| item.blocking_read().serialize(serializer))
+            .map(|serialisation_result| serialisation_result)
+            .collect();
     }
 }
 impl<'de> Deserialize<'de> for TodoListModel {
@@ -73,7 +94,7 @@ pub enum Effect {
     // In strict CQRS a command should not return a value.
     // However, this safes a consecutive query.
     // Thus, return only data for which a query exists.
-    RenderTodoList(RustAutoOpaque<Vec<String>>),
+    RenderTodoList(Vec<RustAutoOpaque<TodoItem>>),
 }
 
 pub(crate) fn process_command_todo_list(
@@ -82,19 +103,19 @@ pub(crate) fn process_command_todo_list(
 ) -> Vec<Effect> {
     match command {
         Command::AddTodo(todo) => {
-            model.items.blocking_write().push(todo);
+            // model.items.blocking_write().push(todo);
+            model
+                .items
+                .push(RustAutoOpaque::new(TodoItem { text: todo }));
             // this clone is cheap, as it is on ARC (RustAutoOpaque>T> = Arc<RwMutex<T>>)
             vec![Effect::RenderTodoList(model.items.clone())]
         }
         Command::RemoveTodo(todo_pos) => {
-            model
-                .items
-                .blocking_write()
-                .remove((todo_pos - 1).try_into().unwrap());
+            model.items.remove((todo_pos - 1).try_into().unwrap());
             vec![Effect::RenderTodoList(model.items.clone())]
         }
         Command::CleanList => {
-            model.items.blocking_write().clear();
+            model.items.clear();
             vec![Effect::RenderTodoList(model.items.clone())]
         }
     }
@@ -111,74 +132,70 @@ pub(crate) fn process_query_todo_list(query: Query, model: &TodoListModel) -> Ve
 mod tests {
     use super::*;
 
-    fn assert_eq_effects(actual_effect: &Effect, expected_effect: &Effect) {
+    fn assert_eq_effect(actual_effect: &Effect, expected_effect: &Effect) {
         assert!(
             matches!((actual_effect, expected_effect), (Effect::RenderTodoList(actual), Effect::RenderTodoList(expected)) if {
-                *actual.blocking_read() == *expected.blocking_read()
-            })
+                        (actual.len() == expected.len()) && {
+                                    let matching = actual.iter().zip(expected.iter()).filter(|&(actual, expected)| *actual.blocking_read() == *expected.blocking_read()).count();
+                                matching == actual.len() && matching == expected.len()
+            }})
         )
+    }
+    fn assert_eq_effects(actual_effect: &Vec<Effect>, expected_effect: &Vec<Effect>) {
+        actual_effect.iter().zip(expected_effect.iter()).for_each(
+            |(actual_effect, expected_effect)| assert_eq_effect(&actual_effect, &expected_effect),
+        );
     }
 
     #[test]
     fn add_todo() {
-        //        let todo_list = AppTester::<TodoList, _>::default();
         let mut actual_model = TodoListModel::default();
 
-        // Call 'add'
         let actual_effects =
             process_command_todo_list(Command::AddTodo("test the list".into()), &mut actual_model);
 
         let expected_model = TodoListModel {
-            items: RustAutoOpaque::new(vec![String::from("test the list")]),
+            items: vec![RustAutoOpaque::new(TodoItem {
+                text: String::from("test the list"),
+            })],
         };
         let expected_effect = Effect::RenderTodoList(expected_model.items.clone());
         let actual_effect = &actual_effects[0];
-        assert_eq_effects(actual_effect, &expected_effect);
-        assert_eq!(
-            *actual_model.items.blocking_read(),
-            *expected_model.items.blocking_read()
-        );
+        assert_eq_effect(actual_effect, &expected_effect);
+        assert_eq!(actual_model, expected_model);
     }
 
     #[test]
     fn remove_todo() {
-        // let todo_list = AppTester::<TodoList, _>::default();
         let mut actual_model = TodoListModel {
-            items: RustAutoOpaque::new(vec!["remove me".into()]),
+            items: vec![RustAutoOpaque::new(TodoItem {
+                text: "remove me".into(),
+            })],
         };
 
-        // Call 'add'
         let actual_effects = process_command_todo_list(Command::RemoveTodo(1), &mut actual_model);
 
-        let expected_model = TodoListModel {
-            items: RustAutoOpaque::new(vec![]),
-        };
-        let expected_effect = [Effect::RenderTodoList(expected_model.items.clone())];
-        assert_eq_effects(&actual_effects[0], &expected_effect[0]);
-        assert_eq!(
-            *actual_model.items.blocking_read(),
-            *expected_model.items.blocking_read()
-        );
+        let expected_model = TodoListModel { items: vec![] };
+        let expected_effect = Effect::RenderTodoList(expected_model.items.clone());
+        assert_eq_effect(&actual_effects[0], &expected_effect);
+        assert_eq!(actual_model, expected_model);
     }
 
     #[test]
     fn clean_list() {
-        // let todo_list = AppTester::<TodoList, _>::default();
         let mut actual_model = TodoListModel::default();
-        actual_model.items.blocking_write().push("remove me".into());
-        actual_model.items.blocking_write().push("clean me".into());
+        actual_model.items.push(RustAutoOpaque::new(TodoItem {
+            text: "remove me".into(),
+        }));
+        actual_model.items.push(RustAutoOpaque::new(TodoItem {
+            text: "clean me".into(),
+        }));
 
-        // Call 'add'
         let actual_effects = process_command_todo_list(Command::CleanList, &mut actual_model);
 
-        let expected_model = TodoListModel {
-            items: RustAutoOpaque::new(vec![]),
-        };
-        let expected_effects = [Effect::RenderTodoList(expected_model.items.clone())];
-        assert_eq_effects(&actual_effects[0], &expected_effects[0]);
-        assert_eq!(
-            *actual_model.items.blocking_read(),
-            *expected_model.items.blocking_read()
-        );
+        let expected_model = TodoListModel { items: vec![] };
+        let expected_effects = vec![Effect::RenderTodoList(expected_model.items.clone())];
+        assert_eq_effects(&actual_effects, &expected_effects);
+        assert_eq!(actual_model, expected_model);
     }
 }
