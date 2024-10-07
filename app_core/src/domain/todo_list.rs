@@ -1,9 +1,8 @@
 use crate::application::bridge::frb_generated::RustAutoOpaque;
 use flutter_rust_bridge::frb;
-use serde::{Deserialize, Serialize};
+use serde::{ser::SerializeSeq, Deserialize, Serialize};
 
-#[derive(Debug)]
-#[frb]
+#[derive(Debug, Default)]
 pub struct TodoListModel {
     /// the vector 'items' is the critical resource we want to protect for concurrent access.
     /// RustAutoOpaque<T> translates (simplified) to Arc<RwLock<T>> and thus can safely be sent between threads.
@@ -17,6 +16,8 @@ pub struct TodoListModel {
     pub items: Vec<RustAutoOpaque<TodoItem>>,
 }
 
+// only for tests, as the danger for a deadlock is too big
+#[cfg(test)]
 impl PartialEq for TodoListModel {
     fn eq(&self, other: &Self) -> bool {
         if self.items.len() != other.items.len() {
@@ -38,24 +39,18 @@ pub struct TodoItem {
     pub text: String,
 }
 
-impl Default for TodoListModel {
-    fn default() -> Self {
-        TodoListModel {
-            items: Vec::default(),
-        }
-    }
-}
-
 impl Serialize for TodoListModel {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
-        self.items
-            .into_iter()
-            .map(|item| item.blocking_read().serialize(serializer))
-            .map(|serialisation_result| serialisation_result)
-            .collect();
+        // get lock and serialize all items
+        // deadlock is avoided, as a lock as to be required by the process methods
+        let mut ser = serializer.serialize_seq(Some(self.items.len()))?;
+        for item in &self.items {
+            ser.serialize_element(&*item.blocking_read())?
+        }
+        ser.end()
     }
 }
 impl<'de> Deserialize<'de> for TodoListModel {
@@ -63,8 +58,11 @@ impl<'de> Deserialize<'de> for TodoListModel {
     where
         D: serde::Deserializer<'de>,
     {
-        Vec::deserialize(deserializer).map(|items| TodoListModel {
-            items: RustAutoOpaque::new(items),
+        // deserialize all items
+        let items = Vec::deserialize(deserializer)?;
+        // for item in &mut items {
+        Ok(TodoListModel {
+            items: items.into_iter().map(RustAutoOpaque::new).collect(),
         })
     }
 }
@@ -95,6 +93,20 @@ pub enum Effect {
     // However, this safes a consecutive query.
     // Thus, return only data for which a query exists.
     RenderTodoList(Vec<RustAutoOpaque<TodoItem>>),
+}
+
+// only for tests, as the danger for a deadlock is too big
+#[cfg(test)]
+impl PartialEq for Effect {
+    fn eq(&self, other: &Self) -> bool {
+        matches!((self, other), (Effect::RenderTodoList(own), Effect::RenderTodoList(other)) if {
+            (own.len() == other.len()) && {
+                // be aware of a potential deadlock here!
+                // (lock on own, waiting for other and in another thread vice-versa!)
+        let matching = own.iter().zip(other.iter()).filter(|&(own, other)| *own.blocking_read() == *other.blocking_read()).count();
+        matching == own.len() && matching == other.len()
+        }})
+    }
 }
 
 pub(crate) fn process_command_todo_list(
@@ -132,21 +144,6 @@ pub(crate) fn process_query_todo_list(query: Query, model: &TodoListModel) -> Ve
 mod tests {
     use super::*;
 
-    fn assert_eq_effect(actual_effect: &Effect, expected_effect: &Effect) {
-        assert!(
-            matches!((actual_effect, expected_effect), (Effect::RenderTodoList(actual), Effect::RenderTodoList(expected)) if {
-                        (actual.len() == expected.len()) && {
-                                    let matching = actual.iter().zip(expected.iter()).filter(|&(actual, expected)| *actual.blocking_read() == *expected.blocking_read()).count();
-                                matching == actual.len() && matching == expected.len()
-            }})
-        )
-    }
-    fn assert_eq_effects(actual_effect: &Vec<Effect>, expected_effect: &Vec<Effect>) {
-        actual_effect.iter().zip(expected_effect.iter()).for_each(
-            |(actual_effect, expected_effect)| assert_eq_effect(&actual_effect, &expected_effect),
-        );
-    }
-
     #[test]
     fn add_todo() {
         let mut actual_model = TodoListModel::default();
@@ -161,7 +158,7 @@ mod tests {
         };
         let expected_effect = Effect::RenderTodoList(expected_model.items.clone());
         let actual_effect = &actual_effects[0];
-        assert_eq_effect(actual_effect, &expected_effect);
+        assert_eq!(actual_effect, &expected_effect);
         assert_eq!(actual_model, expected_model);
     }
 
@@ -177,7 +174,7 @@ mod tests {
 
         let expected_model = TodoListModel { items: vec![] };
         let expected_effect = Effect::RenderTodoList(expected_model.items.clone());
-        assert_eq_effect(&actual_effects[0], &expected_effect);
+        assert_eq!(&actual_effects[0], &expected_effect);
         assert_eq!(actual_model, expected_model);
     }
 
@@ -195,7 +192,7 @@ mod tests {
 
         let expected_model = TodoListModel { items: vec![] };
         let expected_effects = vec![Effect::RenderTodoList(expected_model.items.clone())];
-        assert_eq_effects(&actual_effects, &expected_effects);
+        assert_eq!(&actual_effects, &expected_effects);
         assert_eq!(actual_model, expected_model);
     }
 }

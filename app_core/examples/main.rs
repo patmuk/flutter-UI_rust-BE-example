@@ -32,9 +32,8 @@ fn handle_effects(effects: &Vec<Effect>) {
             Effect::RenderTodoList(todo_list) => {
                 println!("Rendering view:\n");
                 todo_list
-                    .blocking_read()
                     .iter()
-                    .for_each(|todo| println!("   - {:?}", todo))
+                    .for_each(|todo| println!("   - {:?}", todo.blocking_read()))
             }
         }
     }

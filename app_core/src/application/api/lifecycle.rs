@@ -29,8 +29,9 @@ impl Lifecycle {
             }
         })
     }
+
     pub fn get() -> &'static Self {
-        OnceLock::get(&SINGLETON).expect("Lifecycle: has been initialized with ::new()!")
+        OnceLock::get(&SINGLETON).expect("Lifecycle: has to be initialized with ::new()!")
     }
 
     /// call to overwrite default values.

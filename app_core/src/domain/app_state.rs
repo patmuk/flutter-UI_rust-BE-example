@@ -162,10 +162,7 @@ mod tests {
         app_state.persist(&TEST_FILE)
     }
     fn assert_eq_app_states(left: &AppState, right: &AppState) {
-        assert_eq!(
-            *left.model.items.blocking_read(),
-            *right.model.items.blocking_read()
-        );
+        assert_eq!(left.model, right.model);
     }
 
     #[test]

@@ -24,7 +24,7 @@ fn main() {
     println!("{}", USAGE);
     Lifecycle::new(None);
     let effects = process_query(Query::AllTodos);
-    hande_effects(effects);
+    handle_effects(&effects);
 
     loop {
         match stdin.read_line(&mut user_input) {
@@ -36,12 +36,12 @@ fn main() {
                 let todo = user_input.split_at(2).1.trim();
                 let effects = process_command(Command::AddTodo(todo.to_string()))
                     .expect("failed to add todo");
-                hande_effects(effects);
+                handle_effects(&effects);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('v') => {
                 let effects = process_query(Query::AllTodos);
-                hande_effects(effects);
+                handle_effects(&effects);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('r') => {
@@ -52,7 +52,7 @@ fn main() {
                             println!("\nRemoving todo at index {}\n", index);
                             let effects = process_command(Command::RemoveTodo(index))
                                 .expect("failed to remove a todo");
-                            hande_effects(effects);
+                            handle_effects(&effects);
                         } else {
                             println!("\nGive me a positive number, not {}\n", index);
                         }
@@ -66,7 +66,7 @@ fn main() {
             Ok(_) if user_input.starts_with('c') => {
                 let effects =
                     process_command(Command::CleanList).expect("failed to clean the list");
-                hande_effects(effects);
+                handle_effects(&effects);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('q') => {
@@ -82,21 +82,15 @@ fn main() {
     }
 }
 
-fn hande_effects(effects: Vec<Effect>) {
-    effects.iter().for_each(|effect| match effect {
-        Effect::RenderTodoList(todo_list) => {
-            print_todo_list_items(&*todo_list.blocking_read());
+fn handle_effects(effects: &Vec<Effect>) {
+    for effect in effects {
+        match effect {
+            Effect::RenderTodoList(todo_list) => {
+                println!("Rendering view:\n");
+                todo_list.iter().enumerate().for_each(|(index, item)| {
+                    println!("\t{}. {}", index + 1, item.blocking_read().text)
+                })
+            }
         }
-    });
-}
-
-fn print_todo_list_items(todo_list_items: &[String]) {
-    println!("\nTodo List with {} items:", todo_list_items.len());
-    todo_list_items
-        .iter()
-        .enumerate()
-        .for_each(|(index, item)| {
-            println!("\t{}. {}", index + 1, item);
-        });
-    println!("\n");
+    }
 }
