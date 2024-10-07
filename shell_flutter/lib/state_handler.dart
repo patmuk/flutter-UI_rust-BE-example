@@ -27,7 +27,8 @@ class StateHandler {
   // for more fine-granular UI updates, we create a listener for individual fields
   // of the TodoListModel.
   // TODO populate here already!
-  final ValueNotifier<List<String>> todoListItems = ValueNotifier(List.empty());
+  final ValueNotifier<List<TodoItem>> todoListItems =
+      ValueNotifier(List.empty());
 
   // private Factory, so async can be used (not possible in a constructor or factory)
   // call only once to create the singleton
@@ -62,15 +63,11 @@ class StateHandler {
   void _handleEffects(List<Effect> effects) {
     for (var effect in effects) {
       switch (effect) {
-        // case Effect.renderTodoList():
         //   // update the value and trigger a UI repaint
-        //   // note that only the reference is copied, not the whole list!
-        //   StateHandler.singleton.todoListItems.value = effectValue.field0;
-        //   break;
-        // case Effect_RenderTodoList():
+        //   // note that only a List of the references is copied, not the TodoItems list!
         case Effect_RenderTodoList():
           todoListItems.value = effect.field0;
-        // TODO: Handle this case.
+        //   break;
       }
     }
   }

@@ -34,9 +34,15 @@ impl PartialEq for TodoListModel {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-#[frb]
 pub struct TodoItem {
     pub text: String,
+}
+
+impl TodoItem {
+    // this is how to access the fields of a heavy object behind a RustAutoOpaque.
+    pub fn get_text(&self) -> &str {
+        &self.text
+    }
 }
 
 impl Serialize for TodoListModel {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shell_flutter/bridge/frb_generated/domain/todo_list.dart';
 import 'package:shell_flutter/state_handler.dart';
-
 
 Future<void> main() async {
   await StateHandler.createSingleton();
@@ -100,7 +100,7 @@ class MainScreen extends StatelessWidget {
                               .processCommand(Command.removeTodo(index + 1));
                         },
                       ),
-                      Text(' ${index + 1}.: ${todoListItems[index]}'),
+                      Text(' ${index + 1}.: ${todoListItems[index].getText()}'),
                     ],
                   ));
                 },
