@@ -85,11 +85,14 @@ fn main() {
 fn handle_effects(effects: &Vec<Effect>) {
     for effect in effects {
         match effect {
-            Effect::RenderTodoList(todo_list) => {
+            Effect::RenderTodoList(todo_list_model) => {
                 println!("Rendering view:\n");
-                todo_list.iter().enumerate().for_each(|(index, item)| {
-                    println!("\t{}. {}", index + 1, item.blocking_read().text)
-                })
+                todo_list_model
+                    .blocking_read()
+                    .items
+                    .iter()
+                    .enumerate()
+                    .for_each(|(index, item)| println!("\t{}. {}", index + 1, item.text))
             }
         }
     }

@@ -9,7 +9,7 @@ use std::{
 use log::{debug, error, info, trace};
 use serde::{Deserialize, Serialize};
 
-use crate::application::api::lifecycle::AppConfig;
+use crate::application::{api::lifecycle::AppConfig, bridge::frb_generated::RustAutoOpaque};
 use crate::domain::todo_list::TodoListModel;
 
 /// holds the complete state of the app, as a global static variable
@@ -17,12 +17,40 @@ use crate::domain::todo_list::TodoListModel;
 /// which are written to concurrently. You could wrap the whole AppState in it,
 /// but the finer granular the better parallelism you will get.
 /// Just remember that you can not wrap children, if the parent is already wrapped.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug)]
+// #[derive(Serialize, Deserialize, Debug)]
 // #[frb(non_opaque)]
 pub(crate) struct AppState {
-    pub model: TodoListModel,
+    // We pretend that (parts of) the model are too hugh to performantly copy from Rust to Dart.
+    // Thus we implement getters for the parts which need to be shown in the UI only.
+    pub model: RustAutoOpaque<TodoListModel>,
     // flag, if writing to disc is needed
     dirty: AtomicBool,
+}
+
+impl Serialize for AppState {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        // Serialize the model, the dirty flag is always false after loading
+        self.model.blocking_read().serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for AppState {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        // Deserialize the model and dirty flag. The dirty flag is always false after loading
+        let model = TodoListModel::deserialize(deserializer)?;
+        // let model = RustAutoOpaque::<TodoListModel>::deserialize(deserializer)?;
+        Ok(AppState {
+            model: RustAutoOpaque::new(model),
+            dirty: AtomicBool::new(false),
+        })
+    }
 }
 
 impl AppState {
@@ -69,7 +97,7 @@ impl AppState {
             )
         });
         AppState {
-            model: TodoListModel::default(),
+            model: RustAutoOpaque::new(TodoListModel::default()),
             dirty: AtomicBool::new(false),
         }
     }
@@ -162,7 +190,7 @@ mod tests {
         app_state.persist(&TEST_FILE)
     }
     fn assert_eq_app_states(left: &AppState, right: &AppState) {
-        assert_eq!(left.model, right.model);
+        assert_eq!(*left.model.blocking_read(), *right.model.blocking_read());
     }
 
     #[test]

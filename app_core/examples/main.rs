@@ -29,11 +29,13 @@ fn main() {
 fn handle_effects(effects: &Vec<Effect>) {
     for effect in effects {
         match effect {
-            Effect::RenderTodoList(todo_list) => {
+            Effect::RenderTodoList(todo_list_model) => {
                 println!("Rendering view:\n");
-                todo_list
+                todo_list_model
+                    .blocking_read()
+                    .items
                     .iter()
-                    .for_each(|todo| println!("   - {:?}", todo.blocking_read()))
+                    .for_each(|todo| println!("   - {:?}", todo.text))
             }
         }
     }
