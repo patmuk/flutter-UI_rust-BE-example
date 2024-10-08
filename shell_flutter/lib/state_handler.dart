@@ -27,8 +27,7 @@ class StateHandler {
   // for more fine-granular UI updates, we create a listener for individual fields
   // of the TodoListModel.
   // TODO populate here already!
-  final ValueNotifier<List<TodoItem>> todoListItems =
-      ValueNotifier(List.empty());
+  final ValueNotifier<List<String>> todoListItems = ValueNotifier(List.empty());
 
   // private Factory, so async can be used (not possible in a constructor or factory)
   // call only once to create the singleton
@@ -51,22 +50,24 @@ class StateHandler {
   }
 
   Future<void> processCommand(Command command) async {
-    var effects = await todo_list_api.processCommand(command: command);
-    _handleEffects(effects);
+    var effects = todo_list_api.processCommand(command: command);
+    await _handleEffects(await effects);
   }
 
   Future<void> processQuery(Query query) async {
-    var effects = await todo_list_api.processQuery(query: query);
-    _handleEffects(effects);
+    var effects = todo_list_api.processQuery(query: query);
+    await _handleEffects(await effects);
   }
 
-  void _handleEffects(List<Effect> effects) {
+  Future<void> _handleEffects(List<Effect> effects) async {
     for (var effect in effects) {
       switch (effect) {
         //   // update the value and trigger a UI repaint
         //   // note that only a List of the references is copied, not the TodoItems list!
         case Effect_RenderTodoList():
-          todoListItems.value = effect.field0;
+          todoListItems.value =
+              await todo_list_api.todos2Strings(todoListModel: effect.field0);
+        // todoListItems.value = getTodosAsText(effect.field0);
         //   break;
       }
     }

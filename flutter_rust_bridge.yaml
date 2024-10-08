@@ -1,5 +1,5 @@
 rust_root: 'app_core'
-rust_input: 'crate::application::api,parking_lot'
+rust_input: 'crate::application::api'
 rust_output: 'app_core/src/application/bridge/frb_generated/mod.rs'
 dart_output: 'shell_flutter/lib/bridge/frb_generated'
 add_mod_to_lib: false

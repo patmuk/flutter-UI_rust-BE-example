@@ -100,7 +100,7 @@ class MainScreen extends StatelessWidget {
                               .processCommand(Command.removeTodo(index + 1));
                         },
                       ),
-                      Text(' ${index + 1}.: ${todoListItems[index].getText()}'),
+                      Text(' ${index + 1}.: ${todoListItems[index]}'),
                     ],
                   ));
                 },

@@ -3,6 +3,7 @@ use flutter_rust_bridge::frb;
 use serde::{ser::SerializeSeq, Deserialize, Serialize};
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[frb(opaque)]
 pub struct TodoListModel {
     /// the vector 'items' is the critical resource we want to protect for concurrent access.
     /// RustAutoOpaque<T> translates (simplified) to Arc<RwLock<T>> and thus can safely be sent between threads.
@@ -21,12 +22,17 @@ pub struct TodoItem {
     pub text: String,
 }
 
-impl TodoItem {
-    // this is how to access the fields of a heavy object behind a RustAutoOpaque.
-    pub fn get_text(&self) -> &str {
-        &self.text
+impl TodoListModel {
+    //     // this is how to access the fields of a heavy object behind a RustAutoOpaque.
+    //     // this is copying the content, the only way to share data with Dart
+    pub fn todos_as_text(&self) -> Vec<String> {
+        self.items.iter().map(|item| item.text.clone()).collect()
     }
 }
+
+// pub fn get_todos_as_text(model: &TodoListModel) -> Vec<String> {
+//     model.items.iter().map(|item| item.text.clone()).collect()
+// }
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Command {
@@ -56,6 +62,16 @@ pub enum Effect {
     // However, this safes a consecutive query.
     // Thus, return only data for which a query exists.
     RenderTodoList(RustAutoOpaque<TodoListModel>),
+}
+
+impl Effect {
+    pub fn todos_as_string(&self) -> Vec<String> {
+        match self {
+            Effect::RenderTodoList(todo_list_model) => {
+                todo_list_model.blocking_read().todos_as_text()
+            }
+        }
+    }
 }
 
 pub(crate) fn process_command_todo_list(
