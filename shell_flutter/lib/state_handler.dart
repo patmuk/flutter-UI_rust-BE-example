@@ -21,8 +21,6 @@ class StateHandler {
   static bool isInitialised = false;
 
   /// ViewModels, observed by the UI
-  // late final ValueNotifier<TodoListModel> todoListModel; // =
-  // ValueNotifier(TodoListModel(items: VecStringImpl));
 
   // for more fine-granular UI updates, we create a listener for individual fields
   // of the TodoListModel.
@@ -62,13 +60,9 @@ class StateHandler {
   Future<void> _handleEffects(List<Effect> effects) async {
     for (var effect in effects) {
       switch (effect) {
-        //   // update the value and trigger a UI repaint
-        //   // note that only a List of the references is copied, not the TodoItems list!
+        // update the value and trigger a UI repaint
         case Effect_RenderTodoList():
-          // todoListItems.value = await effect.field0.);
           todoListItems.value = await effect.field0.getTodosAsString();
-        // todoListItems.value = getTodosAsText(effect.field0);
-        //   break;
       }
     }
   }

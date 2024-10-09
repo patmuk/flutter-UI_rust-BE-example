@@ -1,5 +1,3 @@
-// use std::path::Path;
-
 use app_core::application::api::lifecycle::Lifecycle;
 use app_core::application::api::todo_list_api::{self, Effect};
 
