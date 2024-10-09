@@ -79,13 +79,8 @@
           inherit pkgs frb_version;
         };
         local_toolchain_path = "$PWD/.toolchain";
-        local_flutter_path = "${local_toolchain_path}/flutter-local";
         local_SDK_path = "${local_toolchain_path}/android";
         local_AVD_path = "${local_SDK_path}/AVD";
-        flutter_version = "latest";
-        flutter-local = import ./nix/flutter-local.nix {
-          inherit pkgs local_flutter_path flutter_version;
-        };
       in
       {
         devShells. default = pkgs.mkShellNoCC
@@ -94,6 +89,7 @@
             buildInputs = with pkgs; [
               just
               # rustToolchain
+              flutter
               cocoapods
               swift-pkgs.xcodes
               pinnedJDK
@@ -107,15 +103,10 @@
                             export ANDROID_EMULATOR_HOME="${local_SDK_path}";
                             export ANDROID_AVD_HOME="${local_AVD_path}";
               	
-              	      #  uncomment to enable flutter-rust-bridge-codegen logging
-              	      #  export RUST_BACKTRACE=1
-              	      #  export RUST_LOG="debug" 
+                    	      #  uncomment to enable flutter-rust-bridge-codegen logging
+                    	      #  export RUST_BACKTRACE=1
+                    	      #  export RUST_LOG="debug" 
 
-                            mkdir -p ${local_toolchain_path}
-                            # installs flutter locally, if not there already
-                            ${flutter-local.unpack_flutter}/bin/unpack_flutter
-                            export PATH="${local_flutter_path}/flutter/bin:$PATH"
-                            echo
                             # installs or checks for the right xcode version
                             echo "installing xcode ${xcode_version}"
                             xcodes install ${xcode_version} --experimental-unxip # --directory "$PWD/.xcode"
