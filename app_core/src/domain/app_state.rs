@@ -20,8 +20,6 @@ use crate::domain::todo_list::TodoListModel;
 /// but the finer granular the better parallelism you will get.
 /// Just remember that you can not wrap children, if the parent is already wrapped.
 #[derive(Debug)]
-// #[derive(Serialize, Deserialize, Debug)]
-// #[frb(non_opaque)]
 pub(crate) struct AppState {
     // We pretend that (parts of) the model are too hugh to performantly copy from Rust to Dart.
     // Thus we implement getters for the parts which need to be shown in the UI only.

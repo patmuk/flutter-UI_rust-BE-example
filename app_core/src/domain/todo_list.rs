@@ -14,6 +14,8 @@ pub struct TodoListModel {
     /// You can wrap multiple fields in RustAutoOpaque's, but you cannot wrap sub-fields.
     /// Besides a compilation error (the trait `application::bridge::frb_generated::MoiArcValue` is not implemented for)
     /// you could easily run into a deadlock.
+    /// As we cannot implement a function on `Vec` which would give use the content of a TodoItem, we wrapped
+    /// the `TodoListModel` in `RustAutoOpaque`
     items: Vec<TodoItem>,
 }
 
@@ -23,8 +25,13 @@ struct TodoItem {
 }
 
 impl TodoListModel {
-    //     // this is how to access the fields of a heavy object behind a RustAutoOpaque.
-    //     // this is copying the content, the only way to share data with Dart
+    /// This is how to access the fields of a heavy object behind a RustAutoOpaque.
+    /// This is copying parts the content, which Dart needs to show to the user.
+    ///
+    /// If `items` would be `pub` FRB would automatically create a getter. However, this
+    /// getter would `clone()` the `items` as well. As we pretend that a single item
+    /// is heavy to clone, we use a custom function to `clone()` only the lightweight and
+    /// only needed part for presentation.
     pub fn get_todos_as_string(&self) -> Vec<String> {
         self.items.iter().map(|item| item.text.clone()).collect()
     }
@@ -44,15 +51,16 @@ pub enum Query {
 
 #[derive(Debug)]
 pub enum Effect {
-    // TODO check if still correct and rewrite
+    // Parameters need to be owned by `Effect`.
+    // The attributes live in the app state - we don't want to
+    // send them back and furth.
+    // A reference is hard to manage - we could only `& mut` it when all
+    // `&` are released, which only happens via `.dispose()` on the dart side.
     //
-    // Parameters need to be owned - as they live inside the app state.
-    // To send them between threads and ro Dart, we need to wrap them into an
-    // RustAutoOpaque<T>, which is an Arc<RwMutex<T>>.
-    // Thus, we clone the Arc when passing it into the Effect.
-    // FRB takes care of aquiring the lock to read and releases it
-    // when the Dart Garbage Collector disposes the object.
-    // To force this, call dispose() on the object in Dart manually.
+    // Thus, the best approach is providing a shared reference, which
+    // Dart can not directly read: `RustAutoOpaque`, which is more or less a `Arc<RwLock>`.
+    // Dart can access the lightweight properties needed for presentation with a function call
+    // on this reference.
     //
     // In strict CQRS a command should not return a value.
     // However, this safes a consecutive query.

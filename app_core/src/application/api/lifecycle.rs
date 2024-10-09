@@ -12,7 +12,7 @@ static SINGLETON: OnceLock<Lifecycle> = OnceLock::new();
 pub struct Lifecycle {
     // the app config is to be set only once, and read afterwards. If mutation is needed wrapp it into a lock for concurrent write access
     pub(crate) app_config: AppConfig,
-    // the app state is to be manipulted from rust only. Thus, it is a RwLock and not RustAutoOpaque
+    // the app state itself doesn't change, only the fields, which are behind a Mutex to be thread save.
     pub(crate) app_state: AppState,
 }
 
