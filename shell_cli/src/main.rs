@@ -92,7 +92,7 @@ fn handle_effects(effects: &Vec<Effect>) {
                     .get_todos_as_string()
                     .iter()
                     .enumerate()
-                    .for_each(|(index, item)| println!("\t{}. {}", index + 1, item.text))
+                    .for_each(|(index, item)| println!("\t{}. {}", index + 1, item))
             }
         }
     }

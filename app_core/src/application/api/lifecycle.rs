@@ -13,7 +13,7 @@ pub struct Lifecycle {
     // the app config is to be set only once, and read afterwards. If mutation is needed wrapp it into a lock for concurrent write access
     pub(crate) app_config: AppConfig,
     // the app state is to be manipulted from rust only. Thus, it is a RwLock and not RustAutoOpaque
-    pub(crate) app_state: RwLock<AppState>,
+    pub(crate) app_state: AppState,
 }
 
 impl Lifecycle {
@@ -21,7 +21,7 @@ impl Lifecycle {
     pub fn new(path: Option<String>) -> &'static Self {
         OnceLock::get_or_init(&SINGLETON, || {
             let app_config = Lifecycle::setup(path);
-            let app_state: RwLock<AppState> = RwLock::new(Lifecycle::init(&app_config));
+            let app_state: AppState = Lifecycle::init(&app_config);
 
             Lifecycle {
                 app_config,
@@ -62,15 +62,9 @@ impl Lifecycle {
 
     pub fn shutdown(&self) -> Result<(), io::Error> {
         debug!("shutting down the app");
-        if self.app_state.is_poisoned() {
-            debug!("Lock is poisened! Healing it.");
-            // todo: check if this is correctly useed!
-            self.app_state.clear_poison();
-        }
-        // Blocks, if RwLock<AppState> is in write use
+        // blocks on the Locks of inner fields
         // TODO implent timeout and throw an error?
-        let app_state = &*(self.app_state.read().expect("Could get lock on app_state"));
-        app_state.persist(&self.app_config.app_state_file_path)
+        self.app_state.persist(&self.app_config.app_state_file_path)
     }
 }
 // app state storage location

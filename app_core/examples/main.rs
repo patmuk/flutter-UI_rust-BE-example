@@ -33,9 +33,9 @@ fn handle_effects(effects: &Vec<Effect>) {
                 println!("Rendering view:\n");
                 todo_list_model
                     .blocking_read()
-                    .items
+                    .get_todos_as_string()
                     .iter()
-                    .for_each(|todo| println!("   - {:?}", todo.text))
+                    .for_each(|todo| println!("   - {:?}", todo))
             }
         }
     }

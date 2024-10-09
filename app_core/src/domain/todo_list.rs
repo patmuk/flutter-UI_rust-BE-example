@@ -62,7 +62,7 @@ pub enum Effect {
 
 pub(crate) fn process_command_todo_list(
     command: Command,
-    model: &mut RustAutoOpaque<TodoListModel>,
+    model: &RustAutoOpaque<TodoListModel>,
 ) -> Vec<Effect> {
     match command {
         Command::AddTodo(todo) => {
@@ -104,10 +104,6 @@ impl PartialEq for Effect {
             let own_items = &own.blocking_read().items;
             let other_items = &other.blocking_read().items;
             own_items == other_items
-            // TODO remove comments below once it is confirmed that == test the vecs content
-        //     (own.items.len() == other.items.len()) && {
-        // let matching = own.iter().zip(other.iter()).filter(|&(own, other)| *own.blocking_read() == *other.blocking_read()).count();
-        // matching == own.len() && matching == other.len()
         })
     }
 }
