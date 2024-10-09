@@ -24,7 +24,6 @@ class StateHandler {
 
   // for more fine-granular UI updates, we create a listener for individual fields
   // of the TodoListModel.
-  // TODO populate here already!
   final ValueNotifier<List<String>> todoListItems = ValueNotifier(List.empty());
 
   // private Factory, so async can be used (not possible in a constructor or factory)
