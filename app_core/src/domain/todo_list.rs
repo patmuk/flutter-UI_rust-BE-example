@@ -1,6 +1,6 @@
 use crate::application::bridge::frb_generated::RustAutoOpaque;
 use flutter_rust_bridge::frb;
-use serde::{ser::SerializeSeq, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[frb(opaque)]
@@ -14,25 +14,21 @@ pub struct TodoListModel {
     /// You can wrap multiple fields in RustAutoOpaque's, but you cannot wrap sub-fields.
     /// Besides a compilation error (the trait `application::bridge::frb_generated::MoiArcValue` is not implemented for)
     /// you could easily run into a deadlock.
-    pub items: Vec<TodoItem>,
+    items: Vec<TodoItem>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct TodoItem {
-    pub text: String,
+struct TodoItem {
+    text: String,
 }
 
 impl TodoListModel {
     //     // this is how to access the fields of a heavy object behind a RustAutoOpaque.
     //     // this is copying the content, the only way to share data with Dart
-    pub fn todos_as_text(&self) -> Vec<String> {
+    pub fn get_todos_as_string(&self) -> Vec<String> {
         self.items.iter().map(|item| item.text.clone()).collect()
     }
 }
-
-// pub fn get_todos_as_text(model: &TodoListModel) -> Vec<String> {
-//     model.items.iter().map(|item| item.text.clone()).collect()
-// }
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Command {
@@ -62,16 +58,6 @@ pub enum Effect {
     // However, this safes a consecutive query.
     // Thus, return only data for which a query exists.
     RenderTodoList(RustAutoOpaque<TodoListModel>),
-}
-
-impl Effect {
-    pub fn todos_as_string(&self) -> Vec<String> {
-        match self {
-            Effect::RenderTodoList(todo_list_model) => {
-                todo_list_model.blocking_read().todos_as_text()
-            }
-        }
-    }
 }
 
 pub(crate) fn process_command_todo_list(

@@ -65,8 +65,8 @@ class StateHandler {
         //   // update the value and trigger a UI repaint
         //   // note that only a List of the references is copied, not the TodoItems list!
         case Effect_RenderTodoList():
-          todoListItems.value =
-              await todo_list_api.todos2Strings(todoListModel: effect.field0);
+          // todoListItems.value = await effect.field0.);
+          todoListItems.value = await effect.field0.getTodosAsString();
         // todoListItems.value = getTodosAsText(effect.field0);
         //   break;
       }

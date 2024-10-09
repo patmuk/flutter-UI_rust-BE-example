@@ -14,7 +14,9 @@ use crate::domain::todo_list::TodoListModel;
 
 /// holds the complete state of the app, as a global static variable
 /// use `RustAutoOpaque<T>`, which is `Arc<RwLock<T>>`, on the fields,
-/// which are written to concurrently. You could wrap the whole AppState in it,
+/// which are written to concurrently, and which are exchanged with Dart,
+/// but are too heavy to copy.
+/// You could wrap the whole AppState in it,
 /// but the finer granular the better parallelism you will get.
 /// Just remember that you can not wrap children, if the parent is already wrapped.
 #[derive(Debug)]

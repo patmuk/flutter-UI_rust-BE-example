@@ -89,7 +89,7 @@ fn handle_effects(effects: &Vec<Effect>) {
                 println!("Rendering view:\n");
                 todo_list_model
                     .blocking_read()
-                    .items
+                    .get_todos_as_string()
                     .iter()
                     .enumerate()
                     .for_each(|(index, item)| println!("\t{}. {}", index + 1, item.text))

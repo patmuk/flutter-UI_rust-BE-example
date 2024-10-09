@@ -1,10 +1,6 @@
-pub use crate::domain::todo_list::Effect;
+use crate::application::api::lifecycle::Lifecycle;
 use crate::domain::todo_list::{process_command_todo_list, process_query_todo_list};
-use crate::{
-    application::api::lifecycle::Lifecycle,
-    domain::todo_list::{self, TodoListModel},
-};
-use flutter_rust_bridge::frb;
+pub use crate::domain::todo_list::{Effect, TodoListModel};
 use log::debug;
 
 pub use crate::domain::todo_list::{Command, Query};
@@ -26,8 +22,4 @@ pub fn process_query(query: Query) -> Vec<Effect> {
     let effects = process_query_todo_list(query, &Lifecycle::get().app_state.read().unwrap().model);
     debug!("Processed query, got the effects {:?}", effects);
     effects
-}
-
-pub fn todos_2_strings(todo_list_model: &TodoListModel) -> Vec<String> {
-    todo_list_model.todos_as_text()
 }
