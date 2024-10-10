@@ -27,14 +27,17 @@
     #     flake-utils.follows = "flake-utils";
     #   };
     # };
+    #
     # workaround (using the last working version)
     # until https://github.com/NixOS/nixpkgs/issues/327836 and https://github.com/NixOS/nixpkgs/issues/242779 are fixed
+    # needs PR https://github.com/NixOS/nixpkgs/pull/346043 and https://github.com/NixOS/nixpkgs/pull/346947 to be merged
     # using last know version where swift wasn't broken
     swift-nixpkgs.url = "github:nixos/nixpkgs?rev=2e92235aa591abc613504fde2546d6f78b18c0cd";
   };
 
   # outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, swift-nixpkgs, ... }:
   outputs = { nixpkgs, flake-utils, android-nixpkgs, swift-nixpkgs, ... }:
+    # outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         swift-pkgs = import swift-nixpkgs {
