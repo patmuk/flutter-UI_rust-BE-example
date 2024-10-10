@@ -84,6 +84,11 @@
         local_toolchain_path = "$PWD/.toolchain";
         local_SDK_path = "${local_toolchain_path}/android";
         local_AVD_path = "${local_SDK_path}/AVD";
+        appleInputs =
+          if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
+            pkgs.cocoapods
+            swift-pkgs.xcodes
+          ] else [ ];
       in
       {
         devShells. default = pkgs.mkShellNoCC
@@ -93,12 +98,10 @@
               just
               # rustToolchain
               flutter
-              cocoapods
-              swift-pkgs.xcodes
               pinnedJDK
               androidCustomPackage
               flutter_rust_bridge_codegen
-            ];
+            ] ++ appleInputs;
             JAVA_HOME = pinnedJDK;
             ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
             shellHook = ''
