@@ -74,16 +74,12 @@
             system-images-android-34-google-apis-playstore-arm64-v8a #google branded with playstore installed
           ]
         );
-        AVD_package = "system-images;android-34;aosp_atd;arm64-v8a";
         pinnedJDK = pkgs.jdk17;
         xcode_version = "15.4.0";
         frb_version = "latest";
         flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
           inherit pkgs frb_version;
         };
-        local_toolchain_path = "$PWD/.toolchain";
-        local_SDK_path = "${local_toolchain_path}/android";
-        local_AVD_path = "${local_SDK_path}/AVD";
         appleInputs =
           if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
             pkgs.cocoapods
@@ -104,26 +100,26 @@
             ] ++ appleInputs;
             JAVA_HOME = pinnedJDK;
             ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
-            shellHook = ''
-                            export ANDROID_SDK_HOME="${local_SDK_path}";
-                            export ANDROID_EMULATOR_HOME="${local_SDK_path}";
-                            export ANDROID_AVD_HOME="${local_AVD_path}";
-              	
-                    	      #  uncomment to enable flutter-rust-bridge-codegen logging
-                    	      #  export RUST_BACKTRACE=1
-                    	      #  export RUST_LOG="debug" 
 
-                            # installs or checks for the right xcode version
-                            echo "installing xcode ${xcode_version}"
-                            xcodes install ${xcode_version} --experimental-unxip # --directory "$PWD/.xcode"
-                            xcodes select ${xcode_version}
-                            echo
-                            echo "setup for android emulator" 
-                            mkdir -p ${local_AVD_path}
-                            avdmanager create avd --name android-34-pixel_8 --package '${AVD_package}' --device "pixel_8"
-                            echo
-                            #  GRADLE_USER_HOME=$HOME/gradle-user-home
-                            #  GRADLE_HOME=$HOME/gradle-home
+            # Use this to create an android emulator
+            # however, this is not needed, as VSCode's Flutter Plugin can create emulators as well
+            # AVD_package = "system-images;android-34;aosp_atd;arm64-v8a";
+            # local_toolchain_path = "$PWD/.toolchain";
+            # local_SDK_path = "${local_toolchain_path}/android";
+            # local_AVD_path = "${local_SDK_path}/AVD";
+            # avdmanager create avd --name android-34-pixel_8 --package '${AVD_package}' --device "pixel_8"
+            shellHook = ''
+              	      #  uncomment to enable flutter-rust-bridge-codegen logging
+              	      #  export RUST_BACKTRACE=1
+              	      #  export RUST_LOG="debug" 
+
+                      # installs or checks for the right xcode version
+                      echo "installing xcode ${xcode_version}"
+                      xcodes install ${xcode_version} --experimental-unxip # --directory "$PWD/.xcode"
+                      xcodes select ${xcode_version}
+                      echo
+                      #  GRADLE_USER_HOME=$HOME/gradle-user-home
+                      #  GRADLE_HOME=$HOME/gradle-home
             '';
 
             # GRADLE_USER_HOME = " /home/admin0101/.gradle ";
