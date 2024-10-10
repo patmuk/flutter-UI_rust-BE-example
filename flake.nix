@@ -99,7 +99,7 @@
               flutter_rust_bridge_codegen
             ] ++ appleInputs;
             JAVA_HOME = pinnedJDK;
-            ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
+            # ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
 
             # Use this to create an android emulator
             # however, this is not needed, as VSCode's Flutter Plugin can create emulators as well
