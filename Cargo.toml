@@ -1,7 +1,10 @@
+
 [workspace]
+# members = ["app_core", "cqrs_core", "cqrs_macros", "shell_cli"]
 members = ["app_core", "shell_cli"]
 
 [workspace.package]
+resolver = "2"
 authors = ["PSTT"]
 edition = "2021"
 repository = "https://github.com/patmuk/sherry"

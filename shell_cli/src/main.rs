@@ -2,7 +2,7 @@ use std::{io, num::ParseIntError, process};
 
 use app_core::application::api::{
     lifecycle::Lifecycle,
-    todo_list_api::{process_command, process_query, Command, Effect, Query},
+    processing::{process_command, process_query, Command, Effect, Query},
 };
 
 fn main() {
@@ -34,9 +34,8 @@ fn main() {
             }
             Ok(_) if user_input.starts_with('a') => {
                 let todo = user_input.split_at(2).1.trim();
-                let effects = process_command(Command::AddTodo(todo.to_string()))
-                    .expect("failed to add todo");
-                handle_effects(&effects);
+
+                process_and_handle_effects(Command::AddTodo(todo.to_string()));
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('v') => {
@@ -82,7 +81,12 @@ fn main() {
     }
 }
 
-fn handle_effects(effects: &Vec<Effect>) {
+fn process_and_handle_effects(cqrs: impl CQRS) {
+    let effects = cqrs.process().expect("failed to process command");
+    handle_effects(effects);
+}
+
+fn handle_effects(effects: Vec<Effect>) {
     for effect in effects {
         match effect {
             Effect::RenderTodoList(todo_list_model) => {

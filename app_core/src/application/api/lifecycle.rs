@@ -4,7 +4,7 @@ use log::{debug, trace};
 use crate::domain::app_state::AppState;
 use std::io;
 use std::path::PathBuf;
-use std::sync::{OnceLock, RwLock};
+use std::sync::OnceLock;
 
 static SINGLETON: OnceLock<Lifecycle> = OnceLock::new();
 

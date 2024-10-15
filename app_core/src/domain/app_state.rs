@@ -153,7 +153,8 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::LazyLock;
 
-    use crate::application::api::todo_list_api::Command;
+    use crate::domain::todo_list::TodoCommand;
+    use crate::utils::cqrs_traits::Cqrs;
 
     use super::{AppState, AppStateLoadError};
 
@@ -175,17 +176,17 @@ mod tests {
     fn create_test_app_state() -> AppState {
         let mut app_state = AppState::new(&TEST_FILE);
         process_command_mock_todo_list_api(
-            Command::AddTodo("Test setup todo".to_string()),
+            TodoCommand::AddTodo("Test setup todo".to_string()),
             &mut app_state,
         )
         .expect("Could not persist the initial test state!");
         app_state
     }
     fn process_command_mock_todo_list_api(
-        command: Command,
+        command: TodoCommand,
         app_state: &mut AppState,
     ) -> Result<(), std::io::Error> {
-        crate::domain::todo_list::process_command_todo_list(command, &mut app_state.model);
+        command.process(&mut app_state.model);
         app_state.mark_dirty();
         app_state.persist(&TEST_FILE)
     }
@@ -218,7 +219,7 @@ mod tests {
 
         let mut changed = AppState::new(&TEST_FILE);
         process_command_mock_todo_list_api(
-            Command::AddTodo("Changed todo".to_string()),
+            TodoCommand::AddTodo("Changed todo".to_string()),
             &mut changed,
         )?;
 
@@ -241,7 +242,7 @@ mod tests {
 
         let mut changed = AppState::new(&TEST_FILE);
         process_command_mock_todo_list_api(
-            Command::AddTodo("Changed todo".to_string()),
+            TodoCommand::AddTodo("Changed todo".to_string()),
             &mut changed,
         )?;
 

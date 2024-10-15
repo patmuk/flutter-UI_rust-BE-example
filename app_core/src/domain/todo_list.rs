@@ -1,4 +1,14 @@
-use crate::application::bridge::frb_generated::RustAutoOpaque;
+use std::{error::Error, ops::Index};
+
+use crate::{
+    application::bridge::frb_generated::RustAutoOpaque,
+    utils::cqrs_traits::{
+        //CQRScommand, CQRSquery,
+        Cqrs,
+        Effect,
+        ProcessingError,
+    },
+};
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
@@ -38,19 +48,46 @@ impl TodoListModel {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum Command {
+pub enum TodoCommand {
     AddTodo(String),
-    RemoveTodo(u32),
+    RemoveTodo(usize),
     CleanList,
 }
 
+impl Cqrs for TodoCommand {
+    type Model = RustAutoOpaque<TodoListModel>;
+    fn process(self, model: &Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
+        // fn process(self, model: Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
+        match self {
+            TodoCommand::AddTodo(todo) => {
+                model.blocking_write().items.push(TodoItem { text: (todo) });
+                // this clone is cheap, as it is on ARC (RustAutoOpaque>T> = Arc<RwMutex<T>>)
+                Ok(vec![TodoEffect::RenderTodoList(model.clone())])
+            }
+            TodoCommand::RemoveTodo(todo_pos) => {
+                let items = &mut model.blocking_write().items;
+                if todo_pos > items.len() {
+                    Err(TodoProcessingError::TodosDoesNotExist(todo_pos))
+                } else {
+                    items.remove(todo_pos - 1);
+                    Ok(vec![TodoEffect::RenderTodoList(model.clone())])
+                }
+            }
+            TodoCommand::CleanList => {
+                model.blocking_write().items.clear();
+                Ok(vec![TodoEffect::RenderTodoList(model.clone())])
+            }
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
-pub enum Query {
+pub enum TodoQuery {
     AllTodos,
 }
 
 #[derive(Debug)]
-pub enum Effect {
+pub enum TodoEffect {
     // Parameters need to be owned by `Effect`.
     // The attributes live in the app state - we don't want to
     // send them back and furth.
@@ -68,45 +105,32 @@ pub enum Effect {
     RenderTodoList(RustAutoOpaque<TodoListModel>),
 }
 
-pub(crate) fn process_command_todo_list(
-    command: Command,
-    model: &RustAutoOpaque<TodoListModel>,
-) -> Vec<Effect> {
-    match command {
-        Command::AddTodo(todo) => {
-            model.blocking_write().items.push(TodoItem { text: (todo) });
-            // this clone is cheap, as it is on ARC (RustAutoOpaque>T> = Arc<RwMutex<T>>)
-            vec![Effect::RenderTodoList(model.clone())]
-        }
-        Command::RemoveTodo(todo_pos) => {
-            model
-                .blocking_write()
-                .items
-                .remove((todo_pos - 1).try_into().unwrap());
-            vec![Effect::RenderTodoList(model.clone())]
-        }
-        Command::CleanList => {
-            model.blocking_write().items.clear();
-            vec![Effect::RenderTodoList(model.clone())]
-        }
+impl Effect for TodoEffect {}
+
+impl Cqrs for TodoQuery {
+    type Model = RustAutoOpaque<TodoListModel>;
+    fn process(self, model: &Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
+        // fn process(self, model: Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
+        Ok(match self {
+            // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
+            TodoQuery::AllTodos => vec![TodoEffect::RenderTodoList(model.clone())],
+        })
     }
 }
 
-pub(crate) fn process_query_todo_list(
-    query: Query,
-    model: &RustAutoOpaque<TodoListModel>,
-) -> Vec<Effect> {
-    match query {
-        // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
-        Query::AllTodos => vec![Effect::RenderTodoList(model.clone())],
-    }
+#[derive(thiserror::Error, Debug, PartialEq)]
+pub enum TodoProcessingError {
+    #[error("The todo at index {0} does not exist!")]
+    TodosDoesNotExist(usize),
 }
+
+impl ProcessingError for TodoProcessingError {}
 
 // only for tests, as the danger for a deadlock is too big
 #[cfg(test)]
-impl PartialEq for Effect {
+impl PartialEq for TodoEffect {
     fn eq(&self, other: &Self) -> bool {
-        matches!((self, other), (Effect::RenderTodoList(own), Effect::RenderTodoList(other)) if {
+        matches!((self, other), (TodoEffect::RenderTodoList(own), TodoEffect::RenderTodoList(other)) if {
             // be aware of a potential deadlock here!
             // (lock on own, waiting for other and in another thread vice-versa!)
             let own_items = &own.blocking_read().items;
@@ -127,11 +151,12 @@ mod tests {
                 text: String::from("test the list"),
             }],
         });
-        let expected_effects = vec![Effect::RenderTodoList(expected_model.clone())];
+        let expected_effects = vec![TodoEffect::RenderTodoList(expected_model.clone())];
 
         let mut actual_model = RustAutoOpaque::new(TodoListModel::default());
-        let actual_effects =
-            process_command_todo_list(Command::AddTodo("test the list".into()), &mut actual_model);
+        let actual_effects = TodoCommand::AddTodo("test the list".into())
+            .process(&mut actual_model)
+            .unwrap();
 
         assert_eq!(actual_effects, expected_effects);
         assert_eq!(
@@ -143,26 +168,32 @@ mod tests {
     #[test]
     fn remove_todo() {
         let expected_model = RustAutoOpaque::new(TodoListModel { items: vec![] });
-        let expected_effect = Effect::RenderTodoList(expected_model.clone());
+        let expected_effects = vec![TodoEffect::RenderTodoList(expected_model.clone())];
 
         let mut actual_model = RustAutoOpaque::new(TodoListModel {
             items: vec![TodoItem {
                 text: "remove me".into(),
             }],
         });
-        let actual_effects = process_command_todo_list(Command::RemoveTodo(1), &mut actual_model);
+        let actual_effects = TodoCommand::RemoveTodo(1)
+            .process(&mut actual_model)
+            .unwrap();
 
-        assert_eq!(&actual_effects[0], &expected_effect);
+        assert_eq!(actual_effects, expected_effects);
         assert_eq!(
             *actual_model.blocking_read(),
             *expected_model.blocking_read()
+        );
+        assert_eq!(
+            TodoCommand::RemoveTodo(1).process(&mut actual_model),
+            Err(TodoProcessingError::TodosDoesNotExist(1))
         );
     }
 
     #[test]
     fn clean_list() {
         let expected_model = RustAutoOpaque::new(TodoListModel { items: vec![] });
-        let expected_effects = vec![Effect::RenderTodoList(expected_model.clone())];
+        let expected_effects = vec![TodoEffect::RenderTodoList(expected_model.clone())];
 
         let mut actual_model = RustAutoOpaque::new(TodoListModel::default());
         actual_model.blocking_write().items.push(TodoItem {
@@ -171,9 +202,9 @@ mod tests {
         actual_model.blocking_write().items.push(TodoItem {
             text: "clean me".into(),
         });
-        let actual_effects = process_command_todo_list(Command::CleanList, &mut actual_model);
+        let actual_effects = TodoCommand::CleanList.process(&mut actual_model).unwrap();
 
-        assert_eq!(&actual_effects, &expected_effects);
+        assert_eq!(actual_effects, expected_effects);
         assert_eq!(
             *actual_model.blocking_read(),
             *expected_model.blocking_read()

@@ -1,22 +1,17 @@
 use app_core::application::api::lifecycle::Lifecycle;
-use app_core::application::api::todo_list_api::{self, Effect};
+use app_core::application::api::processing::{self, Effect};
+use app_core::utils::cqrs_traits::Cqrs;
 
 fn main() {
     // initiializes the app and loads the app state
     Lifecycle::new(Some("./test_app_state.bin".to_string()));
 
     // following CQRS, this is how to query for the state
-    let effects = todo_list_api::process_query(todo_list_api::Query::AllTodos);
     // following the crux-style, one should not call view() directly, but evaluate the Effect, which tells
     // the caller ('shell') what to do (in this case render the viewModel):
-    handle_effects(&effects);
+    process_and_handle_effects(processing::Query::AllTodos);
 
-    let effects = todo_list_api::process_command(todo_list_api::Command::AddTodo(
-        "Proper Test todo".to_string(),
-    ))
-    .expect("Could not persist the state!");
-    println!("added todo !");
-    handle_effects(&effects);
+    process_and_handle_effects(processing::Command::AddTodo("Proper Test todo".to_string()));
 
     // if possible call this function to clean up, like wrting the app's state to disk
     Lifecycle::get()
@@ -24,6 +19,10 @@ fn main() {
         .expect("Could not persist the state!");
 }
 
+fn process_and_handle_effects(cqrs: impl Cqrs) {
+    let effects = cqrs.process().expect("failed to process command");
+    handle_effects(effects);
+}
 fn handle_effects(effects: &Vec<Effect>) {
     for effect in effects {
         match effect {
