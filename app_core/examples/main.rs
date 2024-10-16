@@ -1,5 +1,5 @@
 use app_core::application::api::lifecycle::Lifecycle;
-use app_core::application::api::processing::{self, Effect};
+use app_core::application::api::processing::{self, process_todo_model_command, Effect};
 use app_core::utils::cqrs_traits::Cqrs;
 
 fn main() {
@@ -20,10 +20,12 @@ fn main() {
 }
 
 fn process_and_handle_effects(cqrs: impl Cqrs) {
-    let effects = cqrs.process().expect("failed to process command");
-    handle_effects(effects);
+    let effects = process_todo_model_command(cqrs)
+        // .process()
+        .expect("failed to process command");
+    handle_effects(&effects);
 }
-fn handle_effects(effects: &Vec<Effect>) {
+fn handle_effects(effects: &Vec<impl Effect>) {
     for effect in effects {
         match effect {
             Effect::RenderTodoList(todo_list_model) => {

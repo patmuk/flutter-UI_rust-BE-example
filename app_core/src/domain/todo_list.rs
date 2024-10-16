@@ -1,10 +1,11 @@
 use std::{error::Error, ops::Index};
 
 use crate::{
-    application::bridge::frb_generated::RustAutoOpaque,
+    application::bridge::frb_generated::{MoiArcValue, RustAutoOpaque},
     utils::cqrs_traits::{
         //CQRScommand, CQRSquery,
         Cqrs,
+        CqrsModel,
         Effect,
         ProcessingError,
     },
@@ -46,6 +47,7 @@ impl TodoListModel {
         self.items.iter().map(|item| item.text.clone()).collect()
     }
 }
+impl CqrsModel for TodoListModel {}
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum TodoCommand {
@@ -55,8 +57,17 @@ pub enum TodoCommand {
 }
 
 impl Cqrs for TodoCommand {
-    type Model = RustAutoOpaque<TodoListModel>;
-    fn process(self, model: &Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
+    // impl Cqrs for TodoCommand {
+    type Model = TodoListModel;
+    type Effect = TodoEffect;
+    type ProcessingError = TodoProcessingError;
+    // impl<M: CqrsModel, E: Effect, PE: Error> Cqrs<M, E, PE> for TodoCommand {
+    // impl Cqrs for TodoCommand {
+    fn process(
+        self,
+        model: &RustAutoOpaque<Self::Model>,
+    ) -> Result<Vec<Self::Effect>, Self::ProcessingError> {
+        // ) -> std::result::Result<std::vec::Vec<E>, PE> {
         // fn process(self, model: Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
         match self {
             TodoCommand::AddTodo(todo) => {
@@ -108,10 +119,19 @@ pub enum TodoEffect {
 impl Effect for TodoEffect {}
 
 impl Cqrs for TodoQuery {
-    type Model = RustAutoOpaque<TodoListModel>;
-    fn process(self, model: &Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
+    // impl Cqrs for TodoCommand {
+    // type Model = RustAutoOpaque<TodoListModel>;
+    type Model = TodoListModel;
+    type Effect = TodoEffect;
+    type ProcessingError = TodoProcessingError;
+    fn process(
+        self,
+        // model: &RustAutoOpaque<TodoListModel>,
+        model: &RustAutoOpaque<Self::Model>,
+    ) -> Result<Vec<TodoEffect>, TodoProcessingError> {
+        // fn process(self, model: &Self::Model) -> Result<Vec<impl Effect>, impl ProcessingError> {
         // fn process(self, model: Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
-        Ok(match self {
+        Ok::<std::vec::Vec<TodoEffect>, TodoProcessingError>(match self {
             // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
             TodoQuery::AllTodos => vec![TodoEffect::RenderTodoList(model.clone())],
         })

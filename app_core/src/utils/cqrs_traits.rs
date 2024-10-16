@@ -27,12 +27,32 @@ pub trait AppConfig {}
 pub trait ProcessingError: Error {}
 
 pub trait Effect: Debug {}
+pub trait CqrsModel {}
+pub trait Cqrs: Debug
+where
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<<Self as Cqrs>::Model>:
+        crate::application::bridge::frb_generated::MoiArcValue,
+{
+    // }
 
-pub trait Cqrs: Debug {
-    type Model;
-    fn process(self, model: &Self::Model) -> Result<Vec<impl Effect>, impl ProcessingError>;
+    // pub trait Cqrs: Debug {
+    // pub trait Cqrs<E: Effect, PE: ProcessingError>: Debug {
+    // pub trait Cqrs<M: CqrsModel, E: Effect, PE: ProcessingError>: Debug {
+    type Model: CqrsModel;
+    type Effect: Effect;
+    type ProcessingError: ProcessingError;
+    fn process(
+        self,
+        model: &RustAutoOpaque<Self::Model>,
+    ) -> Result<Vec<Self::Effect>, Self::ProcessingError>;
     // fn process(self, model: &Self::Model) -> Result<Vec<impl Effect>, impl ProcessingError>;
 }
+// pub trait Cqrs: Debug {
+//     type Model;
+//     fn process(self, model: &Self::Model) -> Result<Vec<impl Effect>, impl ProcessingError>;
+//     // fn process(self, model: &Self::Model) -> Result<Vec<impl Effect>, impl ProcessingError>;
+// }
+
 // pub trait Cqrs: Debug {
 //     fn process(
 //         self,
