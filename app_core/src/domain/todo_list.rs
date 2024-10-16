@@ -60,7 +60,7 @@ impl Cqrs for TodoCommand {
         self,
         app_state: &super::app_state::AppState,
     ) -> Result<Vec<Effect>, ProcessingError> {
-        let model = TodoListModel::get_model(&app_state);
+        let model = TodoListModel::get_model(app_state);
         match self {
             TodoCommand::AddTodo(todo) => {
                 model.blocking_write().items.push(TodoItem { text: todo });
@@ -97,7 +97,7 @@ impl Cqrs for TodoQuery {
         self,
         app_state: &super::app_state::AppState,
     ) -> Result<Vec<Effect>, ProcessingError> {
-        let model = TodoListModel::get_model(&app_state);
+        let model = TodoListModel::get_model(app_state);
         Ok::<std::vec::Vec<Effect>, ProcessingError>(match self {
             // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
             TodoQuery::AllTodos => vec![Effect::RenderTodoList(model.clone())],

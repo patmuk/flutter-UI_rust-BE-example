@@ -23,7 +23,7 @@ use crate::domain::todo_list::TodoListModel;
 pub(crate) struct AppState {
     // We pretend that (parts of) the model are too hugh to performantly copy from Rust to Dart.
     // Thus we implement getters for the parts which need to be shown in the UI only.
-    pub model: RustAutoOpaque<TodoListModel>,
+    pub(crate) model: RustAutoOpaque<TodoListModel>,
     // flag, if writing to disc is needed
     dirty: AtomicBool,
 }
@@ -193,7 +193,7 @@ mod tests {
         command: TodoCommand,
         app_state: &mut AppState,
     ) -> Result<(), std::io::Error> {
-        command.process(&app_state).unwrap();
+        command.process(app_state).unwrap();
         app_state.mark_dirty();
         app_state.persist(&TEST_FILE)
     }
