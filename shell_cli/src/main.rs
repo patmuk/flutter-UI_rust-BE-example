@@ -1,9 +1,9 @@
-use std::{io, num::ParseIntError, process};
-
 use app_core::application::api::{
     lifecycle::Lifecycle,
-    processing::{process_command, process_query, Command, Effect, Query},
+    processing::{process_todo_model_command, process_todo_model_query, TodoCommand, TodoQuery},
 };
+use app_core::utils::cqrs_traits::Effect;
+use std::{io, num::ParseIntError, process};
 
 fn main() {
     let mut user_input = String::new();
@@ -23,7 +23,7 @@ fn main() {
                           =====================\n";
     println!("{}", USAGE);
     Lifecycle::new(None);
-    let effects = process_query(Query::AllTodos);
+    let effects = process_query(TodoQuery::AllTodos);
     handle_effects(&effects);
 
     loop {
@@ -35,11 +35,11 @@ fn main() {
             Ok(_) if user_input.starts_with('a') => {
                 let todo = user_input.split_at(2).1.trim();
 
-                process_and_handle_effects(Command::AddTodo(todo.to_string()));
+                process_and_handle_effects(TodoCommand::AddTodo(todo.to_string()));
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('v') => {
-                let effects = process_query(Query::AllTodos);
+                let effects = process_query(TodoQuery::AllTodos);
                 handle_effects(&effects);
                 user_input.clear();
             }
@@ -49,8 +49,9 @@ fn main() {
                     Ok(index) => {
                         if index > 0 {
                             println!("\nRemoving todo at index {}\n", index);
-                            let effects = process_command(Command::RemoveTodo(index))
-                                .expect("failed to remove a todo");
+                            let effects =
+                                process_and_handle_effects(TodoCommand::RemoveTodo(index))
+                                    .expect("failed to remove a todo");
                             handle_effects(&effects);
                         } else {
                             println!("\nGive me a positive number, not {}\n", index);
@@ -63,8 +64,8 @@ fn main() {
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('c') => {
-                let effects =
-                    process_command(Command::CleanList).expect("failed to clean the list");
+                let effects = process_and_handle_effects(TodoCommand::CleanList)
+                    .expect("failed to clean the list");
                 handle_effects(&effects);
                 user_input.clear();
             }
@@ -81,8 +82,8 @@ fn main() {
     }
 }
 
-fn process_and_handle_effects(cqrs: impl CQRS) {
-    let effects = cqrs.process().expect("failed to process command");
+fn process_and_handle_effects(cqrs: impl Cqrs) {
+    let effects = process_todo_model_command(cqrs).expect("failed to process command");
     handle_effects(effects);
 }
 

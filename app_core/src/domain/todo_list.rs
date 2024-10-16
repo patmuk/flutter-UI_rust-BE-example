@@ -1,9 +1,11 @@
 use crate::{
     application::bridge::frb_generated::RustAutoOpaque,
-    utils::cqrs_traits::{Cqrs, CqrsModel, Effect, ProcessingError},
+    utils::cqrs_traits::{Cqrs, CqrsModel},
 };
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
+
+use super::{effects::Effect, processing_errors::ProcessingError};
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[frb(opaque)]
@@ -39,7 +41,11 @@ impl TodoListModel {
         self.items.iter().map(|item| item.text.clone()).collect()
     }
 }
-impl CqrsModel for TodoListModel {}
+impl CqrsModel for TodoListModel {
+    fn get_model(app_state: &super::app_state::AppState) -> &RustAutoOpaque<Self> {
+        &app_state.model
+    }
+}
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum TodoCommand {
@@ -48,34 +54,36 @@ pub enum TodoCommand {
     CleanList,
 }
 
+// impl TodoCommand for TodoCommand {}
 impl Cqrs for TodoCommand {
-    type Model = TodoListModel;
-    type Effect = TodoEffect;
-    type ProcessingError = TodoProcessingError;
     fn process(
         self,
-        model: &RustAutoOpaque<Self::Model>,
-    ) -> Result<Vec<Self::Effect>, Self::ProcessingError> {
+        app_state: &super::app_state::AppState,
+    ) -> Result<Vec<Effect>, ProcessingError> {
+        let model = TodoListModel::get_model(&app_state);
         match self {
             TodoCommand::AddTodo(todo) => {
-                model.blocking_write().items.push(TodoItem { text: (todo) });
+                model.blocking_write().items.push(TodoItem { text: todo });
                 // this clone is cheap, as it is on ARC (RustAutoOpaque>T> = Arc<RwMutex<T>>)
-                Ok(vec![TodoEffect::RenderTodoList(model.clone())])
+                Ok(vec![Effect::RenderTodoList(model.clone())])
             }
             TodoCommand::RemoveTodo(todo_pos) => {
                 let items = &mut model.blocking_write().items;
                 if todo_pos > items.len() {
-                    Err(TodoProcessingError::TodosDoesNotExist(todo_pos))
+                    Err(ProcessingError::TodosDoesNotExist(todo_pos))
                 } else {
                     items.remove(todo_pos - 1);
-                    Ok(vec![TodoEffect::RenderTodoList(model.clone())])
+                    Ok(vec![Effect::RenderTodoList(model.clone())])
                 }
             }
             TodoCommand::CleanList => {
                 model.blocking_write().items.clear();
-                Ok(vec![TodoEffect::RenderTodoList(model.clone())])
+                Ok(vec![Effect::RenderTodoList(model.clone())])
             }
         }
+    }
+    fn is_command(&self) -> bool {
+        true
     }
 }
 
@@ -84,55 +92,27 @@ pub enum TodoQuery {
     AllTodos,
 }
 
-#[derive(Debug)]
-pub enum TodoEffect {
-    // Parameters need to be owned by `Effect`.
-    // The attributes live in the app state - we don't want to
-    // send them back and furth.
-    // A reference is hard to manage - we could only `& mut` it when all
-    // `&` are released, which only happens via `.dispose()` on the dart side.
-    //
-    // Thus, the best approach is providing a shared reference, which
-    // Dart can not directly read: `RustAutoOpaque`, which is more or less a `Arc<RwLock>`.
-    // Dart can access the lightweight properties needed for presentation with a function call
-    // on this reference.
-    //
-    // In strict CQRS a command should not return a value.
-    // However, this safes a consecutive query.
-    // Thus, return only data for which a query exists.
-    RenderTodoList(RustAutoOpaque<TodoListModel>),
-}
-
-impl Effect for TodoEffect {}
-
 impl Cqrs for TodoQuery {
-    type Model = TodoListModel;
-    type Effect = TodoEffect;
-    type ProcessingError = TodoProcessingError;
     fn process(
         self,
-        model: &RustAutoOpaque<Self::Model>,
-    ) -> Result<Vec<TodoEffect>, TodoProcessingError> {
-        Ok::<std::vec::Vec<TodoEffect>, TodoProcessingError>(match self {
+        app_state: &super::app_state::AppState,
+    ) -> Result<Vec<Effect>, ProcessingError> {
+        let model = TodoListModel::get_model(&app_state);
+        Ok::<std::vec::Vec<Effect>, ProcessingError>(match self {
             // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
-            TodoQuery::AllTodos => vec![TodoEffect::RenderTodoList(model.clone())],
+            TodoQuery::AllTodos => vec![Effect::RenderTodoList(model.clone())],
         })
+    }
+    fn is_command(&self) -> bool {
+        false
     }
 }
 
-#[derive(thiserror::Error, Debug, PartialEq)]
-pub enum TodoProcessingError {
-    #[error("The todo at index {0} does not exist!")]
-    TodosDoesNotExist(usize),
-}
-
-impl ProcessingError for TodoProcessingError {}
-
 // only for tests, as the danger for a deadlock is too big
 #[cfg(test)]
-impl PartialEq for TodoEffect {
+impl PartialEq for Effect {
     fn eq(&self, other: &Self) -> bool {
-        matches!((self, other), (TodoEffect::RenderTodoList(own), TodoEffect::RenderTodoList(other)) if {
+        matches!((self, other), (Effect::RenderTodoList(own), Effect::RenderTodoList(other)) if {
             // be aware of a potential deadlock here!
             // (lock on own, waiting for other and in another thread vice-versa!)
             let own_items = &own.blocking_read().items;
@@ -144,6 +124,8 @@ impl PartialEq for TodoEffect {
 
 #[cfg(test)]
 mod tests {
+    use crate::domain::app_state::AppState;
+
     use super::*;
 
     #[test]
@@ -153,11 +135,12 @@ mod tests {
                 text: String::from("test the list"),
             }],
         });
-        let expected_effects = vec![TodoEffect::RenderTodoList(expected_model.clone())];
+        let expected_effects = vec![Effect::RenderTodoList(expected_model.clone())];
 
         let actual_model = RustAutoOpaque::new(TodoListModel::default());
+        let app_state = AppState::from_model(&actual_model);
         let actual_effects = TodoCommand::AddTodo("test the list".into())
-            .process(&actual_model)
+            .process(&app_state)
             .unwrap();
 
         assert_eq!(actual_effects, expected_effects);
@@ -170,14 +153,15 @@ mod tests {
     #[test]
     fn remove_todo() {
         let expected_model = RustAutoOpaque::new(TodoListModel { items: vec![] });
-        let expected_effects = vec![TodoEffect::RenderTodoList(expected_model.clone())];
+        let expected_effects = vec![Effect::RenderTodoList(expected_model.clone())];
 
         let actual_model = RustAutoOpaque::new(TodoListModel {
             items: vec![TodoItem {
                 text: "remove me".into(),
             }],
         });
-        let actual_effects = TodoCommand::RemoveTodo(1).process(&actual_model).unwrap();
+        let app_state = AppState::from_model(&actual_model);
+        let actual_effects = TodoCommand::RemoveTodo(1).process(&app_state).unwrap();
 
         assert_eq!(actual_effects, expected_effects);
         assert_eq!(
@@ -185,15 +169,15 @@ mod tests {
             *expected_model.blocking_read()
         );
         assert_eq!(
-            TodoCommand::RemoveTodo(1).process(&actual_model),
-            Err(TodoProcessingError::TodosDoesNotExist(1))
+            TodoCommand::RemoveTodo(1).process(&app_state),
+            Err(ProcessingError::TodosDoesNotExist(1))
         );
     }
 
     #[test]
     fn clean_list() {
         let expected_model = RustAutoOpaque::new(TodoListModel { items: vec![] });
-        let expected_effects = vec![TodoEffect::RenderTodoList(expected_model.clone())];
+        let expected_effects = vec![Effect::RenderTodoList(expected_model.clone())];
 
         let actual_model = RustAutoOpaque::new(TodoListModel::default());
         actual_model.blocking_write().items.push(TodoItem {
@@ -202,7 +186,9 @@ mod tests {
         actual_model.blocking_write().items.push(TodoItem {
             text: "clean me".into(),
         });
-        let actual_effects = TodoCommand::CleanList.process(&actual_model).unwrap();
+        let app_state = AppState::from_model(&actual_model);
+
+        let actual_effects = TodoCommand::CleanList.process(&app_state).unwrap();
 
         assert_eq!(actual_effects, expected_effects);
         assert_eq!(

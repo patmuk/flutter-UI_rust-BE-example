@@ -1,6 +1,11 @@
-use app_core::application::api::lifecycle::Lifecycle;
-use app_core::application::api::processing::{self, process_todo_model_command, Effect};
-use app_core::utils::cqrs_traits::Cqrs;
+use app_core::{
+    application::api::{
+        lifecycle::Lifecycle,
+        processing::{process_cqrs, Effect},
+    },
+    domain::todo_list::{TodoCommand, TodoQuery},
+    utils::cqrs_traits::Cqrs,
+};
 
 fn main() {
     // initiializes the app and loads the app state
@@ -9,9 +14,9 @@ fn main() {
     // following CQRS, this is how to query for the state
     // following the crux-style, one should not call view() directly, but evaluate the Effect, which tells
     // the caller ('shell') what to do (in this case render the viewModel):
-    process_and_handle_effects(processing::Query::AllTodos);
+    process_and_handle_effects(TodoQuery::AllTodos);
 
-    process_and_handle_effects(processing::Command::AddTodo("Proper Test todo".to_string()));
+    process_and_handle_effects(TodoCommand::AddTodo("Proper Test todo".to_string()));
 
     // if possible call this function to clean up, like wrting the app's state to disk
     Lifecycle::get()
@@ -20,12 +25,10 @@ fn main() {
 }
 
 fn process_and_handle_effects(cqrs: impl Cqrs) {
-    let effects = process_todo_model_command(cqrs)
-        // .process()
-        .expect("failed to process command");
+    let effects = process_cqrs(cqrs).expect("failed to process command");
     handle_effects(&effects);
 }
-fn handle_effects(effects: &Vec<impl Effect>) {
+fn handle_effects(effects: &Vec<Effect>) {
     for effect in effects {
         match effect {
             Effect::RenderTodoList(todo_list_model) => {

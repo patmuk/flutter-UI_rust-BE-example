@@ -101,6 +101,13 @@ impl AppState {
             dirty: AtomicBool::new(false),
         }
     }
+    #[cfg(test)]
+    pub(crate) fn from_model(model: &RustAutoOpaque<TodoListModel>) -> Self {
+        Self {
+            model: model.clone(),
+            dirty: AtomicBool::new(false),
+        }
+    }
     // get the last persisted app state from a file, if any exists, otherwise creates a new app state
     // this function is only called once, in the initialization/app state constructor
     fn load(path: &Path) -> Result<AppState, AppStateLoadError> {
@@ -186,7 +193,7 @@ mod tests {
         command: TodoCommand,
         app_state: &mut AppState,
     ) -> Result<(), std::io::Error> {
-        command.process(&app_state.model).unwrap();
+        command.process(&app_state).unwrap();
         app_state.mark_dirty();
         app_state.persist(&TEST_FILE)
     }
