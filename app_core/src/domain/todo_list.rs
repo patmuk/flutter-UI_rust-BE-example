@@ -1,14 +1,6 @@
-use std::{error::Error, ops::Index};
-
 use crate::{
-    application::bridge::frb_generated::{MoiArcValue, RustAutoOpaque},
-    utils::cqrs_traits::{
-        //CQRScommand, CQRSquery,
-        Cqrs,
-        CqrsModel,
-        Effect,
-        ProcessingError,
-    },
+    application::bridge::frb_generated::RustAutoOpaque,
+    utils::cqrs_traits::{Cqrs, CqrsModel, Effect, ProcessingError},
 };
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
@@ -57,18 +49,13 @@ pub enum TodoCommand {
 }
 
 impl Cqrs for TodoCommand {
-    // impl Cqrs for TodoCommand {
     type Model = TodoListModel;
     type Effect = TodoEffect;
     type ProcessingError = TodoProcessingError;
-    // impl<M: CqrsModel, E: Effect, PE: Error> Cqrs<M, E, PE> for TodoCommand {
-    // impl Cqrs for TodoCommand {
     fn process(
         self,
         model: &RustAutoOpaque<Self::Model>,
     ) -> Result<Vec<Self::Effect>, Self::ProcessingError> {
-        // ) -> std::result::Result<std::vec::Vec<E>, PE> {
-        // fn process(self, model: Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
         match self {
             TodoCommand::AddTodo(todo) => {
                 model.blocking_write().items.push(TodoItem { text: (todo) });
@@ -119,18 +106,13 @@ pub enum TodoEffect {
 impl Effect for TodoEffect {}
 
 impl Cqrs for TodoQuery {
-    // impl Cqrs for TodoCommand {
-    // type Model = RustAutoOpaque<TodoListModel>;
     type Model = TodoListModel;
     type Effect = TodoEffect;
     type ProcessingError = TodoProcessingError;
     fn process(
         self,
-        // model: &RustAutoOpaque<TodoListModel>,
         model: &RustAutoOpaque<Self::Model>,
     ) -> Result<Vec<TodoEffect>, TodoProcessingError> {
-        // fn process(self, model: &Self::Model) -> Result<Vec<impl Effect>, impl ProcessingError> {
-        // fn process(self, model: Self::Model) -> Result<Vec<TodoEffect>, TodoProcessingError> {
         Ok::<std::vec::Vec<TodoEffect>, TodoProcessingError>(match self {
             // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
             TodoQuery::AllTodos => vec![TodoEffect::RenderTodoList(model.clone())],
@@ -173,9 +155,9 @@ mod tests {
         });
         let expected_effects = vec![TodoEffect::RenderTodoList(expected_model.clone())];
 
-        let mut actual_model = RustAutoOpaque::new(TodoListModel::default());
+        let actual_model = RustAutoOpaque::new(TodoListModel::default());
         let actual_effects = TodoCommand::AddTodo("test the list".into())
-            .process(&mut actual_model)
+            .process(&actual_model)
             .unwrap();
 
         assert_eq!(actual_effects, expected_effects);
@@ -190,14 +172,12 @@ mod tests {
         let expected_model = RustAutoOpaque::new(TodoListModel { items: vec![] });
         let expected_effects = vec![TodoEffect::RenderTodoList(expected_model.clone())];
 
-        let mut actual_model = RustAutoOpaque::new(TodoListModel {
+        let actual_model = RustAutoOpaque::new(TodoListModel {
             items: vec![TodoItem {
                 text: "remove me".into(),
             }],
         });
-        let actual_effects = TodoCommand::RemoveTodo(1)
-            .process(&mut actual_model)
-            .unwrap();
+        let actual_effects = TodoCommand::RemoveTodo(1).process(&actual_model).unwrap();
 
         assert_eq!(actual_effects, expected_effects);
         assert_eq!(
@@ -205,7 +185,7 @@ mod tests {
             *expected_model.blocking_read()
         );
         assert_eq!(
-            TodoCommand::RemoveTodo(1).process(&mut actual_model),
+            TodoCommand::RemoveTodo(1).process(&actual_model),
             Err(TodoProcessingError::TodosDoesNotExist(1))
         );
     }
@@ -215,14 +195,14 @@ mod tests {
         let expected_model = RustAutoOpaque::new(TodoListModel { items: vec![] });
         let expected_effects = vec![TodoEffect::RenderTodoList(expected_model.clone())];
 
-        let mut actual_model = RustAutoOpaque::new(TodoListModel::default());
+        let actual_model = RustAutoOpaque::new(TodoListModel::default());
         actual_model.blocking_write().items.push(TodoItem {
             text: "remove me".into(),
         });
         actual_model.blocking_write().items.push(TodoItem {
             text: "clean me".into(),
         });
-        let actual_effects = TodoCommand::CleanList.process(&mut actual_model).unwrap();
+        let actual_effects = TodoCommand::CleanList.process(&actual_model).unwrap();
 
         assert_eq!(actual_effects, expected_effects);
         assert_eq!(

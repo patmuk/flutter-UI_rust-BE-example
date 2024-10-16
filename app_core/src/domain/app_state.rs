@@ -186,7 +186,7 @@ mod tests {
         command: TodoCommand,
         app_state: &mut AppState,
     ) -> Result<(), std::io::Error> {
-        command.process(&mut app_state.model);
+        command.process(&app_state.model).unwrap();
         app_state.mark_dirty();
         app_state.persist(&TEST_FILE)
     }

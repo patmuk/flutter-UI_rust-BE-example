@@ -1,6 +1,5 @@
 
 [workspace]
-# members = ["app_core", "cqrs_core", "cqrs_macros", "shell_cli"]
 members = ["app_core", "shell_cli"]
 
 [workspace.package]
