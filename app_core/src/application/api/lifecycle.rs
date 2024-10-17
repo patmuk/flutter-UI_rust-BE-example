@@ -2,6 +2,9 @@ use flutter_rust_bridge::frb;
 use log::{debug, trace};
 
 use crate::application::app_state::AppState;
+pub use crate::application::processing_errors::ProcessingError;
+pub use crate::domain::effects::Effect;
+pub use crate::utils::cqrs_traits::Cqrs;
 use std::io;
 use std::path::PathBuf;
 use std::sync::OnceLock;
@@ -65,6 +68,29 @@ impl Lifecycle {
         // blocks on the Locks of inner fields
         // TODO implent timeout and throw an error?
         self.app_state.persist(&self.app_config.app_state_file_path)
+    }
+    pub fn process_cqrs<C: Cqrs>(&self, cqrs: C) -> Result<Vec<Effect>, ProcessingError> {
+        let is_command = cqrs.is_command();
+        if is_command {
+            debug!("Processing cqrs_command: {:?}", cqrs);
+        } else {
+            debug!("Processing cqrs_query: {:?}", cqrs);
+        }
+        let effects = cqrs.process(&self.app_state);
+        debug!(
+            "Processed cqrs, new model {:?}",
+            self.app_state.model.blocking_read()
+        );
+        debug!("got the effects {:?}", effects);
+        if is_command {
+            self.app_state.mark_dirty();
+            // persist change to not miss it
+            self.app_state
+                .persist(&self.app_config.app_state_file_path)
+                .unwrap(); // TODO convert to own error
+                           // Ok::<_, dyn ProcessingError>(effects)
+        }
+        effects
     }
 }
 // app state storage location

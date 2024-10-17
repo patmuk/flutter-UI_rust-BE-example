@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shell_flutter/bridge/frb_generated/application/api/todo_list_api.dart'
-    as todo_list_api;
 import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart'
     as lifecycle;
 import 'package:shell_flutter/bridge/frb_generated/domain/todo_list.dart';
@@ -42,16 +40,16 @@ class StateHandler {
     // initialise all Listeners with the loaded model
     // by calling the respective querries
     // the value is set by _handleEffects() automatically
-    singleton.processQuery(Query.allTodos);
+    singleton.processQuery(TodoQuery.allTodos);
     return singleton;
   }
 
-  Future<void> processCommand(Command command) async {
+  Future<void> processCommand(TodoCommand command) async {
     var effects = todo_list_api.processCommand(command: command);
     await _handleEffects(await effects);
   }
 
-  Future<void> processQuery(Query query) async {
+  Future<void> processQuery(TodoQuery query) async {
     var effects = todo_list_api.processQuery(query: query);
     await _handleEffects(await effects);
   }

@@ -1,4 +1,4 @@
-use app_core::application::api::{lifecycle::Lifecycle, processing::process_cqrs};
+use app_core::application::api::lifecycle::Lifecycle;
 use app_core::domain::effects::Effect;
 use app_core::domain::todo_list::TodoCommand;
 use app_core::domain::todo_list::TodoQuery;
@@ -80,7 +80,9 @@ fn main() {
 }
 
 fn process_and_handle_effects(cqrs: impl Cqrs) {
-    let effects = process_cqrs(cqrs).expect("failed to process command");
+    let effects = Lifecycle::get()
+        .process_cqrs(cqrs)
+        .expect("failed to process command");
     handle_effects(effects);
 }
 
