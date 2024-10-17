@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 
+use crate::application::app_state::AppState;
 use crate::application::bridge::frb_generated::RustAutoOpaque;
-use crate::domain::app_state::AppState;
+use crate::application::processing_errors::ProcessingError;
 use crate::domain::effects::Effect;
-use crate::domain::processing_errors::ProcessingError;
 
 // pub(crate) trait AppState {
 //     fn load_or_new(app_config: &impl AppConfig) -> Self;

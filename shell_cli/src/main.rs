@@ -1,9 +1,5 @@
-use app_core::application::api::{
-    lifecycle::Lifecycle,
-    processing::{process_todo_model_command, process_todo_model_query, TodoCommand, TodoQuery},
-};
-use app_core::utils::cqrs_traits::Effect;
-use std::{io, num::ParseIntError, process};
+use app_core::application::api::lifecycle::Lifecycle;
+use std::{io, num::ParseIntError};
 
 fn main() {
     let mut user_input = String::new();
@@ -39,7 +35,7 @@ fn main() {
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('v') => {
-                let effects = process_query(TodoQuery::AllTodos);
+                let effects = process(TodoQuery::AllTodos);
                 handle_effects(&effects);
                 user_input.clear();
             }
@@ -83,7 +79,7 @@ fn main() {
 }
 
 fn process_and_handle_effects(cqrs: impl Cqrs) {
-    let effects = process_todo_model_command(cqrs).expect("failed to process command");
+    let effects = process(cqrs).expect("failed to process command");
     handle_effects(effects);
 }
 

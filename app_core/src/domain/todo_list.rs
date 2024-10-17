@@ -1,11 +1,12 @@
 use crate::{
-    application::bridge::frb_generated::RustAutoOpaque,
+    application::{app_state::AppState, bridge::frb_generated::RustAutoOpaque},
     utils::cqrs_traits::{Cqrs, CqrsModel},
 };
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
-use super::{effects::Effect, processing_errors::ProcessingError};
+use super::effects::Effect;
+use crate::application::processing_errors::ProcessingError;
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[frb(opaque)]
@@ -42,7 +43,7 @@ impl TodoListModel {
     }
 }
 impl CqrsModel for TodoListModel {
-    fn get_model(app_state: &super::app_state::AppState) -> &RustAutoOpaque<Self> {
+    fn get_model(app_state: &AppState) -> &RustAutoOpaque<Self> {
         &app_state.model
     }
 }
@@ -56,10 +57,7 @@ pub enum TodoCommand {
 
 // impl TodoCommand for TodoCommand {}
 impl Cqrs for TodoCommand {
-    fn process(
-        self,
-        app_state: &super::app_state::AppState,
-    ) -> Result<Vec<Effect>, ProcessingError> {
+    fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
         let model = TodoListModel::get_model(app_state);
         match self {
             TodoCommand::AddTodo(todo) => {
@@ -93,10 +91,7 @@ pub enum TodoQuery {
 }
 
 impl Cqrs for TodoQuery {
-    fn process(
-        self,
-        app_state: &super::app_state::AppState,
-    ) -> Result<Vec<Effect>, ProcessingError> {
+    fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
         let model = TodoListModel::get_model(app_state);
         Ok::<std::vec::Vec<Effect>, ProcessingError>(match self {
             // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
@@ -124,7 +119,7 @@ impl PartialEq for Effect {
 
 #[cfg(test)]
 mod tests {
-    use crate::domain::app_state::AppState;
+    use crate::application::app_state::AppState;
 
     use super::*;
 

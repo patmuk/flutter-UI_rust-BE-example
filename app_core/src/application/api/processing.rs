@@ -1,6 +1,6 @@
 use crate::application::api::lifecycle::Lifecycle;
+pub use crate::application::processing_errors::ProcessingError;
 pub use crate::domain::effects::Effect;
-pub use crate::domain::processing_errors::ProcessingError;
 use crate::utils::cqrs_traits::Cqrs;
 use log::debug;
 

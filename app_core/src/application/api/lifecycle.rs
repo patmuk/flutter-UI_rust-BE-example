@@ -1,7 +1,7 @@
 use flutter_rust_bridge::frb;
 use log::{debug, trace};
 
-use crate::domain::app_state::AppState;
+use crate::application::app_state::AppState;
 use std::io;
 use std::path::PathBuf;
 use std::sync::OnceLock;
