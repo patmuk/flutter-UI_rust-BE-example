@@ -1,4 +1,9 @@
-use app_core::application::api::lifecycle::Lifecycle;
+use app_core::application::api::{lifecycle::Lifecycle, processing::process_cqrs};
+use app_core::domain::effects::Effect;
+use app_core::domain::todo_list::TodoCommand;
+use app_core::domain::todo_list::TodoQuery;
+use app_core::utils::cqrs_traits::Cqrs;
+use std::process;
 use std::{io, num::ParseIntError};
 
 fn main() {
@@ -19,8 +24,7 @@ fn main() {
                           =====================\n";
     println!("{}", USAGE);
     Lifecycle::new(None);
-    let effects = process_query(TodoQuery::AllTodos);
-    handle_effects(&effects);
+    process_and_handle_effects(TodoQuery::AllTodos);
 
     loop {
         match stdin.read_line(&mut user_input) {
@@ -35,20 +39,18 @@ fn main() {
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('v') => {
-                let effects = process(TodoQuery::AllTodos);
-                handle_effects(&effects);
+                process_and_handle_effects(TodoQuery::AllTodos);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('r') => {
-                let index: Result<u32, ParseIntError> = user_input.split_at(2).1.trim().parse();
+                let index: Result<usize, ParseIntError> = user_input.split_at(2).1.trim().parse();
                 match index {
                     Ok(index) => {
                         if index > 0 {
                             println!("\nRemoving todo at index {}\n", index);
                             let effects =
-                                process_and_handle_effects(TodoCommand::RemoveTodo(index))
-                                    .expect("failed to remove a todo");
-                            handle_effects(&effects);
+                                process_and_handle_effects(TodoCommand::RemoveTodo(index));
+                            // .expect("failed to remove a todo");
                         } else {
                             println!("\nGive me a positive number, not {}\n", index);
                         }
@@ -60,9 +62,8 @@ fn main() {
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('c') => {
-                let effects = process_and_handle_effects(TodoCommand::CleanList)
-                    .expect("failed to clean the list");
-                handle_effects(&effects);
+                process_and_handle_effects(TodoCommand::CleanList);
+                // .expect("failed to clean the list");
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('q') => {
@@ -79,7 +80,7 @@ fn main() {
 }
 
 fn process_and_handle_effects(cqrs: impl Cqrs) {
-    let effects = process(cqrs).expect("failed to process command");
+    let effects = process_cqrs(cqrs).expect("failed to process command");
     handle_effects(effects);
 }
 
