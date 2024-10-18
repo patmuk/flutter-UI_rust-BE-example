@@ -9,7 +9,10 @@ use std::{
 use log::{debug, error, info, trace};
 use serde::{Deserialize, Serialize};
 
-use crate::application::{api::lifecycle::AppConfig, bridge::frb_generated::RustAutoOpaque};
+use crate::application::{
+    api::lifecycle::{AppConfig, Lifecycle},
+    bridge::frb_generated::RustAutoOpaque,
+};
 use crate::domain::todo_list::TodoListModel;
 
 /// holds the complete state of the app, as a global static variable
@@ -119,8 +122,12 @@ impl AppState {
         app_state.dirty.store(false, Ordering::SeqCst);
         Ok(app_state)
     }
+    /// persist the app state to the previously stored location
+    pub(crate) fn persist(&self) -> Result<(), io::Error> {
+        self.persist_to_path(&Lifecycle::get().app_config.app_state_file_path)
+    }
     /// Stores the app's state in a file.
-    pub(crate) fn persist(&self, path: &Path) -> Result<(), io::Error> {
+    pub(crate) fn persist_to_path(&self, path: &Path) -> Result<(), io::Error> {
         if !self.dirty.load(Ordering::SeqCst) {
             trace!("app state os not dirty:\n  {self:?}");
         } else {
@@ -161,9 +168,6 @@ mod tests {
     use std::io::Write;
     use std::path::PathBuf;
     use std::sync::LazyLock;
-
-    use crate::domain::todo_list::TodoCommand;
-    use crate::utils::cqrs_traits::Cqrs;
 
     use super::{AppState, AppStateLoadError};
 
