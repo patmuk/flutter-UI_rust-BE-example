@@ -7,19 +7,17 @@ import '../../domain/effects.dart';
 import '../../domain/todo_list.dart';
 import '../../frb_generated.dart';
 import '../../lib.dart';
-import '../app_state.dart';
+import '../application/api/lifecycle.dart';
 import '../processing_errors.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lifecycle.freezed.dart';
 
-// These functions are ignored because they are not marked as `pub`: `init`, `inner_process_cqrs`, `setup`
-// These functions are ignored because they have generic arguments: `process_cqrs`
+// These functions are ignored because they are not marked as `pub`: `init`, `process`, `setup`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`
 
-Future<List<Effect>> processCqrs({required WrappedCqrs wrappedCqrs}) =>
-    RustLib.instance.api
-        .crateApplicationApiLifecycleProcessCqrs(wrappedCqrs: wrappedCqrs);
+Future<List<Effect>> processCqrs({required Cqrs cqrs}) =>
+    RustLib.instance.api.crateApplicationApiLifecycleProcessCqrs(cqrs: cqrs);
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<AppConfig>>
 abstract class AppConfig implements RustOpaqueInterface {
@@ -43,20 +41,68 @@ abstract class Lifecycle implements RustOpaqueInterface {
   Future<void> shutdown();
 }
 
-abstract class Wrapping {
-  Future<List<Effect>> process({required AppState appState});
+@freezed
+sealed class Cqrs with _$Cqrs {
+  const Cqrs._();
 
-  Future<WrappedCqrs> wrap();
+  const factory Cqrs.todoCommand(
+    TodoCommand field0,
+  ) = Cqrs_TodoCommand;
+  const factory Cqrs.todoQuery(
+    TodoQuery field0,
+  ) = Cqrs_TodoQuery;
+
+  Future<bool> isCommand() => should_not_reach_here;
+
+  Future<bool> isQuery() => should_not_reach_here;
+}
+
+class Cqrs_test {
+  const Cqrs_test();
+
+  Future<TodoCommand> todoCommandAddTodo({required String todo}) =>
+      RustLib.instance.api
+          .crateApplicationApiLifecycleCqrsTestTodoCommandAddTodo(
+              that: this, todo: todo);
+
+  Future<TodoQuery> todoQueryAllTodos() => RustLib.instance.api
+          .crateApplicationApiLifecycleCqrsTestTodoQueryAllTodos(
+        that: this,
+      );
+
+  @override
+  int get hashCode => 0;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Cqrs_test && runtimeType == other.runtimeType;
 }
 
 @freezed
-sealed class WrappedCqrs with _$WrappedCqrs {
-  const WrappedCqrs._();
+sealed class TodoCommand with _$TodoCommand {
+  const TodoCommand._();
 
-  const factory WrappedCqrs.todoCommand(
-    TodoCommand field0,
-  ) = WrappedCqrs_TodoCommand;
-  const factory WrappedCqrs.todoQuery(
-    TodoQuery field0,
-  ) = WrappedCqrs_TodoQuery;
+  const factory TodoCommand.addTodo(
+    String field0,
+  ) = TodoCommand_AddTodo;
+  const factory TodoCommand.removeTodo(
+    BigInt field0,
+  ) = TodoCommand_RemoveTodo;
+  const factory TodoCommand.cleanList() = TodoCommand_CleanList;
+}
+
+enum TodoQuery {
+  allTodos,
+  ;
+
+  Future<bool> isCommand() =>
+      RustLib.instance.api.crateApplicationApiLifecycleTodoQueryIsCommand(
+        that: this,
+      );
+
+  Future<bool> isQuery() =>
+      RustLib.instance.api.crateApplicationApiLifecycleTodoQueryIsQuery(
+        that: this,
+      );
 }

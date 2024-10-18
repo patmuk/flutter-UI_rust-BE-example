@@ -121,8 +121,10 @@ impl AppState {
     }
     /// Stores the app's state in a file.
     pub(crate) fn persist(&self, path: &Path) -> Result<(), io::Error> {
-        trace!("persisting app state:\n  {self:?}\n to {:?}", path);
-        if self.dirty.load(Ordering::SeqCst) {
+        if !self.dirty.load(Ordering::SeqCst) {
+            trace!("app state os not dirty:\n  {self:?}");
+        } else {
+            trace!("persisting app state:\n  {self:?}\n to {:?}", path);
             trace!("App state is dirty, writing to file");
             let serialized_app_state: Vec<u8> =
                 bincode::serialize(self).expect("bincode.serialzation itself should not result in an error, \
@@ -132,8 +134,8 @@ impl AppState {
             }
             File::create(path)?.write_all(&serialized_app_state)?;
             debug!("Persisted app state to file: {path:?}");
+            self.dirty.store(false, Ordering::SeqCst);
         }
-        self.dirty.store(false, Ordering::SeqCst);
         Ok(())
     }
     pub(crate) fn mark_dirty(&self) {

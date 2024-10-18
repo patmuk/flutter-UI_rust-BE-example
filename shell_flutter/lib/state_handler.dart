@@ -3,13 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart'
-    as lifecycle;
 import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart';
 import 'package:shell_flutter/bridge/frb_generated/domain/effects.dart';
-import 'package:shell_flutter/bridge/frb_generated/domain/todo_list.dart';
 import 'package:shell_flutter/bridge/frb_generated/frb_generated.dart';
-import 'package:shell_flutter/bridge/frb_generated/utils/cqrs_traits.dart';
 
 /// This singleton handles the state, and all communication with the lower layers (implemented in Rust).
 /// Using ValueNotifiers it updates the UI on state changes
@@ -38,25 +34,20 @@ class StateHandler {
     WidgetsFlutterBinding.ensureInitialized();
     final Directory appSupportDir = await getApplicationSupportDirectory();
     final stateFile = File('${appSupportDir.path}/app_state.bin');
-    await lifecycle.Lifecycle.newInstance(path: stateFile.path);
+    await Lifecycle.newInstance(path: stateFile.path);
     singleton = StateHandler._singletonConstructor();
     // initialise all Listeners with the loaded model
     // by calling the respective querries
     // the value is set by _handleEffects() automatically
     // singleton.processQuery(TodoQuery.allTodos);
-    singleton.process_and_handle_effects(await TodoQuery.allTodos.wrap());
+    singleton.processAndHandleEffects(const Cqrs.todoQuery(TodoQuery.allTodos));
     return singleton;
   }
 
-  Future<void> process_and_handle_effects(WrappedCqrs cqrs) async {
-    var effects = lifecycle.processCqrs(wrappedCqrs: cqrs);
+  Future<void> processAndHandleEffects(Cqrs cqrs) async {
+    var effects = processCqrs(cqrs: cqrs);
     await _handleEffects(await effects);
   }
-
-  // Future<void> processQuery(TodoQuery query) async {
-  //   var effects = todo_list_api.processQuery(query: query);
-  //   await _handleEffects(await effects);
-  // }
 
   Future<void> _handleEffects(List<Effect> effects) async {
     for (var effect in effects) {

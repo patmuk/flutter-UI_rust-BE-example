@@ -4,8 +4,8 @@ use log::{debug, trace};
 use crate::application::app_state::{self, AppState};
 pub use crate::application::processing_errors::ProcessingError;
 pub use crate::domain::effects::Effect;
-use crate::domain::todo_list::{TodoCommand, TodoItem, TodoListModel, TodoQuery};
-pub use crate::utils::cqrs_traits::Cqrs;
+use crate::domain::todo_list::TodoListModel;
+pub use crate::utils::cqrs_traits::Cqrs as CqrsTrait;
 use crate::utils::cqrs_traits::CqrsModel;
 use std::io;
 use std::path::PathBuf;
@@ -17,89 +17,73 @@ static SINGLETON: OnceLock<Lifecycle> = OnceLock::new();
 //// processing here to see codegen results
 //////////
 //TODO replace with macro_rules!([TodoComand, TodoQuery])
-pub enum WrappedCqrs {
+pub enum Cqrs {
     TodoCommand(TodoCommand),
     TodoQuery(TodoQuery),
 }
-
-pub trait Wrapping {
-    fn wrap(self) -> WrappedCqrs;
-    fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError>;
+pub enum TodoCommand {
+    AddTodo(String),
+    RemoveTodo(usize),
+    CleanList,
+}
+pub enum TodoQuery {
+    AllTodos,
 }
 
-impl Wrapping for TodoCommand {
-    fn wrap(self) -> WrappedCqrs {
-        WrappedCqrs::TodoCommand(self)
-    }
+// pub trait Wrapping {
+//     fn wrap(self) -> WrappedCqrs;
+//     fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError>;
+// }
+
+// impl Wrapping for TodoCommand {
+impl Cqrs {
     fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
-        let model = TodoListModel::get_model(app_state);
-        match self {
-            TodoCommand::AddTodo(todo) => {
-                model.blocking_write().items.push(TodoItem { text: todo });
-                // this clone is cheap, as it is on ARC (RustAutoOpaque>T> = Arc<RwMutex<T>>)
-                Ok(vec![Effect::RenderTodoList(model.clone())])
-            }
-            TodoCommand::RemoveTodo(todo_pos) => {
-                let items = &mut model.blocking_write().items;
-                if todo_pos > items.len() {
-                    Err(ProcessingError::TodosDoesNotExist(todo_pos))
-                } else {
-                    items.remove(todo_pos - 1);
-                    Ok(vec![Effect::RenderTodoList(model.clone())])
+        let result = match self {
+            Cqrs::TodoCommand(todo_command) => match todo_command {
+                TodoCommand::AddTodo(todo) => TodoListModel::add_todo(app_state, todo),
+                TodoCommand::RemoveTodo(todo_pos) => {
+                    TodoListModel::remove_todo(app_state, todo_pos)
                 }
-            }
-            TodoCommand::CleanList => {
-                model.blocking_write().items.clear();
-                Ok(vec![Effect::RenderTodoList(model.clone())])
-            }
-        }
-    }
-}
-impl Wrapping for TodoQuery {
-    fn wrap(self) -> WrappedCqrs {
-        WrappedCqrs::TodoQuery(self)
-    }
-    fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
-        let model = TodoListModel::get_model(app_state);
-        Ok::<std::vec::Vec<Effect>, ProcessingError>(match self {
-            // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
-            TodoQuery::AllTodos => vec![Effect::RenderTodoList(model.clone())],
-        })
+                TodoCommand::CleanList => TodoListModel::clean_list(app_state),
+            },
+            Cqrs::TodoQuery(todo_query) => match todo_query {
+                TodoQuery::AllTodos => TodoListModel::all_todos(app_state),
+            },
+        };
+        //persist the state, but only if dirty
+        app_state.persist(&Lifecycle::get().app_config.app_state_file_path);
     }
 }
 
-pub fn process_cqrs(wrapped_cqrs: WrappedCqrs) -> Result<Vec<Effect>, ProcessingError> {
-    match wrapped_cqrs {
-        WrappedCqrs::TodoCommand(todo_command) => inner_process_cqrs(todo_command),
-        WrappedCqrs::TodoQuery(todo_query) => inner_process_cqrs(todo_query),
-    }
+pub fn process_cqrs(cqrs: Cqrs) -> Result<Vec<Effect>, ProcessingError> {
+    cqrs.process(&AppState::get())
 }
-fn inner_process_cqrs(cqrs: impl Cqrs) -> Result<Vec<Effect>, ProcessingError> {
-    let lifecycle = Lifecycle::get();
-    let is_command = cqrs.is_command();
-    if is_command {
-        debug!("Processing cqrs_command: {:?}", cqrs);
-    } else {
-        debug!("Processing cqrs_query: {:?}", cqrs);
-    }
-    let effects = cqrs.process(&lifecycle.app_state);
-    debug!(
-        "Processed cqrs, new model {:?}",
-        lifecycle.app_state.model.blocking_read()
-    );
-    debug!("got the effects {:?}", effects);
-    if is_command {
-        lifecycle.app_state.mark_dirty();
-        // persist change to not miss it
-        lifecycle
-            .app_state
-            .persist(&lifecycle.app_config.app_state_file_path)
-            .unwrap(); // TODO convert to own error
-                       // Ok::<_, dyn ProcessingError>(effects)
-    }
-    effects
-    // }
-}
+// fn inner_process_cqrs(cqrs: impl Cqrs) -> Result<Vec<Effect>, ProcessingError> {
+//     let lifecycle = Lifecycle::get();
+//     let is_command = cqrs.is_command();
+//     if is_command {
+//         debug!("Processing cqrs_command: {:?}", cqrs);
+//     } else {
+//         debug!("Processing cqrs_query: {:?}", cqrs);
+//     }
+//     let effects = cqrs.process(&lifecycle.app_state);
+//     debug!(
+//         "Processed cqrs, new model {:?}",
+//         lifecycle.app_state.model.blocking_read()
+//     );
+//     debug!("got the effects {:?}", effects);
+//     if is_command {
+//         lifecycle.app_state.mark_dirty();
+//         // persist change to not miss it
+//         lifecycle
+//             .app_state
+//             .persist(&lifecycle.app_config.app_state_file_path)
+//             .unwrap(); // TODO convert to own error
+//                        // Ok::<_, dyn ProcessingError>(effects)
+//     }
+//     effects
+//     // }
+// }
 
 /////////////
 
@@ -161,29 +145,29 @@ impl Lifecycle {
         // TODO implent timeout and throw an error?
         self.app_state.persist(&self.app_config.app_state_file_path)
     }
-    pub fn process_cqrs<C: Cqrs>(&self, cqrs: C) -> Result<Vec<Effect>, ProcessingError> {
-        let is_command = cqrs.is_command();
-        if is_command {
-            debug!("Processing cqrs_command: {:?}", cqrs);
-        } else {
-            debug!("Processing cqrs_query: {:?}", cqrs);
-        }
-        let effects = cqrs.process(&self.app_state);
-        debug!(
-            "Processed cqrs, new model {:?}",
-            self.app_state.model.blocking_read()
-        );
-        debug!("got the effects {:?}", effects);
-        if is_command {
-            self.app_state.mark_dirty();
-            // persist change to not miss it
-            self.app_state
-                .persist(&self.app_config.app_state_file_path)
-                .unwrap(); // TODO convert to own error
-                           // Ok::<_, dyn ProcessingError>(effects)
-        }
-        effects
-    }
+    // pub fn process_cqrs<C: Cqrs>(&self, cqrs: C) -> Result<Vec<Effect>, ProcessingError> {
+    //     let is_command = cqrs.is_command();
+    //     if is_command {
+    //         debug!("Processing cqrs_command: {:?}", cqrs);
+    //     } else {
+    //         debug!("Processing cqrs_query: {:?}", cqrs);
+    //     }
+    //     let effects = cqrs.process(&self.app_state);
+    //     debug!(
+    //         "Processed cqrs, new model {:?}",
+    //         self.app_state.model.blocking_read()
+    //     );
+    //     debug!("got the effects {:?}", effects);
+    //     if is_command {
+    //         self.app_state.mark_dirty();
+    //         // persist change to not miss it
+    //         self.app_state
+    //             .persist(&self.app_config.app_state_file_path)
+    //             .unwrap(); // TODO convert to own error
+    //                        // Ok::<_, dyn ProcessingError>(effects)
+    //     }
+    //     effects
+    // }
 }
 // app state storage location
 #[derive(Debug)]

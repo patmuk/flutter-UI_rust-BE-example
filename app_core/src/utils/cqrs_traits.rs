@@ -26,7 +26,7 @@ where
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Self>:
         crate::application::bridge::frb_generated::MoiArcValue,
 {
-    fn get_model(app_state: &AppState) -> &RustAutoOpaque<Self>;
+    fn get_model_lock(app_state: &AppState) -> &RustAutoOpaque<Self>;
 }
 pub trait Cqrs: Wrapping + Debug {
     fn is_command(&self) -> bool;

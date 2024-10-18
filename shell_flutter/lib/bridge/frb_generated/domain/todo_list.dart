@@ -3,18 +3,14 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
-import '../application/api/lifecycle.dart';
 import '../application/app_state.dart';
-import '../application/processing_errors.dart';
 import '../frb_generated.dart';
 import '../utils/cqrs_traits.dart';
-import 'effects.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
-import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
-part 'todo_list.freezed.dart';
 
+// These functions are ignored because they are not marked as `pub`: `add_todo`, `clean_list`, `get_all_todos`, `remove_todo`
 // These types are ignored because they are not used by any `pub` functions: `TodoItem`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `assert_receiver_is_total_eq`, `eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_receiver_is_total_eq`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TodoListModel>>
 abstract class TodoListModel implements RustOpaqueInterface, CqrsModel {
@@ -22,9 +18,9 @@ abstract class TodoListModel implements RustOpaqueInterface, CqrsModel {
       RustLib.instance.api.crateDomainTodoListTodoListModelDefault();
 
   /// bootstrap the model from the app's state
-  static Future<void> getModel({required AppState appState}) =>
+  static Future<void> getModelLock({required AppState appState}) =>
       RustLib.instance.api
-          .crateDomainTodoListTodoListModelGetModel(appState: appState);
+          .crateDomainTodoListTodoListModelGetModelLock(appState: appState);
 
   /// This is how to access the fields of a heavy object behind a RustAutoOpaque.
   /// This is copying parts the content, which Dart needs to show to the user.
@@ -34,60 +30,4 @@ abstract class TodoListModel implements RustOpaqueInterface, CqrsModel {
   /// is heavy to clone, we use a custom function to `clone()` only the lightweight and
   /// only needed part for presentation.
   Future<List<String>> getTodosAsString();
-}
-
-@freezed
-sealed class TodoCommand with _$TodoCommand {
-  const TodoCommand._();
-
-  const factory TodoCommand.addTodo(
-    String field0,
-  ) = TodoCommand_AddTodo;
-  const factory TodoCommand.removeTodo(
-    BigInt field0,
-  ) = TodoCommand_RemoveTodo;
-  const factory TodoCommand.cleanList() = TodoCommand_CleanList;
-
-  Future<bool> isCommand() =>
-      RustLib.instance.api.crateDomainTodoListTodoCommandIsCommand(
-        that: this,
-      );
-
-  Future<bool> isQuery() =>
-      RustLib.instance.api.crateDomainTodoListTodoCommandIsQuery(
-        that: this,
-      );
-
-  Future<List<Effect>> process({required AppState appState}) => RustLib
-      .instance.api
-      .crateDomainTodoListTodoCommandProcess(that: this, appState: appState);
-
-  Future<WrappedCqrs> wrap() =>
-      RustLib.instance.api.crateDomainTodoListTodoCommandWrap(
-        that: this,
-      );
-}
-
-enum TodoQuery {
-  allTodos,
-  ;
-
-  Future<bool> isCommand() =>
-      RustLib.instance.api.crateDomainTodoListTodoQueryIsCommand(
-        that: this,
-      );
-
-  Future<bool> isQuery() =>
-      RustLib.instance.api.crateDomainTodoListTodoQueryIsQuery(
-        that: this,
-      );
-
-  Future<List<Effect>> process({required AppState appState}) =>
-      RustLib.instance.api
-          .crateDomainTodoListTodoQueryProcess(that: this, appState: appState);
-
-  Future<WrappedCqrs> wrap() =>
-      RustLib.instance.api.crateDomainTodoListTodoQueryWrap(
-        that: this,
-      );
 }

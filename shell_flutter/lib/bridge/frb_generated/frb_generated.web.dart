@@ -130,16 +130,22 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CqrsModel dco_decode_TraitDef_CqrsModel(dynamic raw);
 
   @protected
-  Wrapping dco_decode_TraitDef_Wrapping(dynamic raw);
+  bool dco_decode_bool(dynamic raw);
 
   @protected
-  bool dco_decode_bool(dynamic raw);
+  Cqrs dco_decode_box_autoadd_cqrs(dynamic raw);
+
+  @protected
+  Cqrs_test dco_decode_box_autoadd_cqrs_test(dynamic raw);
 
   @protected
   TodoCommand dco_decode_box_autoadd_todo_command(dynamic raw);
 
   @protected
-  WrappedCqrs dco_decode_box_autoadd_wrapped_cqrs(dynamic raw);
+  Cqrs dco_decode_cqrs(dynamic raw);
+
+  @protected
+  Cqrs_test dco_decode_cqrs_test(dynamic raw);
 
   @protected
   Effect dco_decode_effect(dynamic raw);
@@ -176,9 +182,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   BigInt dco_decode_usize(dynamic raw);
-
-  @protected
-  WrappedCqrs dco_decode_wrapped_cqrs(dynamic raw);
 
   @protected
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
@@ -265,10 +268,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
+  Cqrs sse_decode_box_autoadd_cqrs(SseDeserializer deserializer);
+
+  @protected
+  Cqrs_test sse_decode_box_autoadd_cqrs_test(SseDeserializer deserializer);
+
+  @protected
   TodoCommand sse_decode_box_autoadd_todo_command(SseDeserializer deserializer);
 
   @protected
-  WrappedCqrs sse_decode_box_autoadd_wrapped_cqrs(SseDeserializer deserializer);
+  Cqrs sse_decode_cqrs(SseDeserializer deserializer);
+
+  @protected
+  Cqrs_test sse_decode_cqrs_test(SseDeserializer deserializer);
 
   @protected
   Effect sse_decode_effect(SseDeserializer deserializer);
@@ -305,9 +317,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   BigInt sse_decode_usize(SseDeserializer deserializer);
-
-  @protected
-  WrappedCqrs sse_decode_wrapped_cqrs(SseDeserializer deserializer);
 
   @protected
   void sse_encode_AnyhowException(
@@ -395,12 +404,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_cqrs(Cqrs self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_cqrs_test(
+      Cqrs_test self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_todo_command(
       TodoCommand self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_wrapped_cqrs(
-      WrappedCqrs self, SseSerializer serializer);
+  void sse_encode_cqrs(Cqrs self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_cqrs_test(Cqrs_test self, SseSerializer serializer);
 
   @protected
   void sse_encode_effect(Effect self, SseSerializer serializer);
@@ -439,9 +457,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_usize(BigInt self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_wrapped_cqrs(WrappedCqrs self, SseSerializer serializer);
 }
 
 // Section: wire_class
