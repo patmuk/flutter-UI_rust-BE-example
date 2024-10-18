@@ -169,6 +169,8 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::LazyLock;
 
+    use crate::application::api::processing::Cqrs;
+
     use super::{AppState, AppStateLoadError};
 
     /// Path to the temporary test directory
@@ -188,20 +190,17 @@ mod tests {
     }
     fn create_test_app_state() -> AppState {
         let mut app_state = AppState::new(&TEST_FILE);
-        process_command_mock_todo_list_api(
-            TodoCommand::AddTodo("Test setup todo".to_string()),
+        mock_process_cqrs(
+            Cqrs::TodoCommandAddTodo("Test setup todo".to_string()),
             &mut app_state,
         )
         .expect("Could not persist the initial test state!");
         app_state
     }
-    fn process_command_mock_todo_list_api(
-        command: TodoCommand,
-        app_state: &mut AppState,
-    ) -> Result<(), std::io::Error> {
-        command.process(app_state).unwrap();
+    fn mock_process_cqrs(cqrs: Cqrs, app_state: &mut AppState) -> Result<(), std::io::Error> {
+        cqrs.process_with_app_state(app_state).unwrap();
         app_state.mark_dirty();
-        app_state.persist(&TEST_FILE)
+        app_state.persist_to_path(&TEST_FILE)
     }
     fn assert_eq_app_states(left: &AppState, right: &AppState) {
         assert_eq!(*left.model.blocking_read(), *right.model.blocking_read());
@@ -212,7 +211,7 @@ mod tests {
     fn read_existing_file() {
         let original = create_test_app_state();
         original
-            .persist(&TEST_FILE)
+            .persist_to_path(&TEST_FILE)
             .expect("App state not persisted");
 
         let loaded = AppState::load(&TEST_FILE).expect("App state not loaded");
@@ -226,13 +225,13 @@ mod tests {
     fn overwrite_existing_file() -> std::result::Result<(), std::io::Error> {
         let original = create_test_app_state();
         original
-            .persist(&TEST_FILE)
+            .persist_to_path(&TEST_FILE)
             .expect("App state not persisted");
         assert!(&TEST_FILE.exists());
 
         let mut changed = AppState::new(&TEST_FILE);
-        process_command_mock_todo_list_api(
-            TodoCommand::AddTodo("Changed todo".to_string()),
+        mock_process_cqrs(
+            Cqrs::TodoCommandAddTodo("Changed todo".to_string()),
             &mut changed,
         )?;
 
@@ -254,8 +253,8 @@ mod tests {
             .unwrap();
 
         let mut changed = AppState::new(&TEST_FILE);
-        process_command_mock_todo_list_api(
-            TodoCommand::AddTodo("Changed todo".to_string()),
+        mock_process_cqrs(
+            Cqrs::TodoCommandAddTodo("Changed todo".to_string()),
             &mut changed,
         )?;
 

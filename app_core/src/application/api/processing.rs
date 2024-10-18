@@ -1,36 +1,38 @@
-use log::debug;
+use super::lifecycle::{Effect, Lifecycle, ProcessingError};
+use crate::{application::app_state::AppState, domain::todo_list::TodoListModel};
 
-use crate::application::api::lifecycle::Lifecycle;
-pub use crate::application::processing_errors::ProcessingError;
-pub use crate::domain::effects::Effect;
-pub use crate::utils::cqrs_traits::Cqrs;
-
-pub struct ProcessCqrs {
-    pub cqrs: impl Cqrs,
+///////////
+//// processing here to see codegen results
+//////////
+//TODO replace with macro_rules!([TodoComand, TodoQuery])
+pub enum Cqrs {
+    TodoCommandAddTodo(String),
+    TodoCommandRemoveTodo(usize),
+    TodoCommandCleanList,
+    TodoQueryAllTodos,
 }
 
-pub fn process_cqrs(cqrs: Box<dyn Cqrs>) -> Result<Vec<Effect>, ProcessingError> {
-    let lifecycle = Lifecycle::get();
-    let is_command = cqrs.is_command();
-    if is_command {
-        debug!("Processing cqrs_command: {:?}", cqrs);
-    } else {
-        debug!("Processing cqrs_query: {:?}", cqrs);
+impl Cqrs {
+    pub(crate) fn process_with_app_state(
+        self,
+        app_state: &AppState,
+    ) -> Result<Vec<Effect>, ProcessingError> {
+        match self {
+            Cqrs::TodoCommandAddTodo(todo) => TodoListModel::add_todo(app_state, todo),
+            Cqrs::TodoCommandRemoveTodo(todo_pos) => {
+                TodoListModel::remove_todo(app_state, todo_pos)
+            }
+            Cqrs::TodoCommandCleanList => TodoListModel::clean_list(app_state),
+            Cqrs::TodoQueryAllTodos => TodoListModel::get_all_todos(app_state),
+        }
     }
-    let effects = cqrs.process(&lifecycle.app_state);
-    debug!(
-        "Processed cqrs, new model {:?}",
-        lifecycle.app_state.model.blocking_read()
-    );
-    debug!("got the effects {:?}", effects);
-    if is_command {
-        lifecycle.app_state.mark_dirty();
-        // persist change to not miss it
-        lifecycle
-            .app_state
-            .persist(&lifecycle.app_config.app_state_file_path)
-            .unwrap(); // TODO convert to own error
-                       // Ok::<_, dyn ProcessingError>(effects)
+    pub fn process(self) -> Result<Vec<Effect>, ProcessingError> {
+        let app_state = &Lifecycle::get().app_state;
+        let result = self.process_with_app_state(app_state);
+        //persist the state, but only if dirty
+        //TODO handle persistence error
+        app_state.persist();
+        result
     }
-    effects
 }
+/////////////

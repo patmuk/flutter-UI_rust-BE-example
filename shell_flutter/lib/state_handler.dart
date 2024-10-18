@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart';
+import 'package:shell_flutter/bridge/frb_generated/application/api/processing.dart';
 import 'package:shell_flutter/bridge/frb_generated/domain/effects.dart';
 import 'package:shell_flutter/bridge/frb_generated/frb_generated.dart';
 
@@ -40,12 +41,12 @@ class StateHandler {
     // by calling the respective querries
     // the value is set by _handleEffects() automatically
     // singleton.processQuery(TodoQuery.allTodos);
-    singleton.processAndHandleEffects(const Cqrs.todoQuery(TodoQuery.allTodos));
+    singleton.processAndHandleEffects(const Cqrs.todoQueryAllTodos());
     return singleton;
   }
 
   Future<void> processAndHandleEffects(Cqrs cqrs) async {
-    var effects = processCqrs(cqrs: cqrs);
+    var effects = cqrs.process();
     await _handleEffects(await effects);
   }
 

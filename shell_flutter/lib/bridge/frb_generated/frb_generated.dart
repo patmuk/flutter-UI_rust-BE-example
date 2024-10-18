@@ -4,6 +4,7 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'application/api/lifecycle.dart';
+import 'application/api/processing.dart';
 import 'application/app_state.dart';
 import 'application/processing_errors.dart';
 import 'dart:async';
@@ -72,7 +73,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.5.0';
 
   @override
-  int get rustContentHash => -1520101261;
+  int get rustContentHash => -1763032806;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -98,20 +99,8 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApplicationApiLifecycleLifecycleShutdown(
       {required Lifecycle that});
 
-  Future<TodoCommand> crateApplicationApiLifecycleCqrsTestTodoCommandAddTodo(
-      {required Cqrs_test that, required String todo});
-
-  Future<TodoQuery> crateApplicationApiLifecycleCqrsTestTodoQueryAllTodos(
-      {required Cqrs_test that});
-
-  Future<List<Effect>> crateApplicationApiLifecycleProcessCqrs(
-      {required Cqrs cqrs});
-
-  Future<bool> crateApplicationApiLifecycleTodoQueryIsCommand(
-      {required TodoQuery that});
-
-  Future<bool> crateApplicationApiLifecycleTodoQueryIsQuery(
-      {required TodoQuery that});
+  Future<List<Effect>> crateApplicationApiProcessingCqrsProcess(
+      {required Cqrs that});
 
   Future<TodoListModel> crateDomainTodoListTodoListModelDefault();
 
@@ -330,137 +319,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<TodoCommand> crateApplicationApiLifecycleCqrsTestTodoCommandAddTodo(
-      {required Cqrs_test that, required String todo}) {
+  Future<List<Effect>> crateApplicationApiProcessingCqrsProcess(
+      {required Cqrs that}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_cqrs_test(that, serializer);
-        sse_encode_String(todo, serializer);
+        sse_encode_box_autoadd_cqrs(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 7, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_todo_command,
-        decodeErrorData: null,
-      ),
-      constMeta:
-          kCrateApplicationApiLifecycleCqrsTestTodoCommandAddTodoConstMeta,
-      argValues: [that, todo],
-      apiImpl: this,
-    ));
-  }
-
-  TaskConstMeta
-      get kCrateApplicationApiLifecycleCqrsTestTodoCommandAddTodoConstMeta =>
-          const TaskConstMeta(
-            debugName: "cqrs_test_todo_command_add_todo",
-            argNames: ["that", "todo"],
-          );
-
-  @override
-  Future<TodoQuery> crateApplicationApiLifecycleCqrsTestTodoQueryAllTodos(
-      {required Cqrs_test that}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_cqrs_test(that, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 8, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_todo_query,
-        decodeErrorData: null,
-      ),
-      constMeta:
-          kCrateApplicationApiLifecycleCqrsTestTodoQueryAllTodosConstMeta,
-      argValues: [that],
-      apiImpl: this,
-    ));
-  }
-
-  TaskConstMeta
-      get kCrateApplicationApiLifecycleCqrsTestTodoQueryAllTodosConstMeta =>
-          const TaskConstMeta(
-            debugName: "cqrs_test_todo_query_all_todos",
-            argNames: ["that"],
-          );
-
-  @override
-  Future<List<Effect>> crateApplicationApiLifecycleProcessCqrs(
-      {required Cqrs cqrs}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_cqrs(cqrs, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 9, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_effect,
         decodeErrorData: sse_decode_processing_error,
       ),
-      constMeta: kCrateApplicationApiLifecycleProcessCqrsConstMeta,
-      argValues: [cqrs],
-      apiImpl: this,
-    ));
-  }
-
-  TaskConstMeta get kCrateApplicationApiLifecycleProcessCqrsConstMeta =>
-      const TaskConstMeta(
-        debugName: "process_cqrs",
-        argNames: ["cqrs"],
-      );
-
-  @override
-  Future<bool> crateApplicationApiLifecycleTodoQueryIsCommand(
-      {required TodoQuery that}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_todo_query(that, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 10, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_bool,
-        decodeErrorData: null,
-      ),
-      constMeta: kCrateApplicationApiLifecycleTodoQueryIsCommandConstMeta,
+      constMeta: kCrateApplicationApiProcessingCqrsProcessConstMeta,
       argValues: [that],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApplicationApiLifecycleTodoQueryIsCommandConstMeta =>
+  TaskConstMeta get kCrateApplicationApiProcessingCqrsProcessConstMeta =>
       const TaskConstMeta(
-        debugName: "todo_query_is_command",
-        argNames: ["that"],
-      );
-
-  @override
-  Future<bool> crateApplicationApiLifecycleTodoQueryIsQuery(
-      {required TodoQuery that}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_todo_query(that, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 11, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_bool,
-        decodeErrorData: null,
-      ),
-      constMeta: kCrateApplicationApiLifecycleTodoQueryIsQueryConstMeta,
-      argValues: [that],
-      apiImpl: this,
-    ));
-  }
-
-  TaskConstMeta get kCrateApplicationApiLifecycleTodoQueryIsQueryConstMeta =>
-      const TaskConstMeta(
-        debugName: "todo_query_is_query",
+        debugName: "cqrs_process",
         argNames: ["that"],
       );
 
@@ -470,7 +350,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 12, port: port_);
+            funcId: 8, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData:
@@ -498,7 +378,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppState(
             appState, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 13, port: port_);
+            funcId: 9, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -525,7 +405,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
             that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 14, port: port_);
+            funcId: 10, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_String,
@@ -718,21 +598,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  Cqrs dco_decode_TraitDef_Cqrs(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    throw UnimplementedError();
-  }
-
-  @protected
   CqrsModel dco_decode_TraitDef_CqrsModel(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     throw UnimplementedError();
-  }
-
-  @protected
-  bool dco_decode_bool(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return raw as bool;
   }
 
   @protected
@@ -742,41 +610,24 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  Cqrs_test dco_decode_box_autoadd_cqrs_test(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return dco_decode_cqrs_test(raw);
-  }
-
-  @protected
-  TodoCommand dco_decode_box_autoadd_todo_command(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return dco_decode_todo_command(raw);
-  }
-
-  @protected
   Cqrs dco_decode_cqrs(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     switch (raw[0]) {
       case 0:
-        return Cqrs_TodoCommand(
-          dco_decode_box_autoadd_todo_command(raw[1]),
+        return Cqrs_TodoCommandAddTodo(
+          dco_decode_String(raw[1]),
         );
       case 1:
-        return Cqrs_TodoQuery(
-          dco_decode_todo_query(raw[1]),
+        return Cqrs_TodoCommandRemoveTodo(
+          dco_decode_usize(raw[1]),
         );
+      case 2:
+        return const Cqrs_TodoCommandCleanList();
+      case 3:
+        return const Cqrs_TodoQueryAllTodos();
       default:
         throw Exception("unreachable");
     }
-  }
-
-  @protected
-  Cqrs_test dco_decode_cqrs_test(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    final arr = raw as List<dynamic>;
-    if (arr.isNotEmpty)
-      throw Exception('unexpected arr length: expect 0 but see ${arr.length}');
-    return const Cqrs_test();
   }
 
   @protected
@@ -791,12 +642,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       default:
         throw Exception("unreachable");
     }
-  }
-
-  @protected
-  int dco_decode_i_32(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return raw as int;
   }
 
   @protected
@@ -834,31 +679,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       default:
         throw Exception("unreachable");
     }
-  }
-
-  @protected
-  TodoCommand dco_decode_todo_command(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    switch (raw[0]) {
-      case 0:
-        return TodoCommand_AddTodo(
-          dco_decode_String(raw[1]),
-        );
-      case 1:
-        return TodoCommand_RemoveTodo(
-          dco_decode_usize(raw[1]),
-        );
-      case 2:
-        return const TodoCommand_CleanList();
-      default:
-        throw Exception("unreachable");
-    }
-  }
-
-  @protected
-  TodoQuery dco_decode_todo_query(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return TodoQuery.values[raw as int];
   }
 
   @protected
@@ -1031,28 +851,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  bool sse_decode_bool(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getUint8() != 0;
-  }
-
-  @protected
   Cqrs sse_decode_box_autoadd_cqrs(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_cqrs(deserializer));
-  }
-
-  @protected
-  Cqrs_test sse_decode_box_autoadd_cqrs_test(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return (sse_decode_cqrs_test(deserializer));
-  }
-
-  @protected
-  TodoCommand sse_decode_box_autoadd_todo_command(
-      SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return (sse_decode_todo_command(deserializer));
   }
 
   @protected
@@ -1062,20 +863,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var tag_ = sse_decode_i_32(deserializer);
     switch (tag_) {
       case 0:
-        var var_field0 = sse_decode_box_autoadd_todo_command(deserializer);
-        return Cqrs_TodoCommand(var_field0);
+        var var_field0 = sse_decode_String(deserializer);
+        return Cqrs_TodoCommandAddTodo(var_field0);
       case 1:
-        var var_field0 = sse_decode_todo_query(deserializer);
-        return Cqrs_TodoQuery(var_field0);
+        var var_field0 = sse_decode_usize(deserializer);
+        return Cqrs_TodoCommandRemoveTodo(var_field0);
+      case 2:
+        return const Cqrs_TodoCommandCleanList();
+      case 3:
+        return const Cqrs_TodoQueryAllTodos();
       default:
         throw UnimplementedError('');
     }
-  }
-
-  @protected
-  Cqrs_test sse_decode_cqrs_test(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return const Cqrs_test();
   }
 
   @protected
@@ -1092,12 +891,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       default:
         throw UnimplementedError('');
     }
-  }
-
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getInt32();
   }
 
   @protected
@@ -1157,32 +950,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TodoCommand sse_decode_todo_command(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-
-    var tag_ = sse_decode_i_32(deserializer);
-    switch (tag_) {
-      case 0:
-        var var_field0 = sse_decode_String(deserializer);
-        return TodoCommand_AddTodo(var_field0);
-      case 1:
-        var var_field0 = sse_decode_usize(deserializer);
-        return TodoCommand_RemoveTodo(var_field0);
-      case 2:
-        return const TodoCommand_CleanList();
-      default:
-        throw UnimplementedError('');
-    }
-  }
-
-  @protected
-  TodoQuery sse_decode_todo_query(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    var inner = sse_decode_i_32(deserializer);
-    return TodoQuery.values[inner];
-  }
-
-  @protected
   int sse_decode_u_8(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8();
@@ -1197,6 +964,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   BigInt sse_decode_usize(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getBigUint64();
+  }
+
+  @protected
+  int sse_decode_i_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getInt32();
+  }
+
+  @protected
+  bool sse_decode_bool(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getUint8() != 0;
   }
 
   @protected
@@ -1351,49 +1130,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_bool(bool self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putUint8(self ? 1 : 0);
-  }
-
-  @protected
   void sse_encode_box_autoadd_cqrs(Cqrs self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_cqrs(self, serializer);
   }
 
   @protected
-  void sse_encode_box_autoadd_cqrs_test(
-      Cqrs_test self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_cqrs_test(self, serializer);
-  }
-
-  @protected
-  void sse_encode_box_autoadd_todo_command(
-      TodoCommand self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_todo_command(self, serializer);
-  }
-
-  @protected
   void sse_encode_cqrs(Cqrs self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
-      case Cqrs_TodoCommand(field0: final field0):
+      case Cqrs_TodoCommandAddTodo(field0: final field0):
         sse_encode_i_32(0, serializer);
-        sse_encode_box_autoadd_todo_command(field0, serializer);
-      case Cqrs_TodoQuery(field0: final field0):
+        sse_encode_String(field0, serializer);
+      case Cqrs_TodoCommandRemoveTodo(field0: final field0):
         sse_encode_i_32(1, serializer);
-        sse_encode_todo_query(field0, serializer);
+        sse_encode_usize(field0, serializer);
+      case Cqrs_TodoCommandCleanList():
+        sse_encode_i_32(2, serializer);
+      case Cqrs_TodoQueryAllTodos():
+        sse_encode_i_32(3, serializer);
       default:
         throw UnimplementedError('');
     }
-  }
-
-  @protected
-  void sse_encode_cqrs_test(Cqrs_test self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
   }
 
   @protected
@@ -1407,12 +1165,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       default:
         throw UnimplementedError('');
     }
-  }
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putInt32(self);
   }
 
   @protected
@@ -1465,29 +1217,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_todo_command(TodoCommand self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    switch (self) {
-      case TodoCommand_AddTodo(field0: final field0):
-        sse_encode_i_32(0, serializer);
-        sse_encode_String(field0, serializer);
-      case TodoCommand_RemoveTodo(field0: final field0):
-        sse_encode_i_32(1, serializer);
-        sse_encode_usize(field0, serializer);
-      case TodoCommand_CleanList():
-        sse_encode_i_32(2, serializer);
-      default:
-        throw UnimplementedError('');
-    }
-  }
-
-  @protected
-  void sse_encode_todo_query(TodoQuery self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_i_32(self.index, serializer);
-  }
-
-  @protected
   void sse_encode_u_8(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint8(self);
@@ -1502,6 +1231,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_usize(BigInt self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putBigUint64(self);
+  }
+
+  @protected
+  void sse_encode_i_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putInt32(self);
+  }
+
+  @protected
+  void sse_encode_bool(bool self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putUint8(self ? 1 : 0);
   }
 }
 

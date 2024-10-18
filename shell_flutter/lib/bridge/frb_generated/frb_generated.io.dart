@@ -4,6 +4,7 @@
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
 import 'application/api/lifecycle.dart';
+import 'application/api/processing.dart';
 import 'application/app_state.dart';
 import 'application/processing_errors.dart';
 import 'dart:async';
@@ -122,34 +123,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
-  Cqrs dco_decode_TraitDef_Cqrs(dynamic raw);
-
-  @protected
   CqrsModel dco_decode_TraitDef_CqrsModel(dynamic raw);
-
-  @protected
-  bool dco_decode_bool(dynamic raw);
 
   @protected
   Cqrs dco_decode_box_autoadd_cqrs(dynamic raw);
 
   @protected
-  Cqrs_test dco_decode_box_autoadd_cqrs_test(dynamic raw);
-
-  @protected
-  TodoCommand dco_decode_box_autoadd_todo_command(dynamic raw);
-
-  @protected
   Cqrs dco_decode_cqrs(dynamic raw);
 
   @protected
-  Cqrs_test dco_decode_cqrs_test(dynamic raw);
-
-  @protected
   Effect dco_decode_effect(dynamic raw);
-
-  @protected
-  int dco_decode_i_32(dynamic raw);
 
   @protected
   List<String> dco_decode_list_String(dynamic raw);
@@ -165,12 +148,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ProcessingError dco_decode_processing_error(dynamic raw);
-
-  @protected
-  TodoCommand dco_decode_todo_command(dynamic raw);
-
-  @protected
-  TodoQuery dco_decode_todo_query(dynamic raw);
 
   @protected
   int dco_decode_u_8(dynamic raw);
@@ -263,28 +240,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
-  bool sse_decode_bool(SseDeserializer deserializer);
-
-  @protected
   Cqrs sse_decode_box_autoadd_cqrs(SseDeserializer deserializer);
-
-  @protected
-  Cqrs_test sse_decode_box_autoadd_cqrs_test(SseDeserializer deserializer);
-
-  @protected
-  TodoCommand sse_decode_box_autoadd_todo_command(SseDeserializer deserializer);
 
   @protected
   Cqrs sse_decode_cqrs(SseDeserializer deserializer);
 
   @protected
-  Cqrs_test sse_decode_cqrs_test(SseDeserializer deserializer);
-
-  @protected
   Effect sse_decode_effect(SseDeserializer deserializer);
-
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
   List<String> sse_decode_list_String(SseDeserializer deserializer);
@@ -302,12 +264,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ProcessingError sse_decode_processing_error(SseDeserializer deserializer);
 
   @protected
-  TodoCommand sse_decode_todo_command(SseDeserializer deserializer);
-
-  @protected
-  TodoQuery sse_decode_todo_query(SseDeserializer deserializer);
-
-  @protected
   int sse_decode_u_8(SseDeserializer deserializer);
 
   @protected
@@ -315,6 +271,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   BigInt sse_decode_usize(SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_i_32(SseDeserializer deserializer);
+
+  @protected
+  bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
   void sse_encode_AnyhowException(
@@ -399,30 +361,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
-  void sse_encode_bool(bool self, SseSerializer serializer);
-
-  @protected
   void sse_encode_box_autoadd_cqrs(Cqrs self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_box_autoadd_cqrs_test(
-      Cqrs_test self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_box_autoadd_todo_command(
-      TodoCommand self, SseSerializer serializer);
 
   @protected
   void sse_encode_cqrs(Cqrs self, SseSerializer serializer);
 
   @protected
-  void sse_encode_cqrs_test(Cqrs_test self, SseSerializer serializer);
-
-  @protected
   void sse_encode_effect(Effect self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
@@ -442,12 +387,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       ProcessingError self, SseSerializer serializer);
 
   @protected
-  void sse_encode_todo_command(TodoCommand self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_todo_query(TodoQuery self, SseSerializer serializer);
-
-  @protected
   void sse_encode_u_8(int self, SseSerializer serializer);
 
   @protected
@@ -455,6 +394,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_usize(BigInt self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_i_32(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_bool(bool self, SseSerializer serializer);
 }
 
 // Section: wire_class

@@ -1,8 +1,6 @@
 use app_core::application::api::lifecycle::Lifecycle;
+use app_core::application::api::processing::Cqrs;
 use app_core::domain::effects::Effect;
-use app_core::domain::todo_list::TodoCommand;
-use app_core::domain::todo_list::TodoQuery;
-use app_core::utils::cqrs_traits::Cqrs;
 use std::process;
 use std::{io, num::ParseIntError};
 
@@ -24,7 +22,7 @@ fn main() {
                           =====================\n";
     println!("{}", USAGE);
     Lifecycle::new(None);
-    process_and_handle_effects(TodoQuery::AllTodos);
+    process_and_handle_effects(Cqrs::TodoQueryAllTodos);
 
     loop {
         match stdin.read_line(&mut user_input) {
@@ -35,11 +33,11 @@ fn main() {
             Ok(_) if user_input.starts_with('a') => {
                 let todo = user_input.split_at(2).1.trim();
 
-                process_and_handle_effects(TodoCommand::AddTodo(todo.to_string()));
+                process_and_handle_effects(Cqrs::TodoCommandAddTodo(todo.to_string()));
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('v') => {
-                process_and_handle_effects(TodoQuery::AllTodos);
+                process_and_handle_effects(Cqrs::TodoQueryAllTodos);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('r') => {
@@ -49,7 +47,7 @@ fn main() {
                         if index > 0 {
                             println!("\nRemoving todo at index {}\n", index);
                             let effects =
-                                process_and_handle_effects(TodoCommand::RemoveTodo(index));
+                                process_and_handle_effects(Cqrs::TodoCommandRemoveTodo(index));
                             // .expect("failed to remove a todo");
                         } else {
                             println!("\nGive me a positive number, not {}\n", index);
@@ -62,7 +60,7 @@ fn main() {
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('c') => {
-                process_and_handle_effects(TodoCommand::CleanList);
+                process_and_handle_effects(Cqrs::TodoCommandCleanList);
                 // .expect("failed to clean the list");
                 user_input.clear();
             }
@@ -79,10 +77,8 @@ fn main() {
     }
 }
 
-fn process_and_handle_effects(cqrs: impl Cqrs) {
-    let effects = Lifecycle::get()
-        .process_cqrs(cqrs)
-        .expect("failed to process command");
+fn process_and_handle_effects(cqrs: Cqrs) {
+    let effects = cqrs.process().expect("failed to process command");
     handle_effects(effects);
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shell_flutter/bridge/frb_generated/application/api/processing.dart';
 import 'package:shell_flutter/bridge/frb_generated/domain/todo_list.dart';
 import 'package:shell_flutter/state_handler.dart';
 
@@ -52,16 +53,16 @@ class MainScreen extends StatelessWidget {
                   maxLines: null,
                   onSubmitted: (value) {
                     // Add your action here
-                    StateHandler.singleton
-                        .processCommand(Command.addTodo(value));
+                    StateHandler.singleton.processAndHandleEffects(
+                        Cqrs.todoCommandAddTodo(value));
                     textController.clear();
                   },
                 ),
               ),
               ElevatedButton(
                 onPressed: () {
-                  StateHandler.singleton
-                      .processCommand(Command_AddTodo(textController.text));
+                  StateHandler.singleton.processAndHandleEffects(
+                      Cqrs.todoCommandAddTodo(textController.text));
                   textController.clear();
                 },
                 child: const Text("Add Todo"),
@@ -96,8 +97,9 @@ class MainScreen extends StatelessWidget {
                       ElevatedButton(
                         child: const Icon(Icons.remove),
                         onPressed: () {
-                          StateHandler.singleton
-                              .processCommand(Command.removeTodo(index + 1));
+                          StateHandler.singleton.processAndHandleEffects(
+                              Cqrs.todoCommandRemoveTodo(
+                                  BigInt.from(index + 1)));
                         },
                       ),
                       Text(' ${index + 1}.: ${todoListItems[index]}'),
