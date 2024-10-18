@@ -22,12 +22,12 @@ pub struct TodoListModel {
     /// you could easily run into a deadlock.
     /// As we cannot implement a function on `Vec` which would give use the content of a TodoItem, we wrapped
     /// the `TodoListModel` in `RustAutoOpaque`
-    items: Vec<TodoItem>,
+    pub(crate) items: Vec<TodoItem>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
-struct TodoItem {
-    text: String,
+pub(crate) struct TodoItem {
+    pub(crate) text: String,
 }
 
 impl TodoListModel {
@@ -43,6 +43,7 @@ impl TodoListModel {
     }
 }
 impl CqrsModel for TodoListModel {
+    /// bootstrap the model from the app's state
     fn get_model(app_state: &AppState) -> &RustAutoOpaque<Self> {
         &app_state.model
     }
@@ -57,29 +58,29 @@ pub enum TodoCommand {
 
 // impl TodoCommand for TodoCommand {}
 impl Cqrs for TodoCommand {
-    fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
-        let model = TodoListModel::get_model(app_state);
-        match self {
-            TodoCommand::AddTodo(todo) => {
-                model.blocking_write().items.push(TodoItem { text: todo });
-                // this clone is cheap, as it is on ARC (RustAutoOpaque>T> = Arc<RwMutex<T>>)
-                Ok(vec![Effect::RenderTodoList(model.clone())])
-            }
-            TodoCommand::RemoveTodo(todo_pos) => {
-                let items = &mut model.blocking_write().items;
-                if todo_pos > items.len() {
-                    Err(ProcessingError::TodosDoesNotExist(todo_pos))
-                } else {
-                    items.remove(todo_pos - 1);
-                    Ok(vec![Effect::RenderTodoList(model.clone())])
-                }
-            }
-            TodoCommand::CleanList => {
-                model.blocking_write().items.clear();
-                Ok(vec![Effect::RenderTodoList(model.clone())])
-            }
-        }
-    }
+    // fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
+    //     let model = TodoListModel::get_model(app_state);
+    //     match self {
+    //         TodoCommand::AddTodo(todo) => {
+    //             model.blocking_write().items.push(TodoItem { text: todo });
+    //             // this clone is cheap, as it is on ARC (RustAutoOpaque>T> = Arc<RwMutex<T>>)
+    //             Ok(vec![Effect::RenderTodoList(model.clone())])
+    //         }
+    //         TodoCommand::RemoveTodo(todo_pos) => {
+    //             let items = &mut model.blocking_write().items;
+    //             if todo_pos > items.len() {
+    //                 Err(ProcessingError::TodosDoesNotExist(todo_pos))
+    //             } else {
+    //                 items.remove(todo_pos - 1);
+    //                 Ok(vec![Effect::RenderTodoList(model.clone())])
+    //             }
+    //         }
+    //         TodoCommand::CleanList => {
+    //             model.blocking_write().items.clear();
+    //             Ok(vec![Effect::RenderTodoList(model.clone())])
+    //         }
+    //     }
+    // }
     fn is_command(&self) -> bool {
         true
     }
@@ -91,13 +92,13 @@ pub enum TodoQuery {
 }
 
 impl Cqrs for TodoQuery {
-    fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
-        let model = TodoListModel::get_model(app_state);
-        Ok::<std::vec::Vec<Effect>, ProcessingError>(match self {
-            // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
-            TodoQuery::AllTodos => vec![Effect::RenderTodoList(model.clone())],
-        })
-    }
+    // fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
+    //     let model = TodoListModel::get_model(app_state);
+    //     Ok::<std::vec::Vec<Effect>, ProcessingError>(match self {
+    //         // the clone here is cheap, as it clones `RustAutoOpaque<T> = Arc<RwMutex<T>>`
+    //         TodoQuery::AllTodos => vec![Effect::RenderTodoList(model.clone())],
+    //     })
+    // }
     fn is_command(&self) -> bool {
         false
     }

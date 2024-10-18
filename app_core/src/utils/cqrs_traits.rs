@@ -1,5 +1,7 @@
 use std::fmt::Debug;
+use std::sync::Arc;
 
+use crate::application::api::lifecycle::{WrappedCqrs, Wrapping};
 use crate::application::app_state::AppState;
 use crate::application::bridge::frb_generated::RustAutoOpaque;
 use crate::application::processing_errors::ProcessingError;
@@ -26,8 +28,7 @@ where
 {
     fn get_model(app_state: &AppState) -> &RustAutoOpaque<Self>;
 }
-pub trait Cqrs: Debug {
-    fn process(self, app_state: &AppState) -> Result<Vec<Effect>, ProcessingError>;
+pub trait Cqrs: Wrapping + Debug {
     fn is_command(&self) -> bool;
     fn is_query(&self) -> bool {
         !self.is_command()
