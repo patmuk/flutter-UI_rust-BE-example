@@ -9,8 +9,8 @@ import '../utils/cqrs_traits.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `add_todo`, `clean_list`, `get_all_todos`, `remove_todo`
-// These types are ignored because they are not used by any `pub` functions: `TodoItem`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `eq`, `eq`, `fmt`, `fmt`
+// These types are ignored because they are not used by any `pub` functions: `TodoItem`, `TodoListProcessingError`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TodoListModel>>
 abstract class TodoListModel implements RustOpaqueInterface, CqrsModel {

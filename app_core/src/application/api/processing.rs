@@ -1,5 +1,10 @@
-use super::lifecycle::{Effect, Lifecycle, ProcessingError};
-use crate::{application::app_state::AppState, domain::todo_list::TodoListModel};
+use std::io;
+
+use super::lifecycle::{Effect, Lifecycle};
+use crate::{
+    application::app_state::AppState,
+    domain::todo_list::{TodoListModel, TodoListProcessingError},
+};
 
 ///////////
 //// processing here to see codegen results
@@ -25,14 +30,23 @@ impl Cqrs {
             Cqrs::TodoCommandCleanList => TodoListModel::clean_list(app_state),
             Cqrs::TodoQueryAllTodos => TodoListModel::get_all_todos(app_state),
         }
+        .map_err(ProcessingError::ErrorDuringProcessing)
     }
     pub fn process(self) -> Result<Vec<Effect>, ProcessingError> {
         let app_state = &Lifecycle::get().app_state;
-        let result = self.process_with_app_state(app_state);
+        let result = self.process_with_app_state(app_state)?;
         //persist the state, but only if dirty
-        //TODO handle persistence error
-        app_state.persist();
-        result
+        let _ = app_state.persist().map_err(ProcessingError::NotPersisted);
+        Ok(result)
     }
 }
+
+#[derive(thiserror::Error, Debug)]
+pub enum ProcessingError {
+    #[error("Error during processing: {0}")]
+    ErrorDuringProcessing(TodoListProcessingError),
+    #[error("Processing was fine, but state could not be persisted: {0}")]
+    NotPersisted(#[source] io::Error),
+}
+
 /////////////

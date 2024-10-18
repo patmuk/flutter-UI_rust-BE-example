@@ -1,7 +1,6 @@
 use log::{debug, trace};
 
 use crate::application::app_state::AppState;
-pub use crate::application::processing_errors::ProcessingError;
 pub use crate::domain::effects::Effect;
 use std::io;
 use std::path::PathBuf;

@@ -6,7 +6,6 @@ use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
 use super::effects::Effect;
-use crate::application::processing_errors::ProcessingError;
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[frb(opaque)]
@@ -45,7 +44,7 @@ impl TodoListModel {
     pub(crate) fn add_todo(
         app_state: &AppState,
         todo: String,
-    ) -> Result<Vec<Effect>, ProcessingError> {
+    ) -> Result<Vec<Effect>, TodoListProcessingError> {
         let model_lock = Self::get_model_lock(app_state);
         model_lock
             .blocking_write()
@@ -58,29 +57,38 @@ impl TodoListModel {
     pub(crate) fn remove_todo(
         app_state: &AppState,
         todo_pos: usize,
-    ) -> Result<Vec<Effect>, ProcessingError> {
+    ) -> Result<Vec<Effect>, TodoListProcessingError> {
         let model_lock = Self::get_model_lock(app_state);
         let items = &mut model_lock.blocking_write().items;
         if todo_pos > items.len() {
-            Err(ProcessingError::TodosDoesNotExist(todo_pos))
+            Err(TodoListProcessingError::TodosDoesNotExist(todo_pos))
         } else {
             items.remove(todo_pos - 1);
             app_state.mark_dirty();
             Ok(vec![Effect::RenderTodoList(model_lock.clone())])
         }
     }
-    pub(crate) fn clean_list(app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
+    pub(crate) fn clean_list(app_state: &AppState) -> Result<Vec<Effect>, TodoListProcessingError> {
         let model_lock = Self::get_model_lock(app_state);
         model_lock.blocking_write().items.clear();
         app_state.mark_dirty();
         Ok(vec![Effect::RenderTodoList(model_lock.clone())])
     }
 
-    pub(crate) fn get_all_todos(app_state: &AppState) -> Result<Vec<Effect>, ProcessingError> {
+    pub(crate) fn get_all_todos(
+        app_state: &AppState,
+    ) -> Result<Vec<Effect>, TodoListProcessingError> {
         let model_lock = TodoListModel::get_model_lock(app_state);
         Ok(vec![Effect::RenderTodoList(model_lock.clone())])
     }
 }
+
+#[derive(thiserror::Error, Debug, PartialEq)]
+pub enum TodoListProcessingError {
+    #[error("The todo at index {0} does not exist!")]
+    TodosDoesNotExist(usize),
+}
+
 impl CqrsModel for TodoListModel {
     /// bootstrap the model from the app's state
     fn get_model_lock(app_state: &AppState) -> &RustAutoOpaque<Self> {
@@ -148,7 +156,7 @@ mod tests {
         );
         assert_eq!(
             TodoListModel::remove_todo(&app_state, 1),
-            Err(ProcessingError::TodosDoesNotExist(1))
+            Err(TodoListProcessingError::TodosDoesNotExist(1))
         );
     }
 
