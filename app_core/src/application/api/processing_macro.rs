@@ -11,21 +11,42 @@ use crate::{
 use syn::parse_macro_input;
 
 macro_rules! provide_api {
-    (
-        $(
-        $file:tt
-    ),+
- ) => {
-
-        // fn output() {
+     ($($file:tt),+ ) => {
+    // ($file:tt) => {
+        provide_api!(@parse
+            // $file
             $(
-            // let file = include!(concat!("../../", $file));
-            include!($file);
-                // println!("{}", $file);
-            )*
+            const _: &'static str = $file;
+        )+
+    );
+    };
+    (@parse $($content:tt)+) => {
+        // provide_api!(@read_file $content);
+        pub mod olala{
+            $(
+                $content
+            )+
         }
-    // };
+    };
+
+     // ($($file:tt),+ ) => {
+       //     // fn output() {
+       //         provide_api!(@parse
+       //         $(
+       //         // let file = include!(concat!("../../", $file));
+       //         include!($file);
+       //             // println!("{}", $file);
+       //         )*
+       //         );
+       //     };
+       // (@parse $content:tt) => {
+       //     pub mod olala{
+       //         $content
+       //     }
+       // };
 }
+
+// provide_api!("../../domain/effects.rs");
 provide_api!("../../domain/todo_list.rs", "../../domain/effects.rs");
 
 // #[cps] // Add this macro to unlock additional syntax
