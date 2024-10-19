@@ -16,16 +16,18 @@ macro_rules! provide_api {
         provide_api!(@parse
             // $file
             $(
-                const _: &'static str = $file;
+                include!($file);
+                // const _: &'static str = $file;
             )+
         );
     };
     (@parse $($content:tt)+) => {
-        // provide_api!(@read_file $content);
-        pub mod olala{
+        // parse_macro_input!(
+        mod olala{
             $(
                 $content
             )+
+        // );
         }
     };
 
@@ -46,8 +48,8 @@ macro_rules! provide_api {
        // };
 }
 
-// provide_api!("../../domain/effects.rs");
-provide_api!("../../domain/todo_list.rs", "../../domain/effects.rs");
+provide_api!("../../domain/effects.rs");
+// provide_api!("../../domain/todo_list.rs", "../../domain/effects.rs");
 
 // #[cps] // Add this macro to unlock additional syntax
 // macro_rules! provide_api {
