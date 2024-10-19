@@ -4,7 +4,7 @@ use crate::application::bridge::frb_generated::RustAutoOpaque;
 /// All effects for the same reason all Processing Errors are in one emun:
 /// - easier handling for the consumer (match)
 /// - reuse of effects among domain implementations
-#[derive(Debug)]
+// #[derive(Debug)]
 pub enum Effect {
     // Parameters need to be owned by `Effect`.
     // The attributes live in the app state - we don't want to

@@ -6,72 +6,112 @@ use crate::{
     domain::todo_list::{TodoListModel, TodoListProcessingError},
 };
 
+use cps::cps;
 // use cps::cps;
 // use cps::{cps, include};
+use quote::quote;
 use syn::parse_macro_input;
 
+// macro_rules! provide_api {
+//      ($($file:tt),+ ) => {
+//     // ($file:tt) => {
+//         provide_api!(@convert
+//             // $file
+//             $(
+//                 include!($file);
+//                 // const _: &'static str = $file;
+//             )+
+//         );
+//     };
+//     (@convert $($content:tt)+) => {
+//         provide_api!(@parse
+//             proc_macro2::TokenStream::from($($content))+
+//         )
+//     };
+//     (@parse $($converted:tt)+) => {
+//         // provide_api!(@generate
+//         provide_api!(@generate
+//             quote::quote!(
+//                 ($($converted))+
+//             );
+//         );
+//         // );
+//     //     quote!(
+//     //     mod olala{
+//     //         $(
+//     //             $content
+//     //         )+
+//     //     }
+//     // );
+//     };
+//     (@generate $($parsed:tt)+) => {
+//         // provide_api!(
+//             mod washamwa {
+//             // parse_quote!(
+//                 $($parsed)+
+//             // );
+//             }
+//         // );
+//     };
+// }
 macro_rules! provide_api {
      ($($file:tt),+ ) => {
-    // ($file:tt) => {
-        provide_api!(@parse
-            // $file
+        provide_api!(@convert
             $(
                 include!($file);
-                // const _: &'static str = $file;
             )+
+            const INCLUDED: usize = 1;
         );
     };
-    (@parse $($content:tt)+) => {
-        // parse_macro_input!(
-        mod olala{
+    (@convert $($content:tt)+) => {
+        provide_api!(@parse
             $(
                 $content
             )+
-        // );
-        }
+            const CONVERTED: usize = 1;
+        );
     };
-
-     // ($($file:tt),+ ) => {
-       //     // fn output() {
-       //         provide_api!(@parse
-       //         $(
-       //         // let file = include!(concat!("../../", $file));
-       //         include!($file);
-       //             // println!("{}", $file);
-       //         )*
-       //         );
-       //     };
-       // (@parse $content:tt) => {
-       //     pub mod olala{
-       //         $content
-       //     }
-       // };
+    (@parse $($converted:tt)+) => {
+        provide_api!(@generate
+            $(
+                $converted
+            )+
+            const PARSED: usize = 1;
+        );
+    };
+    (@generate $($parsed:tt)+) => {
+        mod washamwa {
+            $(
+                $parsed
+            )+
+            const FINAL: usize = 1;
+            }
+    };
 }
 
 provide_api!("../../domain/effects.rs");
 // provide_api!("../../domain/todo_list.rs", "../../domain/effects.rs");
 
-// #[cps] // Add this macro to unlock additional syntax
+// #[cps]
 // macro_rules! provide_api {
-//     ($file:literal) =>
-//     //let $content:tt =
+//      ($file:tt) =>
+//     //  ($($file:tt),+ ) =>
+//     //  let  ($($file:tt),+ ) = include!($($file)+) in
+//      let $content:tt = cps::include!($file) in
+//     //  let $parsed:tt = cps::quote!($file) in
+//     //  let ($($content:tt)+) = cps::include!($file) in
+//     //  let $file = include!($file) in
+
 //     {
-//         include!(concat!("../../", $file)) in
-//             stringify!(
+//         mod olala{
+//             $(
 //                 $content
-//             )
+//             )+
+//         }
 //     };
+
 // }
-
-// // #[cps]
-// // macro_rules! provide_api {
-// //     ( ) =>
-// // in
-// //  {
-// //     };
-// // }
-
-// provide_api!("domain/todo_list.rs");
+// provide_api!("app_core/src/domain/effects.rs");
 
 // #[cfg(test)]
 // #[test]
