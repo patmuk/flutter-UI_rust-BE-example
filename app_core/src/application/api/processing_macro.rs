@@ -16,9 +16,9 @@ macro_rules! provide_api {
         provide_api!(@parse
             // $file
             $(
-            const _: &'static str = $file;
-        )+
-    );
+                const _: &'static str = $file;
+            )+
+        );
     };
     (@parse $($content:tt)+) => {
         // provide_api!(@read_file $content);
