@@ -8,11 +8,11 @@ use syn::{parse_file, parse_macro_input, DeriveInput, File};
 #[proc_macro]
 pub fn generate_api(input: TokenStream) -> TokenStream {
     // Read the file locations from the input token stream
-    // let file_path_literal = input.to_string().replace("\"", "");
-    let file_path_literal = input.to_string();
+    let file_path_literal = input.to_string().replace("\"", "");
+    // let file_path_literal = input.to_string();
     println!("-------------- file name: {}", file_path_literal);
-    // let file_content = fs::read_to_string(file_path_literal).unwrap();
-    let file_content = file_path_literal;
+    let file_content = fs::read_to_string(file_path_literal).unwrap();
+    // let file_content = file_path_literal;
     println!("-------------- file content: {}", file_content);
     // let ast = syn::parse_file(&file_content).unwrap();
     let ast = syn::parse_str::<File>(&file_content).unwrap();

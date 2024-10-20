@@ -52,8 +52,8 @@ macro_rules! gen_api {
     }
 }
 
-// generate_api!("app_core/src/domain/effects.rs");
-gen_api!("app_core/src/domain/effects.rs");
+generate_api!("app_core/src/domain/effects.rs");
+// gen_api!("app_core/src/domain/effects.rs");
 
 // gen_api!("../../domain/todo_list.rs", "../../domain/effects.rs");
 // generate_api!("../../domain/todo_list.rs", "../../domain/effects.rs");
