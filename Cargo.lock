@@ -423,7 +423,7 @@ version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "570e736c5c84982a931d819c7be0ad000f3aad769eb4e78b234dc9fa64b10415"
 dependencies = [
- "litrs",
+ "litrs 0.2.3",
  "proc-macro2",
  "quote",
  "syn 1.0.109",
@@ -816,6 +816,7 @@ dependencies = [
 name = "generate_api_macros"
 version = "0.1.0"
 dependencies = [
+ "litrs 0.4.1",
  "quote",
  "syn 2.0.79",
 ]
@@ -1079,6 +1080,15 @@ name = "litrs"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f9275e0933cf8bb20f008924c0cb07a0692fe54d8064996520bf998de9eb79aa"
+dependencies = [
+ "proc-macro2",
+]
+
+[[package]]
+name = "litrs"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4ce301924b7887e9d637144fdade93f9dfff9b60981d4ac161db09720d39aa5"
 dependencies = [
  "proc-macro2",
 ]

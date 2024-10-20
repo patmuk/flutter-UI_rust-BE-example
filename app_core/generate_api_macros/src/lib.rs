@@ -1,19 +1,53 @@
 extern crate proc_macro;
 
-use proc_macro::TokenStream;
+use proc_macro::{Literal, TokenStream, TokenTree};
 use quote::quote;
 use std::{fs, path::Path, str::FromStr};
-use syn::{parse_file, parse_macro_input, DeriveInput, File};
+use syn::{
+    parse::{self, Parse, ParseStream},
+    parse_file, parse_macro_input, DeriveInput, File, LitStr,
+};
+
+// struct GenerateApiInput {
+//     file_pathes: Vec<String>,
+// }
+
+// impl Parse for GenerateApiInput {
+//     fn parse(input: ParseStream) -> Result<Self> {
+//         input
+//     }
+// }
 
 #[proc_macro]
-pub fn generate_api(input: TokenStream) -> TokenStream {
+pub fn generate_api(file_pathes: TokenStream) -> TokenStream {
     // Read the file locations from the input token stream
-    let file_path_literal = input.to_string().replace("\"", "");
-    println!("-------------- file name: {}", file_path_literal);
-    let file_content = fs::read_to_string(file_path_literal).unwrap();
-    println!("-------------- file content: \n{}", file_content);
-    let ast = syn::parse_file(&file_content).unwrap();
-    println!("---------------- {} items", ast.items.len());
+    // println!("-------------- Raw input: {:?}", file_pathes);
+
+    let file_pathes_filtered: Vec<String> = file_pathes
+        .into_iter()
+        .filter_map(|token| match token {
+            TokenTree::Literal(literal) => Some(literal),
+            _ => None,
+        })
+        .map(|literal| {
+            // if to_string() breaks, parse it with https://github.com/LukasKalbertodt/litrs/
+            let cleaned = literal.to_string();
+            cleaned[1..cleaned.len() - 1].to_string()
+        })
+        .collect();
+
+    println!("-------------- Cleaned: {:?}", file_pathes_filtered);
+
+    // load and compine the files's content
+
+    let content = file_pathes_filtered
+        .into_iter()
+        .map(|file_path| fs::read_to_string(file_path).unwrap())
+        .collect::<String>();
+    println!("-------------- file content: \n{}", content);
+
+    let ast = syn::parse_file(&content).unwrap();
+    // println!("---------------- {} items", ast.items.len());
 
     let expanded = quote! {
         #ast
