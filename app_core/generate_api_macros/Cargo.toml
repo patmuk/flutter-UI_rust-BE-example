@@ -9,3 +9,7 @@ proc-macro = true
 [dependencies]
 syn = "2.0.79"
 quote = "1.0.37"
+
+[dev-dependencies]
+syn = "2.0.79"
+quote = "1.0.37"

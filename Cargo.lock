@@ -138,8 +138,10 @@ dependencies = [
  "flutter_rust_bridge_codegen",
  "generate_api_macros",
  "log",
+ "quote",
  "serde",
  "serial_test 3.0.0",
+ "syn 2.0.79",
  "thiserror",
 ]
 

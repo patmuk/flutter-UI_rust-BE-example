@@ -19,6 +19,8 @@ cps = "0.2.3"
 
 [dev-dependencies]
 serial_test = "3.0.0"
+syn = "2.0.79"
+quote = "1.0.37"
 
 [build-dependencies]
 flutter_rust_bridge_codegen = "=2.4.0"
