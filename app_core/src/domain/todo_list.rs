@@ -74,7 +74,6 @@ impl TodoListModel {
         app_state.mark_dirty();
         Ok(vec![Effect::RenderTodoList(model_lock.clone())])
     }
-
     pub(crate) fn get_all_todos(
         app_state: &AppState,
     ) -> Result<Vec<Effect>, TodoListProcessingError> {
