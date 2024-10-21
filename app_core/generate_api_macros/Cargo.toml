@@ -7,9 +7,11 @@ edition = "2021"
 proc-macro = true
 
 [dependencies]
+log = "0.4.22"
+simple_logger = "5.0.0"
 syn = "2.0.79"
 quote = "1.0.37"
-litrs = "0.4.1"
+# litrs = "0.4.1"
 
 # [dev-dependencies]
 # syn = "2.0.79"
