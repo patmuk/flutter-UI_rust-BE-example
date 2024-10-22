@@ -1,6 +1,7 @@
 use proc_macro::TokenStream;
 
 mod generate_api_macro_impl;
+mod read_rust_files;
 
 #[proc_macro]
 pub fn generate_api(file_pathes: proc_macro::TokenStream) -> proc_macro::TokenStream {

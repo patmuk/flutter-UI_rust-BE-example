@@ -1,17 +1,18 @@
-use log::{debug, info, trace};
+use log::debug;
 
-use proc_macro2::{Span, TokenStream, TokenTree};
-use quote::{quote, ToTokens};
-use syn::{parse_macro_input, File, Ident, Result};
+use crate::read_rust_files::read_rust_file_content;
+use proc_macro2::{Span, TokenStream};
+use quote::{format_ident, quote, ToTokens};
+use syn::{File, Result};
 
 pub(crate) fn generate_api_impl(file_pathes: TokenStream) -> Result<TokenStream> {
     simple_logger::init_with_level(log::Level::Debug).unwrap();
     // simple_logger::init_with_level(log::Level::Trace).unwrap();
     log::info!("-------- Generating API --------");
 
-    let ast = parse_rust_file_content(file_pathes)?;
-    // .unwrap_or_else(|e| e.to_compile_error());
-    //expect("File pathes should start from the project root");
+    let file_content = read_rust_file_content(file_pathes)?;
+
+    let ast = syn::parse_file(&file_content)?;
 
     let domain_model_struct_name = get_domain_model_struct_name(&ast);
     debug!("domain model name: {:#?}", domain_model_struct_name);
@@ -56,19 +57,20 @@ pub(crate) fn generate_api_impl(file_pathes: TokenStream) -> Result<TokenStream>
 
     // generate the code
 
-    let processing_error = processing_error_enum.first().unwrap();
+    let processing_error = format_ident!("{}", processing_error_enum.first().unwrap());
     let generated_code = quote! {
         // #ast
         #[derive(thiserror::Error, Debug)]
         pub enum ProcessingError {
-            // #[error("Error during processing: {0}")]
+            #[error("Error during processing: {0}")]
             // #processing_error(#processing_error),
+            #processing_error(#processing_error),
             #[error("Processing was fine, but state could not be persisted: {0}")]
             NotPersisted(#[source] io::Error),
         }
     };
     debug!(
-        "----------- generated code: {}\n",
+        "----------- generated code:\n\n{}\n",
         prettyplease::unparse(&syn::parse2::<File>(generated_code.clone()).unwrap())
     );
     Ok(generated_code)
@@ -92,47 +94,6 @@ fn get_processing_error_enum_idents(ast: &File) -> Vec<String> {
             _ => None,
         })
         .collect::<Vec<String>>()
-}
-
-fn parse_rust_file_content(file_pathes: TokenStream) -> Result<syn::File> {
-    let file_pathes = file_pathes
-        .into_iter()
-        .filter_map(|token| match token {
-            TokenTree::Literal(literal) => Some(literal),
-            _ => None,
-        })
-        .map(|literal| {
-            // if to_string() breaks, parse it with https://github.com/LukasKalbertodt/litrs/
-            let cleaned = literal.to_string();
-            cleaned[1..cleaned.len() - 1].to_string()
-        })
-        .collect::<Vec<String>>();
-    info!("Parsing content of: {:#?}", file_pathes);
-
-    let content = file_pathes
-        .into_iter()
-        .map(|file_path| std::fs::read_to_string(&file_path)
-        .map_err(|io_error| {
-            let current_dir = std::env::current_dir();
-            match current_dir {
-                Ok(cwd) => {
-                    syn::Error::new(
-                        Span::call_site(),
-                        format!("Error loading the given files: {io_error}\nlooked in: {cwd:?} / \"{file_path}\""),
-                    )
-                }
-                Err(cwd_io_error) =>                     
-                        syn::Error::new(
-                        Span::call_site(),
-                    format!(
-                        "Error reading cwd: {cwd_io_error}\nwhile loading the given files: {io_error}"
-                    ),
-            ),
-            }
-        }))
-    .collect::<syn::Result<String>>()?;
-    trace!("file content: \n{}", content);
-    syn::parse_file(&content)
 }
 
 fn get_domain_model_struct_name(ast: &File) -> Result<String> {

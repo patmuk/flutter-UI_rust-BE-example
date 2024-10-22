@@ -61,7 +61,7 @@ impl TodoListModel {
         let model_lock = Self::get_model_lock(app_state);
         let items = &mut model_lock.blocking_write().items;
         if todo_pos > items.len() {
-            Err(TodoListProcessingError::TodosDoesNotExist(todo_pos))
+            Err(TodoListProcessingError::TodoDoesNotExist(todo_pos))
         } else {
             items.remove(todo_pos - 1);
             app_state.mark_dirty();
@@ -155,7 +155,7 @@ mod tests {
         );
         assert_eq!(
             TodoListModel::remove_todo(&app_state, 1),
-            Err(TodoListProcessingError::TodosDoesNotExist(1))
+            Err(TodoListProcessingError::TodoDoesNotExist(1))
         );
     }
 

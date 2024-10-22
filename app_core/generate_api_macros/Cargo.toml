@@ -17,6 +17,8 @@ prettyplease = "0.2.24"
 # litrs = "0.4.1"
 trybuild = "1.0.101"
 
+thiserror = "^1.0.51"
+
 # [dev-dependencies]
 # syn = "2.0.79"
 # quote = "1.0.37"

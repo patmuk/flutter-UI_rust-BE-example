@@ -842,6 +842,7 @@ dependencies = [
  "quote",
  "simple_logger",
  "syn 2.0.82",
+ "thiserror",
  "trybuild",
 ]
 

@@ -30,7 +30,7 @@ impl Cqrs {
             Cqrs::TodoCommandCleanList => TodoListModel::clean_list(app_state),
             Cqrs::TodoQueryAllTodos => TodoListModel::get_all_todos(app_state),
         }
-        .map_err(ProcessingError::ErrorDuringProcessing)
+        .map_err(ProcessingError::TodoListProcessingError)
     }
     pub fn process(self) -> Result<Vec<Effect>, ProcessingError> {
         let app_state = &Lifecycle::get().app_state;
@@ -44,7 +44,7 @@ impl Cqrs {
 #[derive(thiserror::Error, Debug)]
 pub enum ProcessingError {
     #[error("Error during processing: {0}")]
-    ErrorDuringProcessing(TodoListProcessingError),
+    TodoListProcessingError(TodoListProcessingError),
     #[error("Processing was fine, but state could not be persisted: {0}")]
     NotPersisted(#[source] io::Error),
 }
