@@ -9,5 +9,5 @@ use generate_api_macros::generate_api;
 
 generate_api!(
     // "app_core/src/domain/effects.rs",
-    "app_core/src/domain/todo_list.rs"
+    "appf_core/src/domain/todo_list.rs"
 );
