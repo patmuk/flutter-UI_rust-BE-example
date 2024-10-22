@@ -66,7 +66,7 @@ pub(crate) fn generate_api_impl(file_pathes: TokenStream) -> Result<TokenStream>
             // #processing_error(#processing_error),
             #processing_error(#processing_error),
             #[error("Processing was fine, but state could not be persisted: {0}")]
-            NotPersisted(#[source] io::Error),
+            NotPersisted(#[source] std::io::Error),
         }
     };
     debug!(
@@ -76,7 +76,11 @@ pub(crate) fn generate_api_impl(file_pathes: TokenStream) -> Result<TokenStream>
     Ok(generated_code)
 }
 
+/// searches the error enum(s) by derive thiserror only!
+// / TODO search for the word "Error" in the name?
+/// TODO search for one error enum, panic if more are present?
 fn get_processing_error_enum_idents(ast: &File) -> Vec<String> {
+    println!("----------- get processing error enum idents:");
     ast.items
         .iter()
         .filter_map(|item| match item {
