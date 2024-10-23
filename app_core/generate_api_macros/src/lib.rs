@@ -12,8 +12,14 @@ pub fn generate_api(file_pathes: proc_macro::TokenStream) -> proc_macro::TokenSt
     )
 }
 
+#[cfg(test)]
+use log::info;
+
 #[test]
 fn ui() {
+    simple_logger::init_with_level(log::Level::Debug).unwrap();
+    // simple_logger::init_with_level(log::Level::Trace).unwrap();
+    info!("test llloooooogggg");
     let t = trybuild::TestCases::new();
-    t.compile_fail("tests/ui/*.rs");
+    t.pass("tests/ui/*.rs");
 }
