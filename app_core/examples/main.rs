@@ -1,5 +1,5 @@
-use app_core::application::api::lifecycle::{Effect, Lifecycle};
-use app_core::application::api::processing::Cqrs;
+use app_core::application::api::lifecycle::Lifecycle;
+use app_core::application::api::processing::{Cqrs, Effect};
 
 fn main() {
     // initiializes the app and loads the app state
@@ -23,9 +23,9 @@ fn process_and_handle_effects(cqrs: Cqrs) {
 fn handle_effects(effects: &Vec<Effect>) {
     for effect in effects {
         match effect {
-            Effect::RenderTodoList(todo_list_model) => {
+            Effect::TodoListEffectRenderTodoList(todo_list_model_lock) => {
                 println!("Rendering view:\n");
-                todo_list_model
+                todo_list_model_lock
                     .blocking_read()
                     .get_todos_as_string()
                     .iter()

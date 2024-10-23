@@ -8,7 +8,6 @@ import 'application/api/processing.dart';
 import 'application/app_state.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'domain/effects.dart';
 import 'domain/todo_list.dart';
 import 'frb_generated.dart';
 import 'frb_generated.io.dart'
@@ -668,7 +667,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     switch (raw[0]) {
       case 0:
-        return Effect_RenderTodoList(
+        return Effect_TodoListEffectRenderTodoList(
           dco_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
               raw[1]),
         );
@@ -925,7 +924,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         var var_field0 =
             sse_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
                 deserializer);
-        return Effect_RenderTodoList(var_field0);
+        return Effect_TodoListEffectRenderTodoList(var_field0);
       default:
         throw UnimplementedError('');
     }
@@ -1202,7 +1201,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_effect(Effect self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
-      case Effect_RenderTodoList(field0: final field0):
+      case Effect_TodoListEffectRenderTodoList(field0: final field0):
         sse_encode_i_32(0, serializer);
         sse_encode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
             field0, serializer);

@@ -3,7 +3,6 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
-import '../../domain/effects.dart';
 import '../../domain/todo_list.dart';
 import '../../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
@@ -11,7 +10,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'processing.freezed.dart';
 
 // These functions are ignored because they are not marked as `pub`: `process_with_app_state`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`, `fmt`, `source`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`, `fmt`, `fmt`, `source`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ProcessingError>>
 abstract class ProcessingError implements RustOpaqueInterface {}
@@ -33,4 +32,13 @@ sealed class Cqrs with _$Cqrs {
       RustLib.instance.api.crateApplicationApiProcessingCqrsProcess(
         that: this,
       );
+}
+
+@freezed
+sealed class Effect with _$Effect {
+  const Effect._();
+
+  const factory Effect.todoListEffectRenderTodoList(
+    TodoListModel field0,
+  ) = Effect_TodoListEffectRenderTodoList;
 }

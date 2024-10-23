@@ -9,7 +9,6 @@ import 'application/app_state.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
-import 'domain/effects.dart';
 import 'domain/todo_list.dart';
 import 'frb_generated.dart';
 import 'lib.dart';

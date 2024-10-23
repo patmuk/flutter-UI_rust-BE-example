@@ -653,3 +653,234 @@ abstract class Cqrs_TodoQueryAllTodos extends Cqrs {
   const factory Cqrs_TodoQueryAllTodos() = _$Cqrs_TodoQueryAllTodosImpl;
   const Cqrs_TodoQueryAllTodos._() : super._();
 }
+
+/// @nodoc
+mixin _$Effect {
+  TodoListModel get field0 => throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModel field0)
+        todoListEffectRenderTodoList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModel field0)? todoListEffectRenderTodoList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModel field0)? todoListEffectRenderTodoList,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Effect_TodoListEffectRenderTodoList value)
+        todoListEffectRenderTodoList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Effect_TodoListEffectRenderTodoList value)?
+        todoListEffectRenderTodoList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Effect_TodoListEffectRenderTodoList value)?
+        todoListEffectRenderTodoList,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EffectCopyWith<Effect> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $EffectCopyWith<$Res> {
+  factory $EffectCopyWith(Effect value, $Res Function(Effect) then) =
+      _$EffectCopyWithImpl<$Res, Effect>;
+  @useResult
+  $Res call({TodoListModel field0});
+}
+
+/// @nodoc
+class _$EffectCopyWithImpl<$Res, $Val extends Effect>
+    implements $EffectCopyWith<$Res> {
+  _$EffectCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_value.copyWith(
+      field0: null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as TodoListModel,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$Effect_TodoListEffectRenderTodoListImplCopyWith<$Res>
+    implements $EffectCopyWith<$Res> {
+  factory _$$Effect_TodoListEffectRenderTodoListImplCopyWith(
+          _$Effect_TodoListEffectRenderTodoListImpl value,
+          $Res Function(_$Effect_TodoListEffectRenderTodoListImpl) then) =
+      __$$Effect_TodoListEffectRenderTodoListImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({TodoListModel field0});
+}
+
+/// @nodoc
+class __$$Effect_TodoListEffectRenderTodoListImplCopyWithImpl<$Res>
+    extends _$EffectCopyWithImpl<$Res,
+        _$Effect_TodoListEffectRenderTodoListImpl>
+    implements _$$Effect_TodoListEffectRenderTodoListImplCopyWith<$Res> {
+  __$$Effect_TodoListEffectRenderTodoListImplCopyWithImpl(
+      _$Effect_TodoListEffectRenderTodoListImpl _value,
+      $Res Function(_$Effect_TodoListEffectRenderTodoListImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$Effect_TodoListEffectRenderTodoListImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as TodoListModel,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$Effect_TodoListEffectRenderTodoListImpl
+    extends Effect_TodoListEffectRenderTodoList {
+  const _$Effect_TodoListEffectRenderTodoListImpl(this.field0) : super._();
+
+  @override
+  final TodoListModel field0;
+
+  @override
+  String toString() {
+    return 'Effect.todoListEffectRenderTodoList(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$Effect_TodoListEffectRenderTodoListImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$Effect_TodoListEffectRenderTodoListImplCopyWith<
+          _$Effect_TodoListEffectRenderTodoListImpl>
+      get copyWith => __$$Effect_TodoListEffectRenderTodoListImplCopyWithImpl<
+          _$Effect_TodoListEffectRenderTodoListImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModel field0)
+        todoListEffectRenderTodoList,
+  }) {
+    return todoListEffectRenderTodoList(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModel field0)? todoListEffectRenderTodoList,
+  }) {
+    return todoListEffectRenderTodoList?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModel field0)? todoListEffectRenderTodoList,
+    required TResult orElse(),
+  }) {
+    if (todoListEffectRenderTodoList != null) {
+      return todoListEffectRenderTodoList(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Effect_TodoListEffectRenderTodoList value)
+        todoListEffectRenderTodoList,
+  }) {
+    return todoListEffectRenderTodoList(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Effect_TodoListEffectRenderTodoList value)?
+        todoListEffectRenderTodoList,
+  }) {
+    return todoListEffectRenderTodoList?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Effect_TodoListEffectRenderTodoList value)?
+        todoListEffectRenderTodoList,
+    required TResult orElse(),
+  }) {
+    if (todoListEffectRenderTodoList != null) {
+      return todoListEffectRenderTodoList(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class Effect_TodoListEffectRenderTodoList extends Effect {
+  const factory Effect_TodoListEffectRenderTodoList(
+      final TodoListModel field0) = _$Effect_TodoListEffectRenderTodoListImpl;
+  const Effect_TodoListEffectRenderTodoList._() : super._();
+
+  @override
+  TodoListModel get field0;
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$Effect_TodoListEffectRenderTodoListImplCopyWith<
+          _$Effect_TodoListEffectRenderTodoListImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}

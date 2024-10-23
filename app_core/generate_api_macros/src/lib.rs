@@ -21,5 +21,5 @@ fn ui() {
     // simple_logger::init_with_level(log::Level::Trace).unwrap();
     info!("test llloooooogggg");
     let t = trybuild::TestCases::new();
-    t.pass("tests/ui/*.rs");
+    t.pass("tests/build_test.rs");
 }
