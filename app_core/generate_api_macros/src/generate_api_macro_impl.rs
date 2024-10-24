@@ -1,17 +1,19 @@
-use log::debug;
+use log::{debug, trace};
 
-use crate::read_rust_files::read_rust_file_content;
+use crate::read_rust_files::{read_rust_file_content, tokens_2_file_locations};
 use proc_macro2::{Span, TokenStream};
 use quote::{format_ident, quote, ToTokens};
-use syn::{File, Result};
+use syn::{parse_str, File, Ident, Result, UsePath, UseTree};
 
 pub(crate) fn generate_api_impl(file_pathes: TokenStream) -> Result<TokenStream> {
-    simple_logger::init_with_level(log::Level::Debug).unwrap();
-    // simple_logger::init_with_level(log::Level::Trace).unwrap();
+    simple_logger::init_with_level(log::Level::Debug).expect("faild to init logger");
+
     log::info!("-------- Generating API --------");
 
-    let file_content = read_rust_file_content(file_pathes)?;
+    let file_locations = tokens_2_file_locations(file_pathes)?;
+    let (base_path, file_content) = read_rust_file_content(file_locations[0].to_owned())?;
 
+    // TODO implement for more than one file
     let ast = syn::parse_file(&file_content)?;
 
     let domain_model_struct_name = get_domain_model_struct_name(&ast);
@@ -57,13 +59,37 @@ pub(crate) fn generate_api_impl(file_pathes: TokenStream) -> Result<TokenStream>
 
     // generate the code
 
-    let processing_error = format_ident!("{}", processing_error_enum.first().unwrap());
+    // TODO support multiplr inputs
+    // let processing_error = format_ident!("{}", processing_error_enum.first().unwrap());
+    let processing_error = format_ident!(
+        "{}",
+        processing_error_enum
+            .first()
+            .expect("error formating the ident")
+    );
+
+    let use_statement_processing_error_enum = format!(
+        "use {}::{};",
+        base_path,
+        processing_error_enum
+            .first()
+            .expect("error formating the ident")
+    );
+    // parse with syn
+    let use_statements = parse_str::<File>(&use_statement_processing_error_enum)
+        .expect("error parsing use statement");
+
+    let use_statement = use_statements
+        .items
+        .first()
+        .expect("first item was not the use statement");
+
     let generated_code = quote! {
-        // #ast
+        #use_statement
+
         #[derive(thiserror::Error, Debug)]
         pub enum ProcessingError {
             #[error("Error during processing: {0}")]
-            // #processing_error(#processing_error),
             #processing_error(#processing_error),
             #[error("Processing was fine, but state could not be persisted: {0}")]
             NotPersisted(#[source] std::io::Error),
@@ -111,7 +137,7 @@ fn get_domain_model_struct_name(ast: &File) -> Result<String> {
                     && item_impl
                         .trait_
                         .clone()
-                        .unwrap()
+                        .expect("Should have gotten a trait")
                         .1
                         .segments
                         .iter()

@@ -13,6 +13,8 @@ proc-macro2 = "1.0.88"
 # syn = "2.0.79"
 syn = {version = "2.0.79", features = ["full"]}
 quote = "1.0.37"
+
+# TODO remove once failed result is visible in tests
 prettyplease = "0.2.24"
 # litrs = "0.4.1"
 trybuild = "1.0.101"

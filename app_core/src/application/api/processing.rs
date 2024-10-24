@@ -63,9 +63,6 @@ impl Cqrs {
             TodoListEffect::RenderTodoList(content) => {
                 Effect::TodoListEffectRenderTodoList(content)
             }
-            _ => {
-                panic!("Unknown effect");
-            }
         })
         .collect();
         Ok(result)
