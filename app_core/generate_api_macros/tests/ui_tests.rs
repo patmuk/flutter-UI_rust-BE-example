@@ -1,6 +1,5 @@
 #[cfg(test)]
 use generate_api_macros::generate_api;
-use log::info;
 include!("fixtures/good_source_file.rs");
 
 #[test]
@@ -16,9 +15,6 @@ fn test_macro() {
 
 #[test]
 fn test_build() {
-    simple_logger::init_with_level(log::Level::Debug).unwrap();
-    // simple_logger::init_with_level(log::Level::Trace).unwrap();
-    info!("test llloooooogggg");
     let t = trybuild::TestCases::new();
     t.pass("tests/ui_tests.rs");
 }
