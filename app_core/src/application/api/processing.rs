@@ -10,6 +10,8 @@ use crate::{
 //// processing here to see codegen results
 //////////
 //TODO replace with macro_rules!([TodoComand, TodoQuery])
+// TODO consider changing the name to TodoCommand_AddTodo
+// test codegen for Dart!!!
 pub enum Cqrs {
     TodoCommandAddTodo(String),
     TodoCommandRemoveTodo(usize),
