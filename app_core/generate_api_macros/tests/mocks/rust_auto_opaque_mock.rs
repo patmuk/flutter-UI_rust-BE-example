@@ -3,9 +3,6 @@ pub struct RustAutoOpaque<T> {
 }
 
 impl<T: std::clone::Clone> RustAutoOpaque<T> {
-    fn blocking_read(&self) -> &T {
-        &self.model
-    }
     fn blocking_write(&self) -> T {
         self.clone().model
     }
