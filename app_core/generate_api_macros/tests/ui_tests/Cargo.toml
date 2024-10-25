@@ -1,8 +1,0 @@
-[package]
-name = "fixtures"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-your_macro_crate = { path = "../.." }
-thiserror = "^1.0.51"
