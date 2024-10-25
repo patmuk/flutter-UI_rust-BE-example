@@ -1,10 +1,3 @@
-// Since this is a fixture to test the proc macro,
-// we don't import all dependencies, which are probably ven (crate) private.
-//
-// Instead, we include! the needed files and comment out dependencies
-// not needed for the proc macro tests.
-//
-//
 // use crate::{
 //     application::{app_state::AppState, bridge::frb_generated::RustAutoOpaque},
 //     utils::cqrs_traits::CqrsModel,
@@ -12,9 +5,12 @@
 // use flutter_rust_bridge::frb;
 // use serde::{Deserialize, Serialize};
 
-include!("../mocks/app_state_mock.rs");
-include!("../mocks/rust_auto_opaque_mock.rs");
-include!("../mocks/cqrs_traits_mock.rs");
+// include!("../mocks/app_state_mock.rs");
+// include!("../mocks/rust_auto_opaque_mock.rs");
+// include!("../mocks/cqrs_traits_mock.rs");
+use crate::mocks::app_state_mock::AppState;
+use crate::mocks::cqrs_traits_mock::CqrsModel;
+use crate::mocks::rust_auto_opaque_mock::RustAutoOpaque;
 
 // const app_state_const: AppState = AppState {};
 // const MODEL_LOCK: RustAutoOpaque<MyGoodDomainModel> = RustAutoOpaque {

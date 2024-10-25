@@ -21,6 +21,8 @@ trybuild = "1.0.101"
 
 thiserror = "^1.0.51"
 
-# [dev-dependencies]
+[dev-dependencies]
+fixtures = { path = "tests/fixtures" }
+
 # syn = "2.0.79"
 # quote = "1.0.37"

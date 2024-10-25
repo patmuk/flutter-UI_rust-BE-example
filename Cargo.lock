@@ -647,6 +647,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "fixtures"
+version = "0.1.0"
+dependencies = [
+ "thiserror",
+]
+
+[[package]]
 name = "flutter_rust_bridge"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -836,6 +843,7 @@ dependencies = [
 name = "generate_api_macros"
 version = "0.1.0"
 dependencies = [
+ "fixtures",
  "log",
  "prettyplease",
  "proc-macro2",
