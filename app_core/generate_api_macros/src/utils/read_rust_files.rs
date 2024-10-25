@@ -2,6 +2,8 @@ use log::{debug, info, trace};
 use proc_macro2::{Span, TokenStream, TokenTree};
 use syn::Result;
 
+use crate::utils::file_location_2_base_path::file_location_2_base_path;
+
 /// extracts file locations from a TokenStream
 pub (crate) fn tokens_2_file_locations(file_pathes: TokenStream) -> Result<Vec<String>> {
     let file_pathes = file_pathes
@@ -48,45 +50,4 @@ pub (crate) fn read_rust_file_content(file_path: &str) -> Result<(String, String
         )?;
     trace!("file content: \n{}", content);
     Ok ((path, content))
-}
-
-fn file_location_2_base_path(file_path: &str) -> String {
-    let mut path_split = file_path.split('/')
-    .skip_while(|element| *element != "src");
-    path_split.next().expect("file path needs to contain 'src/'");
-    let base_path = path_split.collect::<Vec<&str>>().join("::");
-    format!("crate::{}", &base_path[..base_path.len()-3])
-}
-
-
-#[cfg(test)]
-mod tests {
-use crate::read_rust_files::file_location_2_base_path;
-
-#[test]
-#[should_panic(expected = "file path needs to contain 'src/'")]
-fn test_file_location_2_base_path_no_src() {
-    let input = String::from("main.rs");
-    file_location_2_base_path(&input);
-}
-#[test]
-fn test_file_location_2_base_path_zero_levels() {
-    let input = String::from("src/main.rs");
-    assert_eq!("crate::main".to_string(), file_location_2_base_path(&input));
-}
-#[test]
-fn test_file_location_2_base_path_one_level() {
-    let input = String::from("src/domain/model.rs");
-    assert_eq!("crate::domain::model".to_string(), file_location_2_base_path(&input));
-}
-#[test]
-fn test_file_location_2_base_path_two_levels() {
-    let input = String::from("src/domain/model/item.rs");
-    assert_eq!("crate::domain::model::item".to_string(), file_location_2_base_path(&input));
-}
-#[test]
-fn test_file_location_2_base_path_multiple_levels() {
-    let input = String::from("src/domain/model/items/entity.rs");
-    assert_eq!("crate::domain::model::items::entity".to_string(), file_location_2_base_path(&input));
-}
 }

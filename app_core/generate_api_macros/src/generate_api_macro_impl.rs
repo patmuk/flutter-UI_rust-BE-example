@@ -1,6 +1,6 @@
 use log::debug;
 
-use crate::read_rust_files::{read_rust_file_content, tokens_2_file_locations};
+use crate::utils::read_rust_files::{read_rust_file_content, tokens_2_file_locations};
 use proc_macro2::{Span, TokenStream};
 use quote::{format_ident, quote, ToTokens};
 use syn::{parse_str, File, Result};
@@ -165,12 +165,12 @@ fn get_domain_model_struct_name(ast: &File) -> Result<String> {
 mod tests {
     use crate::{
         generate_api_macro_impl::get_processing_error_enum_idents,
-        read_rust_files::read_rust_file_content,
+        utils::read_rust_files::read_rust_file_content,
     };
 
     thread_local! {
         static AST: syn::File = syn::parse_file(
-            &read_rust_file_content("tests/fixtures/src/good_source_file.rs")
+            &read_rust_file_content("tests/fixtures/src/good_source_file/mod.rs")
             .unwrap()
             .1,
         ).unwrap();
