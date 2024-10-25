@@ -12,9 +12,9 @@
 // use flutter_rust_bridge::frb;
 // use serde::{Deserialize, Serialize};
 
-include!("../mocks/app_state_mock.rs");
-include!("../mocks/rust_auto_opaque_mock.rs");
-include!("../mocks/cqrs_traits_mock.rs");
+include!("./mocks/app_state_mock.rs");
+include!("./mocks/rust_auto_opaque_mock.rs");
+include!("./mocks/cqrs_traits_mock.rs");
 
 // const app_state_const: AppState = AppState {};
 // const MODEL_LOCK: RustAutoOpaque<MyGoodDomainModel> = RustAutoOpaque {

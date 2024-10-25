@@ -1,6 +1,6 @@
 #[cfg(test)]
 use generate_api_macros::generate_api;
-include!("fixtures/good_source_file.rs");
+include!("fixtures/src/good_source_file.rs");
 
 #[test]
 // mod
@@ -8,7 +8,7 @@ include!("fixtures/good_source_file.rs");
 // use crate::good_source_file;
 
 fn test_macro() {
-    generate_api!("app_core/generate_api_macros/tests/fixtures/good_source_file.rs");
+    generate_api!("app_core/generate_api_macros/tests/fixtures/src/good_source_file.rs");
 
     // assert_eq!(A::hello_macro(), "A".to_string());
 }

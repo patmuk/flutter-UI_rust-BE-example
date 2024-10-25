@@ -21,7 +21,7 @@ pub (crate) fn tokens_2_file_locations(file_pathes: TokenStream) -> Result<Vec<S
 }
 
 /// reads a rust file and returns (path, content)
-pub (crate) fn read_rust_file_content(file_path: String) -> Result<(String, String)> {
+pub (crate) fn read_rust_file_content(file_path: &str) -> Result<(String, String)> {
 
     let path = file_location_2_base_path(&file_path);
     

@@ -1,9 +1,9 @@
-use log::{debug, trace};
+use log::debug;
 
 use crate::read_rust_files::{read_rust_file_content, tokens_2_file_locations};
 use proc_macro2::{Span, TokenStream};
 use quote::{format_ident, quote, ToTokens};
-use syn::{parse_str, File, Ident, Result, UsePath, UseTree};
+use syn::{parse_str, File, Result};
 
 pub(crate) fn generate_api_impl(file_pathes: TokenStream) -> Result<TokenStream> {
     simple_logger::init_with_level(log::Level::Debug).expect("faild to init logger");
@@ -11,7 +11,7 @@ pub(crate) fn generate_api_impl(file_pathes: TokenStream) -> Result<TokenStream>
     log::info!("-------- Generating API --------");
 
     let file_locations = tokens_2_file_locations(file_pathes)?;
-    let (base_path, file_content) = read_rust_file_content(file_locations[0].to_owned())?;
+    let (base_path, file_content) = read_rust_file_content(&file_locations[0])?;
 
     // TODO implement for more than one file
     let ast = syn::parse_file(&file_content)?;
@@ -161,24 +161,27 @@ fn get_domain_model_struct_name(ast: &File) -> Result<String> {
     Ok(domain_model_name[0].clone())
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use quote::quote;
-//     use syn;
+#[cfg(test)]
+mod tests {
+    use crate::{
+        generate_api_macro_impl::get_processing_error_enum_idents,
+        read_rust_files::read_rust_file_content,
+    };
 
-//     #[test]
-//     fn parse_fn() {
-//         let source = r#"
-//         fn main() {
-//             let string = "line one
-//             line two";
-//         }
-//         "#;
+    thread_local! {
+        static AST: syn::File = syn::parse_file(
+            &read_rust_file_content("tests/fixtures/src/good_source_file.rs")
+            .unwrap()
+            .1,
+        ).unwrap();
+    }
 
-//         let syntax: File = syn::parse_str(source).unwrap();
-//         println!("{:#?}\n", syntax);
-
-//         println!("{}", quote!(#syntax));
-//     }
-// }
+    #[test]
+    fn generate_error_enum_test() {
+        let result = AST.with(get_processing_error_enum_idents);
+        assert_eq!(
+            "MyGoodProcessingError".to_string(),
+            *result.first().unwrap()
+        );
+    }
+}
