@@ -1,4 +1,3 @@
-
 [workspace]
 members = ["app_core", "shell_cli"]
 
@@ -6,9 +5,9 @@ members = ["app_core", "shell_cli"]
 resolver = "2"
 authors = ["PSTT"]
 edition = "2021"
-repository = "https://github.com/patmuk/sherry"
+repository = "https://github.com/patmuk/flutter-UI_rust-BE-example"
 license = "Apache-2.0"
-keywords = ["photos", "sharring"]
+keywords = ["frb", "flutter_rust_bridge", "backend", "example", "cqrs", "crux"]
 
 [workspace.dependencies]
 thiserror = "^1.0.40"
