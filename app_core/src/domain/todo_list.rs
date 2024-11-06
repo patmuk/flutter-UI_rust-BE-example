@@ -1,9 +1,10 @@
-use crate::{
-    application::{app_state::AppState, bridge::frb_generated::RustAutoOpaque},
-    utils::cqrs_traits::CqrsModel,
-};
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
+
+use crate::{
+    application::{api::api_traits::AppState, bridge::frb_generated::RustAutoOpaque},
+    utils::cqrs_traits::CqrsModel,
+};
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[frb(opaque)]
@@ -59,7 +60,7 @@ impl TodoListModel {
     }
 
     pub(crate) fn add_todo(
-        app_state: &AppState,
+        self,
         todo: String,
     ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
         let model_lock = Self::get_model_lock(app_state);
@@ -68,11 +69,12 @@ impl TodoListModel {
             .items
             .push(TodoItem { text: todo });
         app_state.mark_dirty();
+        self.items.push(TodoItem { text: todo });
         // this clone is cheap, as it is on ARC (RustAutoOpaque>T> = Arc<RwMutex<T>>)
         Ok(vec![TodoListEffect::RenderTodoList(model_lock.clone())])
     }
-    pub(crate) fn remove_todo(
-        app_state: &AppState,
+    pub(crate) fn remove_todo<AS: AppState>(
+        app_state: &AS,
         todo_pos: usize,
     ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
         let model_lock = Self::get_model_lock(app_state);
@@ -85,16 +87,16 @@ impl TodoListModel {
             Ok(vec![TodoListEffect::RenderTodoList(model_lock.clone())])
         }
     }
-    pub(crate) fn clean_list(
-        app_state: &AppState,
+    pub(crate) fn clean_list<AS: AppState>(
+        app_state: &AS,
     ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
         let model_lock = Self::get_model_lock(app_state);
         model_lock.blocking_write().items.clear();
         app_state.mark_dirty();
         Ok(vec![TodoListEffect::RenderTodoList(model_lock.clone())])
     }
-    pub(crate) fn get_all_todos(
-        app_state: &AppState,
+    pub(crate) fn get_all_todos<AS: AppState>(
+        app_state: &AS,
     ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
         let model_lock = TodoListModel::get_model_lock(app_state);
         Ok(vec![TodoListEffect::RenderTodoList(model_lock.clone())])
@@ -109,7 +111,7 @@ pub enum TodoListProcessingError {
 
 impl CqrsModel for TodoListModel {
     /// bootstrap the model from the app's state
-    fn get_model_lock(app_state: &AppState) -> &RustAutoOpaque<Self> {
+    fn get_model_lock<AS: AppState>(app_state: &AS) -> &RustAutoOpaque<Self> {
         &app_state.model
     }
 }
@@ -130,7 +132,7 @@ impl PartialEq for TodoListEffect {
 
 #[cfg(test)]
 mod tests {
-    use crate::application::app_state::AppState;
+    use crate::application::app_state::AppStateImpl;
 
     use super::*;
 
@@ -144,7 +146,7 @@ mod tests {
         let expected_effects = vec![TodoListEffect::RenderTodoList(expected_model.clone())];
 
         let actual_model = RustAutoOpaque::new(TodoListModel::default());
-        let app_state = AppState::from_model(&actual_model);
+        let app_state = AppStateImpl::from_model(&actual_model);
         let actual_effects = TodoListModel::add_todo(&app_state, "test the list".into()).unwrap();
 
         assert_eq!(actual_effects, expected_effects);
@@ -164,7 +166,7 @@ mod tests {
                 text: "remove me".into(),
             }],
         });
-        let app_state = AppState::from_model(&actual_model);
+        let app_state = AppStateImpl::from_model(&actual_model);
         let actual_effects = TodoListModel::remove_todo(&app_state, 1).unwrap();
 
         assert_eq!(actual_effects, expected_effects);
@@ -190,7 +192,7 @@ mod tests {
         actual_model.blocking_write().items.push(TodoItem {
             text: "clean me".into(),
         });
-        let app_state = AppState::from_model(&actual_model);
+        let app_state = AppStateImpl::from_model(&actual_model);
 
         let actual_effects = TodoListModel::clean_list(&app_state).unwrap();
 

@@ -9,11 +9,10 @@ use std::{
 use log::{debug, error, info, trace};
 use serde::{Deserialize, Serialize};
 
-use crate::application::{
-    api::lifecycle::{AppConfig, Lifecycle},
-    bridge::frb_generated::RustAutoOpaque,
-};
+use crate::application::bridge::frb_generated::RustAutoOpaque;
 use crate::domain::todo_list::TodoListModel;
+
+use super::api::api_traits::{AppConfig, AppState};
 
 /// holds the complete state of the app, as a global static variable
 /// use `RustAutoOpaque<T>`, which is `Arc<RwLock<T>>`, on the fields,
@@ -23,7 +22,7 @@ use crate::domain::todo_list::TodoListModel;
 /// but the finer granular the better parallelism you will get.
 /// Just remember that you can not wrap children, if the parent is already wrapped.
 #[derive(Debug)]
-pub(crate) struct AppState {
+pub(crate) struct AppStateImpl {
     // We pretend that (parts of) the model are too hugh to performantly copy from Rust to Dart.
     // Thus we implement getters for the parts which need to be shown in the UI only.
     pub(crate) model: RustAutoOpaque<TodoListModel>,
@@ -31,7 +30,7 @@ pub(crate) struct AppState {
     dirty: AtomicBool,
 }
 
-impl Serialize for AppState {
+impl Serialize for AppStateImpl {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -41,37 +40,37 @@ impl Serialize for AppState {
     }
 }
 
-impl<'de> Deserialize<'de> for AppState {
+impl<'de> Deserialize<'de> for AppStateImpl {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
         // Deserialize the model and dirty flag. The dirty flag is always false after loading
         let model = TodoListModel::deserialize(deserializer)?;
-        // let model = RustAutoOpaque::<TodoListModel>::deserialize(deserializer)?;
-        Ok(AppState {
+        Ok(AppStateImpl {
             model: RustAutoOpaque::new(model),
             dirty: AtomicBool::new(false),
         })
     }
 }
 
-impl AppState {
+impl AppState for AppStateImpl {
     // called by the lifecycle initialization. Get the app state over the lifecycle singleton.
-    pub(crate) fn load_or_new(app_config: &AppConfig) -> Self {
+    fn load_or_new<A: AppConfig>(app_config: &A) -> Self {
         debug!("creating the app state from persisted or default values");
-        let app_state = match AppState::load(&app_config.app_state_file_path) {
+        let app_state = match AppStateImpl::load(&app_config.app_state_file_path()) {
             Err(AppStateLoadError::ReadFile(err, path)) if err.kind() == IoErrorKind::NotFound => {
                 info!(
                     "No app state file found in {:?}, creating new state there.",
                     &path
                 );
-                AppState::new(&app_config.app_state_file_path)
+                AppStateImpl::new(&app_config.app_state_file_path())
             }
             Err(err) => {
                 panic!(
                     "Error loading app state from file {:?}: {}",
-                    &app_config.app_state_file_path, err
+                    &app_config.app_state_file_path(),
+                    err
                 );
                 // TODO better handling
                 // error!("Error reading file, creating a new state: {}", err);
@@ -85,49 +84,13 @@ impl AppState {
         );
         app_state
     }
-    fn new(path: &PathBuf) -> Self {
-        trace!("creating new app state");
-        // create the directories, but no need to write the file, as there is only the default content
-        // remove the last part, as this is the file
-        let directories = path
-            .components()
-            .take(path.components().count() - 1)
-            .collect::<PathBuf>();
-        create_dir_all(directories).unwrap_or_else(|_| {
-            panic!(
-                "failed to create directories for the app's state persistance in {:?}",
-                &path
-            )
-        });
-        AppState {
-            model: RustAutoOpaque::new(TodoListModel::default()),
-            dirty: AtomicBool::new(false),
-        }
+
+    fn mark_dirty(&self) {
+        self.dirty.store(true, Ordering::SeqCst);
     }
-    #[cfg(test)]
-    pub(crate) fn from_model(model: &RustAutoOpaque<TodoListModel>) -> Self {
-        Self {
-            model: model.clone(),
-            dirty: AtomicBool::new(false),
-        }
-    }
-    // get the last persisted app state from a file, if any exists, otherwise creates a new app state
-    // this function is only called once, in the initialization/app state constructor
-    fn load(path: &Path) -> Result<AppState, AppStateLoadError> {
-        trace!("loading the app state from {path:?}");
-        let loaded = std::fs::read(path)
-            .map_err(|error| AppStateLoadError::ReadFile(error, path.to_owned()))?;
-        let app_state: AppState = bincode::deserialize(&loaded)
-            .map_err(|e| AppStateLoadError::DeserializationError(e, path.to_path_buf()))?;
-        app_state.dirty.store(false, Ordering::SeqCst);
-        Ok(app_state)
-    }
-    /// persist the app state to the previously stored location
-    pub(crate) fn persist(&self) -> Result<(), io::Error> {
-        self.persist_to_path(&Lifecycle::get().app_config.app_state_file_path)
-    }
+
     /// Stores the app's state in a file.
-    pub(crate) fn persist_to_path(&self, path: &Path) -> Result<(), io::Error> {
+    fn persist_to_path(&self, path: &Path) -> Result<(), io::Error> {
         if !self.dirty.load(Ordering::SeqCst) {
             trace!("app state os not dirty:\n  {self:?}");
         } else {
@@ -145,8 +108,45 @@ impl AppState {
         }
         Ok(())
     }
-    pub(crate) fn mark_dirty(&self) {
-        self.dirty.store(true, Ordering::SeqCst);
+}
+impl AppStateImpl {
+    fn new(path: &Path) -> Self {
+        trace!("creating new app state");
+        // create the directories, but no need to write the file, as there is only the default content
+        // remove the last part, as this is the file
+        let directories = path
+            .components()
+            .take(path.components().count() - 1)
+            .collect::<PathBuf>();
+        create_dir_all(directories).unwrap_or_else(|_| {
+            panic!(
+                "failed to create directories for the app's state persistance in {:?}",
+                &path
+            )
+        });
+        AppStateImpl {
+            model: RustAutoOpaque::new(TodoListModel::default()),
+            dirty: AtomicBool::new(false),
+        }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn from_model(model: &RustAutoOpaque<TodoListModel>) -> Self {
+        Self {
+            model: model.clone(),
+            dirty: AtomicBool::new(false),
+        }
+    }
+    // get the last persisted app state from a file, if any exists, otherwise creates a new app state
+    // this function is only called once, in the initialization/app state constructor
+    fn load(path: &Path) -> Result<AppStateImpl, AppStateLoadError> {
+        trace!("loading the app state from {path:?}");
+        let loaded = std::fs::read(path)
+            .map_err(|error| AppStateLoadError::ReadFile(error, path.to_owned()))?;
+        let app_state: AppStateImpl = bincode::deserialize(&loaded)
+            .map_err(|e| AppStateLoadError::DeserializationError(e, path.to_path_buf()))?;
+        app_state.dirty.store(false, Ordering::SeqCst);
+        Ok(app_state)
     }
 }
 
@@ -169,9 +169,10 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::LazyLock;
 
+    use crate::application::api::api_traits::AppState;
     use crate::application::api::processing::Cqrs;
 
-    use super::{AppState, AppStateLoadError};
+    use super::{AppStateImpl, AppStateLoadError};
 
     /// Path to the temporary test directory
 
@@ -188,8 +189,8 @@ mod tests {
             std::fs::remove_dir_all(root_dir).expect("Could not delete test file");
         }
     }
-    fn create_test_app_state() -> AppState {
-        let mut app_state = AppState::new(&TEST_FILE);
+    fn create_test_app_state() -> AppStateImpl {
+        let mut app_state = AppStateImpl::new(&TEST_FILE);
         mock_process_cqrs(
             Cqrs::TodoCommandAddTodo("Test setup todo".to_string()),
             &mut app_state,
@@ -197,12 +198,12 @@ mod tests {
         .expect("Could not persist the initial test state!");
         app_state
     }
-    fn mock_process_cqrs(cqrs: Cqrs, app_state: &mut AppState) -> Result<(), std::io::Error> {
+    fn mock_process_cqrs(cqrs: Cqrs, app_state: &mut AppStateImpl) -> Result<(), std::io::Error> {
         cqrs.process_with_app_state(app_state).unwrap();
         app_state.mark_dirty();
         app_state.persist_to_path(&TEST_FILE)
     }
-    fn assert_eq_app_states(left: &AppState, right: &AppState) {
+    fn assert_eq_app_states(left: &AppStateImpl, right: &AppStateImpl) {
         assert_eq!(*left.model.blocking_read(), *right.model.blocking_read());
     }
 
@@ -214,7 +215,7 @@ mod tests {
             .persist_to_path(&TEST_FILE)
             .expect("App state not persisted");
 
-        let loaded = AppState::load(&TEST_FILE).expect("App state not loaded");
+        let loaded = AppStateImpl::load(&TEST_FILE).expect("App state not loaded");
 
         assert_eq_app_states(&original, &loaded);
         cleanup_test_file();
@@ -229,13 +230,13 @@ mod tests {
             .expect("App state not persisted");
         assert!(&TEST_FILE.exists());
 
-        let mut changed = AppState::new(&TEST_FILE);
+        let mut changed = AppStateImpl::new(&TEST_FILE);
         mock_process_cqrs(
             Cqrs::TodoCommandAddTodo("Changed todo".to_string()),
             &mut changed,
         )?;
 
-        let loaded = AppState::load(&TEST_FILE).unwrap();
+        let loaded = AppStateImpl::load(&TEST_FILE).unwrap();
         assert_eq_app_states(&changed, &loaded);
         cleanup_test_file();
         Ok(())
@@ -252,13 +253,13 @@ mod tests {
             .write_all(b"corrupted")
             .unwrap();
 
-        let mut changed = AppState::new(&TEST_FILE);
+        let mut changed = AppStateImpl::new(&TEST_FILE);
         mock_process_cqrs(
             Cqrs::TodoCommandAddTodo("Changed todo".to_string()),
             &mut changed,
         )?;
 
-        let loaded = AppState::load(&TEST_FILE).unwrap();
+        let loaded = AppStateImpl::load(&TEST_FILE).unwrap();
         assert_eq_app_states(&changed, &loaded);
         cleanup_test_file();
         Ok(())
@@ -271,7 +272,7 @@ mod tests {
             create_dir_all(parent).unwrap();
         }
         std::fs::write(&*TEST_FILE, "corrupted").unwrap();
-        let result = AppState::load(&TEST_FILE);
+        let result = AppStateImpl::load(&TEST_FILE);
         assert!(&result.is_err());
         use bincode::ErrorKind;
         assert!(matches!(
@@ -306,7 +307,7 @@ mod tests {
         cleanup_test_file();
         assert!(!TEST_FILE.exists());
 
-        let result = AppState::load(&TEST_FILE);
+        let result = AppStateImpl::load(&TEST_FILE);
 
         assert!(result.is_err());
         assert!(

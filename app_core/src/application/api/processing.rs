@@ -50,7 +50,10 @@ impl Cqrs {
         app_state: &AppState,
     ) -> Result<Vec<Effect>, ProcessingError> {
         let result = match self {
-            Cqrs::TodoCommandAddTodo(todo) => TodoListModel::add_todo(app_state, todo),
+            Cqrs::TodoCommandAddTodo(todo) => {
+                // app_state.
+                TodoListModel::add_todo(app_state, todo)
+            }
             Cqrs::TodoCommandRemoveTodo(todo_pos) => {
                 TodoListModel::remove_todo(app_state, todo_pos)
             }
