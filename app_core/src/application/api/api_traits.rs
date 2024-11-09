@@ -15,6 +15,7 @@ pub trait Lifecycle {
 
     fn get() -> &'static Self;
     fn app_config<'a>(&'a self) -> &'a Self::AC;
+    fn app_state<'a>(&'a self) -> &'a Self::AS;
 
     /// call to initialize the app.
     /// loads the app's state, which can be io-heavy
@@ -40,8 +41,8 @@ pub(crate) trait AppState {
     where
         Self: Sized;
     fn persist_to_path(&self, path: &Path) -> Result<(), std::io::Error>;
-    // fn get_dirty_flag(&self) -> std::sync::atomic::AtomicBool;
+    fn dirty_flag_value(&self) -> bool;
     fn mark_dirty(&self);
-    // fn get_model() -> RustAutoOpaque<CqrsModel>;
-    // fn get_model() -> impl CqrsModel;
+    // fn get_model<M: CqrsModel>(&self, model_type: Self::ModelType) -> &Self::Lock;
+    // fn get_model(&self, model_type: Self::ModelType) -> &Self::Lock;
 }

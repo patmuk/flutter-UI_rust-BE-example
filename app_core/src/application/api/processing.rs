@@ -1,9 +1,12 @@
-use std::io;
-
-use super::lifecycle::Lifecycle;
 use crate::{
-    application::{app_state::AppState, bridge::frb_generated::RustAutoOpaque},
+    application::bridge::frb_generated::RustAutoOpaque,
     domain::todo_list::{TodoListEffect, TodoListModel, TodoListProcessingError},
+    utils::cqrs_traits::Cqrs,
+};
+
+use super::{
+    api_traits::{AppState, Lifecycle},
+    lifecycle::LifecycleImpl,
 };
 
 ///////////
@@ -12,11 +15,13 @@ use crate::{
 //TODO replace with macro_rules!([TodoComand, TodoQuery])
 // TODO consider changing the name to TodoCommand_AddTodo
 // test codegen for Dart!!!
-pub enum Cqrs {
-    TodoCommandAddTodo(String),
-    TodoCommandRemoveTodo(usize),
-    TodoCommandCleanList,
-    TodoQueryAllTodos,
+pub enum TodoCommand {
+    AddTodo(String),
+    RemoveTodo(usize),
+    CleanList,
+}
+pub enum TodoQuery {
+    AllTodos,
 }
 
 // TODO codegen it
@@ -44,38 +49,74 @@ pub enum Effect {
     // TodoListEffectRenderTodoList(TodoListEffect),
 }
 
-impl Cqrs {
-    pub(crate) fn process_with_app_state(
-        self,
-        app_state: &AppState,
-    ) -> Result<Vec<Effect>, ProcessingError> {
-        let result = match self {
-            Cqrs::TodoCommandAddTodo(todo) => {
-                // app_state.
-                TodoListModel::add_todo(app_state, todo)
-            }
-            Cqrs::TodoCommandRemoveTodo(todo_pos) => {
-                TodoListModel::remove_todo(app_state, todo_pos)
-            }
-            Cqrs::TodoCommandCleanList => TodoListModel::clean_list(app_state),
-            Cqrs::TodoQueryAllTodos => TodoListModel::get_all_todos(app_state),
-        }
-        .map_err(ProcessingError::TodoListProcessingError)?
-        .into_iter()
-        .map(|effect| match effect {
-            TodoListEffect::RenderTodoList(content) => {
-                Effect::TodoListEffectRenderTodoList(content)
-            }
-        })
-        .collect();
-        Ok(result)
+impl Cqrs for TodoCommand {
+    type Effect = Effect;
+    type ProcessingError = ProcessingError;
+
+    fn process(self) -> Result<Vec<Effect>, ProcessingError> {
+        let lifecycle = LifecycleImpl::get();
+        self.process_with_lifecycle(lifecycle)
     }
-    pub fn process(self) -> Result<Vec<Effect>, ProcessingError> {
-        let app_state = &Lifecycle::get().app_state;
-        let result = self.process_with_app_state(app_state)?;
-        //persist the state, but only if dirty
-        let _ = app_state.persist().map_err(ProcessingError::NotPersisted);
-        Ok(result)
+}
+
+impl Cqrs for TodoQuery {
+    type Effect = Effect;
+    type ProcessingError = ProcessingError;
+
+    fn process(self) -> Result<Vec<Effect>, ProcessingError> {
+        //todo get AppStateImpl for codegen -> from Lifecycle trait impl type
+        self.process_with_lifecycle(LifecycleImpl::get())
+    }
+}
+
+impl TodoQuery {
+    fn process_with_lifecycle(
+        self,
+        lifecycle: &LifecycleImpl,
+    ) -> Result<Vec<Effect>, ProcessingError> {
+        let todo_list_model_lock = &lifecycle.app_state().todo_list_model_lock;
+        let result = match self {
+            TodoQuery::AllTodos => todo_list_model_lock.query_get_all_todos(),
+        }
+        .map_err(ProcessingError::TodoListProcessingError)?;
+        Ok(result
+            .into_iter()
+            .map(|effect| match effect {
+                TodoListEffect::RenderTodoList(model_lock) => {
+                    Effect::TodoListEffectRenderTodoList(model_lock)
+                }
+            })
+            .collect())
+    }
+}
+impl TodoCommand {
+    fn process_with_lifecycle(
+        self,
+        lifecycle: &LifecycleImpl,
+    ) -> Result<Vec<Effect>, ProcessingError> {
+        //todo get AppStateImpl for codegen -> from Lifecycle trait impl type
+        let app_state = lifecycle.app_state();
+        let todo_list_model_lock = &app_state.todo_list_model_lock;
+        let result = match self {
+            TodoCommand::AddTodo(todo) => todo_list_model_lock.command_add_todo(todo),
+            TodoCommand::RemoveTodo(todo_pos) => todo_list_model_lock.command_remove_todo(todo_pos),
+            TodoCommand::CleanList => todo_list_model_lock.command_clean_list(),
+        }
+        .map_err(ProcessingError::TodoListProcessingError)?;
+        let (state_changed, result) = result;
+
+        if state_changed {
+            app_state.mark_dirty();
+            lifecycle.persist().map_err(ProcessingError::NotPersisted)?;
+        }
+        Ok(result
+            .into_iter()
+            .map(|effect| match effect {
+                TodoListEffect::RenderTodoList(model_lock) => {
+                    Effect::TodoListEffectRenderTodoList(model_lock)
+                }
+            })
+            .collect())
     }
 }
 
@@ -84,7 +125,7 @@ pub enum ProcessingError {
     #[error("Error during processing: {0}")]
     TodoListProcessingError(TodoListProcessingError),
     #[error("Processing was fine, but state could not be persisted: {0}")]
-    NotPersisted(#[source] io::Error),
+    NotPersisted(#[source] std::io::Error),
 }
 
 /////////////

@@ -44,6 +44,10 @@ impl api_traits::Lifecycle for LifecycleImpl {
         &self.app_config
     }
 
+    fn app_state<'a>(&'a self) -> &'a Self::AS {
+        &self.app_state
+    }
+
     /// persist the app state to the previously stored location
     fn persist(&self) -> Result<(), io::Error> {
         self.app_state

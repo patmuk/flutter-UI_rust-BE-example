@@ -9,8 +9,8 @@ use std::{
 use log::{debug, error, info, trace};
 use serde::{Deserialize, Serialize};
 
-use crate::application::bridge::frb_generated::RustAutoOpaque;
-use crate::domain::todo_list::TodoListModel;
+use crate::domain::todo_list::TodoListModelLock;
+use crate::{domain::todo_list::TodoListModel, utils::cqrs_traits::CqrsModelLock};
 
 use super::api::api_traits::{AppConfig, AppState};
 
@@ -25,9 +25,12 @@ use super::api::api_traits::{AppConfig, AppState};
 pub(crate) struct AppStateImpl {
     // We pretend that (parts of) the model are too hugh to performantly copy from Rust to Dart.
     // Thus we implement getters for the parts which need to be shown in the UI only.
-    pub(crate) model: RustAutoOpaque<TodoListModel>,
+    pub(crate) todo_list_model_lock: TodoListModelLock,
     // flag, if writing to disc is needed
     dirty: AtomicBool,
+}
+pub(crate) enum Model {
+    TodoListModel,
 }
 
 impl Serialize for AppStateImpl {
@@ -36,7 +39,10 @@ impl Serialize for AppStateImpl {
         S: serde::Serializer,
     {
         // Serialize the model, the dirty flag is always false after loading
-        self.model.blocking_read().serialize(serializer)
+        self.todo_list_model_lock
+            .get()
+            .blocking_read()
+            .serialize(serializer)
     }
 }
 
@@ -48,7 +54,7 @@ impl<'de> Deserialize<'de> for AppStateImpl {
         // Deserialize the model and dirty flag. The dirty flag is always false after loading
         let model = TodoListModel::deserialize(deserializer)?;
         Ok(AppStateImpl {
-            model: RustAutoOpaque::new(model),
+            todo_list_model_lock: model.into(),
             dirty: AtomicBool::new(false),
         })
     }
@@ -96,9 +102,10 @@ impl AppState for AppStateImpl {
         } else {
             trace!("persisting app state:\n  {self:?}\n to {:?}", path);
             trace!("App state is dirty, writing to file");
-            let serialized_app_state: Vec<u8> =
-                bincode::serialize(self).expect("bincode.serialzation itself should not result in an error, \
-                                                    unless the contract with serde is not respected!");
+            let serialized_app_state: Vec<u8> = bincode::serialize(self).expect(
+                "bincode.serialzation itself should not result in an error, \
+            unless the contract with serde is not respected!",
+            );
             if let Some(parent) = path.parent() {
                 create_dir_all(parent)?;
             }
@@ -108,6 +115,17 @@ impl AppState for AppStateImpl {
         }
         Ok(())
     }
+    fn dirty_flag_value(&self) -> bool {
+        self.dirty.load(Ordering::SeqCst) == true
+    }
+
+    // type ModelType = Model;
+    // fn get_model<TodoListModel>(&self, model_type: Model) -> &RustAutoOpaque<TodoListModel> {
+    //     //TodoListModelLock {
+    //     match model_type {
+    //         Model::TodoListModel => &self.todo_list_model_lock,
+    //     }
+    // }
 }
 impl AppStateImpl {
     fn new(path: &Path) -> Self {
@@ -124,16 +142,16 @@ impl AppStateImpl {
                 &path
             )
         });
-        AppStateImpl {
-            model: RustAutoOpaque::new(TodoListModel::default()),
+        Self {
+            todo_list_model_lock: TodoListModelLock::default(),
             dirty: AtomicBool::new(false),
         }
     }
 
     #[cfg(test)]
-    pub(crate) fn from_model(model: &RustAutoOpaque<TodoListModel>) -> Self {
+    pub(crate) fn from_model(model: TodoListModel) -> Self {
         Self {
-            model: model.clone(),
+            todo_list_model_lock: model.into(),
             dirty: AtomicBool::new(false),
         }
     }
@@ -147,6 +165,10 @@ impl AppStateImpl {
             .map_err(|e| AppStateLoadError::DeserializationError(e, path.to_path_buf()))?;
         app_state.dirty.store(false, Ordering::SeqCst);
         Ok(app_state)
+    }
+
+    pub(crate) fn get_todo_list_model_lock(&self) -> &TodoListModelLock {
+        &self.todo_list_model_lock
     }
 }
 
@@ -170,7 +192,7 @@ mod tests {
     use std::sync::LazyLock;
 
     use crate::application::api::api_traits::AppState;
-    use crate::application::api::processing::Cqrs;
+    use crate::utils::cqrs_traits::CqrsModelLock;
 
     use super::{AppStateImpl, AppStateLoadError};
 
@@ -191,20 +213,20 @@ mod tests {
     }
     fn create_test_app_state() -> AppStateImpl {
         let mut app_state = AppStateImpl::new(&TEST_FILE);
-        mock_process_cqrs(
-            Cqrs::TodoCommandAddTodo("Test setup todo".to_string()),
-            &mut app_state,
-        )
-        .expect("Could not persist the initial test state!");
+        mock_process_cqrs("Test setup todo".to_string(), &mut app_state)
+            .expect("Could not persist the initial test state!");
         app_state
     }
-    fn mock_process_cqrs(cqrs: Cqrs, app_state: &mut AppStateImpl) -> Result<(), std::io::Error> {
-        cqrs.process_with_app_state(app_state).unwrap();
+    fn mock_process_cqrs(todo: String, app_state: &mut AppStateImpl) -> Result<(), std::io::Error> {
+        let _ = app_state.todo_list_model_lock.command_add_todo(todo);
         app_state.mark_dirty();
         app_state.persist_to_path(&TEST_FILE)
     }
     fn assert_eq_app_states(left: &AppStateImpl, right: &AppStateImpl) {
-        assert_eq!(*left.model.blocking_read(), *right.model.blocking_read());
+        assert_eq!(
+            *left.todo_list_model_lock.get().blocking_read(),
+            *right.todo_list_model_lock.get().blocking_read()
+        );
     }
 
     #[test]
@@ -231,10 +253,7 @@ mod tests {
         assert!(&TEST_FILE.exists());
 
         let mut changed = AppStateImpl::new(&TEST_FILE);
-        mock_process_cqrs(
-            Cqrs::TodoCommandAddTodo("Changed todo".to_string()),
-            &mut changed,
-        )?;
+        mock_process_cqrs("Changed todo".to_string(), &mut changed)?;
 
         let loaded = AppStateImpl::load(&TEST_FILE).unwrap();
         assert_eq_app_states(&changed, &loaded);
@@ -254,10 +273,7 @@ mod tests {
             .unwrap();
 
         let mut changed = AppStateImpl::new(&TEST_FILE);
-        mock_process_cqrs(
-            Cqrs::TodoCommandAddTodo("Changed todo".to_string()),
-            &mut changed,
-        )?;
+        mock_process_cqrs("Changed todo".to_string(), &mut changed)?;
 
         let loaded = AppStateImpl::load(&TEST_FILE).unwrap();
         assert_eq_app_states(&changed, &loaded);

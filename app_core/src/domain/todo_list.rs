@@ -1,12 +1,17 @@
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    application::{api::api_traits::AppState, bridge::frb_generated::RustAutoOpaque},
-    utils::cqrs_traits::CqrsModel,
-};
+use crate::application::bridge::frb_generated::RustAutoOpaque;
+use crate::utils::cqrs_traits::{CqrsModel, CqrsModelLock};
 
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+use super::common_value_objects::StateChanged;
+
+#[derive(Debug, Default)]
+pub struct TodoListModelLock {
+    lock: RustAutoOpaque<TodoListModel>,
+}
+
+#[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
 #[frb(opaque)]
 pub struct TodoListModel {
     /// the vector 'items' is the critical resource we want to protect for concurrent access.
@@ -23,10 +28,12 @@ pub struct TodoListModel {
     items: Vec<TodoItem>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 struct TodoItem {
     text: String,
 }
+
+impl CqrsModel for TodoListModel {}
 
 #[derive(Debug)]
 pub enum TodoListEffect {
@@ -44,10 +51,38 @@ pub enum TodoListEffect {
     // In strict CQRS a command should not return a value.
     // However, this safes a consecutive query.
     // Thus, return only data for which a query exists.
+    /// this indicates that the model has changed, so that the app's state should be persisted.
+    /// to avoid scanning the entire vec, this must be the first element.
+    // this indicates that the model has changed, so that the app's state should be persisted.
     RenderTodoList(RustAutoOpaque<TodoListModel>),
 }
+impl CqrsModelLock for TodoListModelLock {
+    type Lock = RustAutoOpaque<TodoListModel>;
+    type Model = TodoListModel;
 
-impl TodoListModel {
+    fn get<'a>(&'a self) -> &'a Self::Lock {
+        &self.lock
+    }
+    fn clone(&self) -> Self::Lock {
+        self.lock.clone()
+    }
+}
+
+impl From<TodoListModel> for TodoListModelLock {
+    fn from(model: TodoListModel) -> Self {
+        TodoListModelLock {
+            lock: RustAutoOpaque::new(model),
+        }
+    }
+}
+
+impl From<TodoListModelLock> for TodoListModel {
+    fn from(val: TodoListModelLock) -> Self {
+        std::mem::take(&mut *val.lock.blocking_write())
+    }
+}
+
+impl TodoListModelLock {
     /// This is how to access the fields of a heavy object behind a RustAutoOpaque.
     /// This is copying parts the content, which Dart needs to show to the user.
     ///
@@ -56,50 +91,49 @@ impl TodoListModel {
     /// is heavy to clone, we use a custom function to `clone()` only the lightweight and
     /// only needed part for presentation.
     pub fn get_todos_as_string(&self) -> Vec<String> {
-        self.items.iter().map(|item| item.text.clone()).collect()
+        self.get()
+            .blocking_read()
+            .items
+            .iter()
+            .map(|item| item.text.clone())
+            .collect()
     }
 
-    pub(crate) fn add_todo(
-        self,
+    /// as a command potentially changes the state, the bool denotes if a state change happened.
+    pub(crate) fn command_add_todo(
+        &self,
         todo: String,
-    ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
-        let model_lock = Self::get_model_lock(app_state);
-        model_lock
+    ) -> Result<(StateChanged, Vec<TodoListEffect>), TodoListProcessingError> {
+        self.get()
             .blocking_write()
             .items
             .push(TodoItem { text: todo });
-        app_state.mark_dirty();
-        self.items.push(TodoItem { text: todo });
         // this clone is cheap, as it is on ARC (RustAutoOpaque>T> = Arc<RwMutex<T>>)
-        Ok(vec![TodoListEffect::RenderTodoList(model_lock.clone())])
+        Ok((true, vec![TodoListEffect::RenderTodoList(self.clone())]))
     }
-    pub(crate) fn remove_todo<AS: AppState>(
-        app_state: &AS,
+
+    pub(crate) fn command_remove_todo(
+        &self,
         todo_pos: usize,
-    ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
-        let model_lock = Self::get_model_lock(app_state);
-        let items = &mut model_lock.blocking_write().items;
+    ) -> Result<(StateChanged, Vec<TodoListEffect>), TodoListProcessingError> {
+        let items = &mut self.lock.blocking_write().items;
         if todo_pos > items.len() {
             Err(TodoListProcessingError::TodoDoesNotExist(todo_pos))
         } else {
             items.remove(todo_pos - 1);
-            app_state.mark_dirty();
-            Ok(vec![TodoListEffect::RenderTodoList(model_lock.clone())])
+            Ok((true, vec![TodoListEffect::RenderTodoList(self.clone())]))
         }
     }
-    pub(crate) fn clean_list<AS: AppState>(
-        app_state: &AS,
-    ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
-        let model_lock = Self::get_model_lock(app_state);
-        model_lock.blocking_write().items.clear();
-        app_state.mark_dirty();
-        Ok(vec![TodoListEffect::RenderTodoList(model_lock.clone())])
+    pub(crate) fn command_clean_list(
+        &self,
+    ) -> Result<(StateChanged, Vec<TodoListEffect>), TodoListProcessingError> {
+        self.lock.blocking_write().items.clear();
+        Ok((true, vec![TodoListEffect::RenderTodoList(self.clone())]))
     }
-    pub(crate) fn get_all_todos<AS: AppState>(
-        app_state: &AS,
+    pub(crate) fn query_get_all_todos(
+        &self,
     ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
-        let model_lock = TodoListModel::get_model_lock(app_state);
-        Ok(vec![TodoListEffect::RenderTodoList(model_lock.clone())])
+        Ok(vec![TodoListEffect::RenderTodoList(self.clone())])
     }
 }
 
@@ -109,97 +143,104 @@ pub enum TodoListProcessingError {
     TodoDoesNotExist(usize),
 }
 
-impl CqrsModel for TodoListModel {
-    /// bootstrap the model from the app's state
-    fn get_model_lock<AS: AppState>(app_state: &AS) -> &RustAutoOpaque<Self> {
-        &app_state.model
-    }
-}
-
 // only for tests, as the danger for a deadlock is too big
 #[cfg(test)]
 impl PartialEq for TodoListEffect {
     fn eq(&self, other: &Self) -> bool {
-        matches!((self, other), (TodoListEffect::RenderTodoList(own), TodoListEffect::RenderTodoList(other)) if {
-            // be aware of a potential deadlock here!
-            // (lock on own, waiting for other and in another thread vice-versa!)
-            let own_items = &own.blocking_read().items;
-            let other_items = &other.blocking_read().items;
-            own_items == other_items
-        })
+        match (self, other) {
+            (
+                TodoListEffect::RenderTodoList(own_model_lock),
+                TodoListEffect::RenderTodoList(other_model_lock),
+            ) => {
+                // be aware of a potential deadlock here!
+                // (lock on own, waiting for other and in another thread vice-versa!)
+                let own_items = &own_model_lock.blocking_read().items;
+                let other_items = &other_model_lock.blocking_read().items;
+                own_items == other_items
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::application::app_state::AppStateImpl;
-
     use super::*;
 
-    #[test]
-    fn add_todo() {
-        let expected_model = RustAutoOpaque::new(TodoListModel {
-            items: vec![TodoItem {
-                text: String::from("test the list"),
-            }],
-        });
-        let expected_effects = vec![TodoListEffect::RenderTodoList(expected_model.clone())];
-
-        let actual_model = RustAutoOpaque::new(TodoListModel::default());
-        let app_state = AppStateImpl::from_model(&actual_model);
-        let actual_effects = TodoListModel::add_todo(&app_state, "test the list".into()).unwrap();
-
-        assert_eq!(actual_effects, expected_effects);
+    fn assert_eq_model_lock(
+        expected_model_lock: &TodoListModelLock,
+        actual_model_lock: &TodoListModelLock,
+    ) {
         assert_eq!(
-            *actual_model.blocking_read(),
-            *expected_model.blocking_read()
+            expected_model_lock.get().blocking_read().items,
+            actual_model_lock.get().blocking_read().items
         );
     }
 
     #[test]
-    fn remove_todo() {
-        let expected_model = RustAutoOpaque::new(TodoListModel { items: vec![] });
-        let expected_effects = vec![TodoListEffect::RenderTodoList(expected_model.clone())];
+    fn add_todo() {
+        let expected_model_lock: TodoListModelLock = TodoListModel {
+            items: vec![TodoItem {
+                text: String::from("test the list"),
+            }],
+        }
+        .into();
+        let expected_effects = (
+            true,
+            vec![TodoListEffect::RenderTodoList(expected_model_lock.clone())],
+        );
 
-        let actual_model = RustAutoOpaque::new(TodoListModel {
+        let actual_model_lock = TodoListModelLock::default();
+        let actual_effects = actual_model_lock
+            .command_add_todo("test the list".into())
+            .unwrap();
+
+        assert_eq!(actual_effects, expected_effects);
+        assert_eq_model_lock(&expected_model_lock, &actual_model_lock);
+    }
+
+    #[test]
+    fn remove_todo() {
+        let expected_model_lock = TodoListModelLock::from(TodoListModel { items: vec![] });
+        let expected_effects = (
+            true,
+            vec![TodoListEffect::RenderTodoList(expected_model_lock.clone())],
+        );
+
+        let actual_model = TodoListModel {
             items: vec![TodoItem {
                 text: "remove me".into(),
             }],
-        });
-        let app_state = AppStateImpl::from_model(&actual_model);
-        let actual_effects = TodoListModel::remove_todo(&app_state, 1).unwrap();
+        };
+        let actual_model_lock: TodoListModelLock = actual_model.into();
+        let actual_effects = actual_model_lock.command_remove_todo(1).unwrap();
 
         assert_eq!(actual_effects, expected_effects);
+        assert_eq_model_lock(&expected_model_lock, &actual_model_lock);
         assert_eq!(
-            *actual_model.blocking_read(),
-            *expected_model.blocking_read()
-        );
-        assert_eq!(
-            TodoListModel::remove_todo(&app_state, 1),
-            Err(TodoListProcessingError::TodoDoesNotExist(1))
+            Err(TodoListProcessingError::TodoDoesNotExist(1)),
+            actual_model_lock.command_remove_todo(1),
         );
     }
 
     #[test]
     fn clean_list() {
-        let expected_model = RustAutoOpaque::new(TodoListModel { items: vec![] });
-        let expected_effects = vec![TodoListEffect::RenderTodoList(expected_model.clone())];
+        let expected_model_lock = TodoListModelLock::from(TodoListModel { items: vec![] });
+        let expected_effects = (
+            true,
+            vec![TodoListEffect::RenderTodoList(expected_model_lock.clone())],
+        );
 
-        let actual_model = RustAutoOpaque::new(TodoListModel::default());
-        actual_model.blocking_write().items.push(TodoItem {
+        let mut actual_model = TodoListModel::default();
+        actual_model.items.push(TodoItem {
             text: "remove me".into(),
         });
-        actual_model.blocking_write().items.push(TodoItem {
+        actual_model.items.push(TodoItem {
             text: "clean me".into(),
         });
-        let app_state = AppStateImpl::from_model(&actual_model);
-
-        let actual_effects = TodoListModel::clean_list(&app_state).unwrap();
+        let actual_model_lock: TodoListModelLock = actual_model.into();
+        let actual_effects = actual_model_lock.command_clean_list().unwrap();
 
         assert_eq!(actual_effects, expected_effects);
-        assert_eq!(
-            *actual_model.blocking_read(),
-            *expected_model.blocking_read()
-        );
+        assert_eq_model_lock(&expected_model_lock, &actual_model_lock);
     }
 }
