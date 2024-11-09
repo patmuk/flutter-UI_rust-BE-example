@@ -8,7 +8,7 @@ use super::common_value_objects::StateChanged;
 
 #[derive(Debug, Default)]
 pub struct TodoListModelLock {
-    lock: RustAutoOpaque<TodoListModel>,
+    pub lock: RustAutoOpaque<TodoListModel>,
 }
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
