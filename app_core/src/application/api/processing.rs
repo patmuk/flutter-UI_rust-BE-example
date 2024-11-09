@@ -74,7 +74,10 @@ impl TodoQuery {
         self,
         lifecycle: &LifecycleImpl,
     ) -> Result<Vec<Effect>, ProcessingError> {
-        let todo_list_model_lock = &lifecycle.app_state().todo_list_model_lock;
+        // let app_state = *lifecycle.app_state();
+        // let app_state: &AppStateImpl = lifecycle.app_state();
+        // let app_state: &AppStateImpl = &*lifecycle.app_state();
+        let todo_list_model_lock = &lifecycle.app_state.todo_list_model_lock;
         let result = match self {
             TodoQuery::AllTodos => todo_list_model_lock.query_get_all_todos(),
         }
@@ -95,7 +98,7 @@ impl TodoCommand {
         lifecycle: &LifecycleImpl,
     ) -> Result<Vec<Effect>, ProcessingError> {
         //todo get AppStateImpl for codegen -> from Lifecycle trait impl type
-        let app_state = lifecycle.app_state();
+        let app_state = &lifecycle.app_state;
         let todo_list_model_lock = &app_state.todo_list_model_lock;
         let result = match self {
             TodoCommand::AddTodo(todo) => todo_list_model_lock.command_add_todo(todo),

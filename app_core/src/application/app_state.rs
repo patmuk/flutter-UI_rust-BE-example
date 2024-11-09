@@ -29,9 +29,6 @@ pub(crate) struct AppStateImpl {
     // flag, if writing to disc is needed
     dirty: AtomicBool,
 }
-pub(crate) enum Model {
-    TodoListModel,
-}
 
 impl Serialize for AppStateImpl {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -118,15 +115,8 @@ impl AppState for AppStateImpl {
     fn dirty_flag_value(&self) -> bool {
         self.dirty.load(Ordering::SeqCst) == true
     }
-
-    // type ModelType = Model;
-    // fn get_model<TodoListModel>(&self, model_type: Model) -> &RustAutoOpaque<TodoListModel> {
-    //     //TodoListModelLock {
-    //     match model_type {
-    //         Model::TodoListModel => &self.todo_list_model_lock,
-    //     }
-    // }
 }
+
 impl AppStateImpl {
     fn new(path: &Path) -> Self {
         trace!("creating new app state");

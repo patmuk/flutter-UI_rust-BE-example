@@ -3,7 +3,7 @@ use log::{debug, trace};
 
 use crate::application::app_state::AppStateImpl;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::OnceLock;
 
 use super::api_traits;
@@ -18,9 +18,6 @@ pub struct LifecycleImpl {
 }
 
 impl api_traits::Lifecycle for LifecycleImpl {
-    type AC = AppConfigImpl;
-    type AS = AppStateImpl;
-
     // to avoid an illegal state (app state not loaded) we do the setup and init in one go
     fn new(path: Option<String>) -> &'static Self {
         SINGLETON.get_or_init(|| {
@@ -40,11 +37,11 @@ impl api_traits::Lifecycle for LifecycleImpl {
             .expect("Lifecycle: should been initialized with  ::new()!")
     }
 
-    fn app_config<'a>(&'a self) -> &'a Self::AC {
+    fn app_config<'a>(&'a self) -> &'a impl AppConfig {
         &self.app_config
     }
 
-    fn app_state<'a>(&'a self) -> &'a Self::AS {
+    fn app_state<'a>(&'a self) -> &'a impl AppState {
         &self.app_state
     }
 
