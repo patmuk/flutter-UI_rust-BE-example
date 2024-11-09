@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use log::debug;
+
 pub trait Lifecycle {
     type AC: AppConfig;
     type AS: AppState;
