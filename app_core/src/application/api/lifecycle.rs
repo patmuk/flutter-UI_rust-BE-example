@@ -1,4 +1,4 @@
-use crate::application::api::api_traits::{AppConfig, AppState, Lifecycle};
+use crate::application::api::api_traits::{AppConfig, AppState};
 use log::{debug, trace};
 
 use crate::application::app_state::AppStateImpl;
