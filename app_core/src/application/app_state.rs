@@ -96,7 +96,7 @@ impl AppState for AppStateImpl {
     }
 
     /// Stores the app's state in a file.
-    fn persist_to_path(&self, path: &Path) -> Result<(), io::Error> {
+    fn persist_to_path(&self, path: &PathBuf) -> Result<(), io::Error> {
         if !self.dirty.load(Ordering::SeqCst) {
             trace!("app state os not dirty:\n  {self:?}");
         } else {

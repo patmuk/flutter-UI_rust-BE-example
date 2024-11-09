@@ -89,7 +89,7 @@ impl api_traits::AppConfig for AppConfigImpl {
             }
         }
     }
-    fn app_state_file_path(&self) -> &Path {
+    fn app_state_file_path(&self) -> &PathBuf {
         &self.app_state_file_path
     }
 }

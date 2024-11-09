@@ -1,6 +1,4 @@
-use std::path::Path;
-
-use log::debug;
+use std::path::PathBuf;
 
 pub trait Lifecycle {
     type AC: AppConfig;
@@ -12,11 +10,9 @@ pub trait Lifecycle {
     fn new(path: Option<String>) -> &'static Self;
     // fn new(path: Option<String>) -> &'static Self;
     // fn new<AC: AppConfig, AS: AppState>(path: Option<String>) -> &'static Lifecycle<AC, AS>;
-
     fn get() -> &'static Self;
     fn app_config<'a>(&'a self) -> &'a Self::AC;
     fn app_state<'a>(&'a self) -> &'a Self::AS;
-
     /// call to initialize the app.
     /// loads the app's state, which can be io-heavy
     fn init(app_config: &Self::AC) -> Self::AS {
@@ -24,7 +20,6 @@ pub trait Lifecycle {
         AppState::load_or_new(app_config)
     }
     fn persist(&self) -> Result<(), std::io::Error>;
-
     fn shutdown(&self) -> Result<(), std::io::Error>;
 }
 
@@ -33,14 +28,14 @@ pub trait AppConfig: Default + std::fmt::Debug {
     /// call to overwrite default values.
     /// Doesn't trigger initialization.
     fn new(path: Option<String>) -> Self;
-    fn app_state_file_path(&self) -> &std::path::Path;
+    fn app_state_file_path(&self) -> &std::path::PathBuf;
 }
 
 pub(crate) trait AppState {
     fn load_or_new<A: AppConfig>(app_config: &A) -> Self
     where
         Self: Sized;
-    fn persist_to_path(&self, path: &Path) -> Result<(), std::io::Error>;
+    fn persist_to_path(&self, path: &PathBuf) -> Result<(), std::io::Error>;
     fn dirty_flag_value(&self) -> bool;
     fn mark_dirty(&self);
     // fn get_model<M: CqrsModel>(&self, model_type: Self::ModelType) -> &Self::Lock;
