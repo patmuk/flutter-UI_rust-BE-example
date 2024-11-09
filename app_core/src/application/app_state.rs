@@ -9,8 +9,8 @@ use std::{
 use log::{debug, error, info, trace};
 use serde::{Deserialize, Serialize};
 
+use crate::domain::todo_list::TodoListModel;
 use crate::domain::todo_list::TodoListModelLock;
-use crate::{domain::todo_list::TodoListModel, utils::cqrs_traits::CqrsModelLock};
 
 use super::api::api_traits::{AppConfig, AppState};
 
@@ -37,7 +37,7 @@ impl Serialize for AppStateImpl {
     {
         // Serialize the model, the dirty flag is always false after loading
         self.todo_list_model_lock
-            .get()
+            .lock
             .blocking_read()
             .serialize(serializer)
     }
@@ -61,13 +61,13 @@ impl AppState for AppStateImpl {
     // called by the lifecycle initialization. Get the app state over the lifecycle singleton.
     fn load_or_new<A: AppConfig>(app_config: &A) -> Self {
         debug!("creating the app state from persisted or default values");
-        let app_state = match AppStateImpl::load(&app_config.app_state_file_path()) {
+        let app_state = match AppStateImpl::load(app_config.app_state_file_path()) {
             Err(AppStateLoadError::ReadFile(err, path)) if err.kind() == IoErrorKind::NotFound => {
                 info!(
                     "No app state file found in {:?}, creating new state there.",
                     &path
                 );
-                AppStateImpl::new(&app_config.app_state_file_path())
+                AppStateImpl::new(app_config.app_state_file_path())
             }
             Err(err) => {
                 panic!(
@@ -113,7 +113,7 @@ impl AppState for AppStateImpl {
         Ok(())
     }
     fn dirty_flag_value(&self) -> bool {
-        self.dirty.load(Ordering::SeqCst) == true
+        self.dirty.load(Ordering::SeqCst)
     }
 }
 
@@ -138,13 +138,6 @@ impl AppStateImpl {
         }
     }
 
-    #[cfg(test)]
-    pub(crate) fn from_model(model: TodoListModel) -> Self {
-        Self {
-            todo_list_model_lock: model.into(),
-            dirty: AtomicBool::new(false),
-        }
-    }
     // get the last persisted app state from a file, if any exists, otherwise creates a new app state
     // this function is only called once, in the initialization/app state constructor
     fn load(path: &Path) -> Result<AppStateImpl, AppStateLoadError> {
@@ -155,10 +148,6 @@ impl AppStateImpl {
             .map_err(|e| AppStateLoadError::DeserializationError(e, path.to_path_buf()))?;
         app_state.dirty.store(false, Ordering::SeqCst);
         Ok(app_state)
-    }
-
-    pub(crate) fn get_todo_list_model_lock(&self) -> &TodoListModelLock {
-        &self.todo_list_model_lock
     }
 }
 
@@ -182,7 +171,6 @@ mod tests {
     use std::sync::LazyLock;
 
     use crate::application::api::api_traits::AppState;
-    use crate::utils::cqrs_traits::CqrsModelLock;
 
     use super::{AppStateImpl, AppStateLoadError};
 
@@ -214,8 +202,8 @@ mod tests {
     }
     fn assert_eq_app_states(left: &AppStateImpl, right: &AppStateImpl) {
         assert_eq!(
-            *left.todo_list_model_lock.get().blocking_read(),
-            *right.todo_list_model_lock.get().blocking_read()
+            *left.todo_list_model_lock.lock.blocking_read(),
+            *right.todo_list_model_lock.lock.blocking_read()
         );
     }
 

@@ -1,6 +1,5 @@
 use crate::{
-    application::bridge::frb_generated::RustAutoOpaque,
-    domain::todo_list::{TodoListEffect, TodoListModel, TodoListProcessingError},
+    domain::todo_list::{TodoListEffect, TodoListModelLock, TodoListProcessingError},
     utils::cqrs_traits::Cqrs,
 };
 
@@ -10,16 +9,18 @@ use super::{
 };
 
 ///////////
-//// processing here to see codegen results
+// processing here to see codegen results
 //////////
 //TODO replace with macro_rules!([TodoComand, TodoQuery])
 // TODO consider changing the name to TodoCommand_AddTodo
 // test codegen for Dart!!!
+#[derive(Debug)]
 pub enum TodoCommand {
     AddTodo(String),
     RemoveTodo(usize),
     CleanList,
 }
+#[derive(Debug)]
 pub enum TodoQuery {
     AllTodos,
 }
@@ -45,8 +46,7 @@ pub enum Effect {
     // In strict CQRS a command should not return a value.
     // However, this safes a consecutive query.
     // Thus, return only data for which a query exists.
-    TodoListEffectRenderTodoList(RustAutoOpaque<TodoListModel>),
-    // TodoListEffectRenderTodoList(TodoListEffect),
+    TodoListEffectRenderTodoList(TodoListModelLock),
 }
 
 impl Cqrs for TodoCommand {

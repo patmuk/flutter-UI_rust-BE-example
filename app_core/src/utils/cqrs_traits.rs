@@ -1,12 +1,15 @@
+use std::fmt::Debug;
+
 pub(crate) trait CqrsModel: std::marker::Sized {}
-pub(crate) trait CqrsModelLock: Default + From<Self::Model> + std::marker::Sized {
-    type Lock;
-    type Model: CqrsModel;
-    fn get<'a>(&'a self) -> &'a Self::Lock;
-    fn clone(&self) -> Self::Lock;
+pub(crate) trait CqrsModelLock<CqrsModel>:
+    Default + From<CqrsModel> + std::marker::Sized + Clone
+{
 }
-pub trait Cqrs {
+//     fn get<'a>(&'a self) -> &'a Lock;
+//     fn clone(&self) -> Lock;
+// }
+pub trait Cqrs: Debug {
     type Effect;
-    type ProcessingError;
+    type ProcessingError: Debug;
     fn process(self) -> Result<Vec<Self::Effect>, Self::ProcessingError>;
 }

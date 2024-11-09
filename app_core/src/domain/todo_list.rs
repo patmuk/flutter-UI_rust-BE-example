@@ -6,10 +6,12 @@ use crate::utils::cqrs_traits::{CqrsModel, CqrsModelLock};
 
 use super::common_value_objects::StateChanged;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
+// #[frb(non_opaque)]
 pub struct TodoListModelLock {
     pub lock: RustAutoOpaque<TodoListModel>,
 }
+impl CqrsModelLock<TodoListModel> for TodoListModelLock {}
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
 #[frb(opaque)]
@@ -54,18 +56,7 @@ pub enum TodoListEffect {
     /// this indicates that the model has changed, so that the app's state should be persisted.
     /// to avoid scanning the entire vec, this must be the first element.
     // this indicates that the model has changed, so that the app's state should be persisted.
-    RenderTodoList(RustAutoOpaque<TodoListModel>),
-}
-impl CqrsModelLock for TodoListModelLock {
-    type Lock = RustAutoOpaque<TodoListModel>;
-    type Model = TodoListModel;
-
-    fn get<'a>(&'a self) -> &'a Self::Lock {
-        &self.lock
-    }
-    fn clone(&self) -> Self::Lock {
-        self.lock.clone()
-    }
+    RenderTodoList(TodoListModelLock),
 }
 
 impl From<TodoListModel> for TodoListModelLock {
@@ -83,28 +74,12 @@ impl From<TodoListModelLock> for TodoListModel {
 }
 
 impl TodoListModelLock {
-    /// This is how to access the fields of a heavy object behind a RustAutoOpaque.
-    /// This is copying parts the content, which Dart needs to show to the user.
-    ///
-    /// If `items` would be `pub` FRB would automatically create a getter. However, this
-    /// getter would `clone()` the `items` as well. As we pretend that a single item
-    /// is heavy to clone, we use a custom function to `clone()` only the lightweight and
-    /// only needed part for presentation.
-    pub fn get_todos_as_string(&self) -> Vec<String> {
-        self.get()
-            .blocking_read()
-            .items
-            .iter()
-            .map(|item| item.text.clone())
-            .collect()
-    }
-
     /// as a command potentially changes the state, the bool denotes if a state change happened.
     pub(crate) fn command_add_todo(
         &self,
         todo: String,
     ) -> Result<(StateChanged, Vec<TodoListEffect>), TodoListProcessingError> {
-        self.get()
+        self.lock
             .blocking_write()
             .items
             .push(TodoItem { text: todo });
@@ -137,6 +112,19 @@ impl TodoListModelLock {
     }
 }
 
+impl TodoListModel {
+    /// This is how to access the fields of a heavy object behind a RustAutoOpaque.
+    /// This is copying parts the content, which Dart needs to show to the user.
+    ///
+    /// If `items` would be `pub` FRB would automatically create a getter. However, this
+    /// getter would `clone()` the `items` as well. As we pretend that a single item
+    /// is heavy to clone, we use a custom function to `clone()` only the lightweight and
+    /// only needed part for presentation.
+    pub fn get_todos_as_string(&self) -> Vec<String> {
+        self.items.iter().map(|item| item.text.clone()).collect()
+    }
+}
+
 #[derive(thiserror::Error, Debug, PartialEq)]
 pub enum TodoListProcessingError {
     #[error("The todo at index {0} does not exist!")]
@@ -154,8 +142,8 @@ impl PartialEq for TodoListEffect {
             ) => {
                 // be aware of a potential deadlock here!
                 // (lock on own, waiting for other and in another thread vice-versa!)
-                let own_items = &own_model_lock.blocking_read().items;
-                let other_items = &other_model_lock.blocking_read().items;
+                let own_items = &own_model_lock.lock.blocking_read().items;
+                let other_items = &other_model_lock.lock.blocking_read().items;
                 own_items == other_items
             }
         }
@@ -171,8 +159,8 @@ mod tests {
         actual_model_lock: &TodoListModelLock,
     ) {
         assert_eq!(
-            expected_model_lock.get().blocking_read().items,
-            actual_model_lock.get().blocking_read().items
+            expected_model_lock.lock.blocking_read().items,
+            actual_model_lock.lock.blocking_read().items
         );
     }
 

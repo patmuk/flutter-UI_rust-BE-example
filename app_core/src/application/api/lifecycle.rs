@@ -37,11 +37,11 @@ impl api_traits::Lifecycle for LifecycleImpl {
             .expect("Lifecycle: should been initialized with  ::new()!")
     }
 
-    fn app_config<'a>(&'a self) -> &'a impl AppConfig {
+    fn app_config(&self) -> &impl AppConfig {
         &self.app_config
     }
 
-    fn app_state<'a>(&'a self) -> &'a impl AppState {
+    fn app_state(&self) -> &impl AppState {
         &self.app_state
     }
 
@@ -56,9 +56,7 @@ impl api_traits::Lifecycle for LifecycleImpl {
         // blocks on the Locks of inner fields
         // TODO implent timeout and throw an error?
         self.app_state
-            .persist_to_path(&api_traits::AppConfig::app_state_file_path(
-                &self.app_config,
-            ))
+            .persist_to_path(api_traits::AppConfig::app_state_file_path(&self.app_config))
     }
 }
 // app state storage location

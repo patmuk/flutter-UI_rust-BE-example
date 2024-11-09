@@ -9,8 +9,8 @@ pub trait Lifecycle {
     // fn new(path: Option<String>) -> &'static Self;
     // fn new<AC: AppConfig, AS: AppState>(path: Option<String>) -> &'static Lifecycle<AC, AS>;
     fn get() -> &'static Self;
-    fn app_config<'a>(&'a self) -> &'a impl AppConfig;
-    fn app_state<'a>(&'a self) -> &'a impl AppState;
+    fn app_config(&self) -> &impl AppConfig;
+    fn app_state(&self) -> &impl AppState;
     /// call to initialize the app.
     /// loads the app's state, which can be io-heavy
     fn init<AC: AppConfig, AS: AppState>(app_config: &AC) -> AS {
@@ -30,7 +30,7 @@ pub trait AppConfig: Default + std::fmt::Debug {
     fn app_state_file_path(&self) -> &std::path::PathBuf;
 }
 
-pub(crate) trait AppState {
+pub trait AppState {
     fn load_or_new<A: AppConfig>(app_config: &A) -> Self
     where
         Self: Sized;
