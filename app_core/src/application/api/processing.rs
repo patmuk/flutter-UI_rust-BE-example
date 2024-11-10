@@ -45,9 +45,6 @@ pub enum Effect {
 }
 
 impl Cqrs for TodoCommand {
-    type Effect = Effect;
-    type ProcessingError = ProcessingError;
-
     fn process(self) -> Result<Vec<Effect>, ProcessingError> {
         let lifecycle = LifecycleImpl::get();
         self.process_with_lifecycle(lifecycle)
@@ -55,11 +52,7 @@ impl Cqrs for TodoCommand {
 }
 
 impl Cqrs for TodoQuery {
-    type Effect = Effect;
-    type ProcessingError = ProcessingError;
-
     fn process(self) -> Result<Vec<Effect>, ProcessingError> {
-        //todo get AppStateImpl for codegen -> from Lifecycle trait impl type
         self.process_with_lifecycle(LifecycleImpl::get())
     }
 }

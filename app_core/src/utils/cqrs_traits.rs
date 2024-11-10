@@ -1,5 +1,7 @@
 use std::fmt::Debug;
 
+use crate::application::api::processing::{Effect, ProcessingError};
+
 pub(crate) trait CqrsModel: std::marker::Sized {}
 pub(crate) trait CqrsModelLock<CqrsModel>:
     Default + From<CqrsModel> + std::marker::Sized + Clone
@@ -7,7 +9,5 @@ pub(crate) trait CqrsModelLock<CqrsModel>:
 }
 
 pub trait Cqrs: Debug {
-    type Effect;
-    type ProcessingError: Debug;
-    fn process(self) -> Result<Vec<Self::Effect>, Self::ProcessingError>;
+    fn process(self) -> Result<Vec<Effect>, ProcessingError>;
 }
