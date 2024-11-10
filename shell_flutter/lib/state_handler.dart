@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart';
 import 'package:shell_flutter/bridge/frb_generated/application/api/processing.dart';
-import 'package:shell_flutter/bridge/frb_generated/domain/effects.dart';
 import 'package:shell_flutter/bridge/frb_generated/frb_generated.dart';
 
 /// This singleton handles the state, and all communication with the lower layers (implemented in Rust).
@@ -35,27 +34,23 @@ class StateHandler {
     WidgetsFlutterBinding.ensureInitialized();
     final Directory appSupportDir = await getApplicationSupportDirectory();
     final stateFile = File('${appSupportDir.path}/app_state.bin');
-    await Lifecycle.newInstance(path: stateFile.path);
+    await LifecycleImpl.newInstance(path: stateFile.path);
     singleton = StateHandler._singletonConstructor();
     // initialise all Listeners with the loaded model
     // by calling the respective querries
     // the value is set by _handleEffects() automatically
-    // singleton.processQuery(TodoQuery.allTodos);
-    singleton.processAndHandleEffects(const Cqrs.todoQueryAllTodos());
+    singleton.handleEffects(const TodoQuery.allTodos().process());
     return singleton;
   }
 
-  Future<void> processAndHandleEffects(Cqrs cqrs) async {
-    var effects = cqrs.process();
-    await _handleEffects(await effects);
-  }
-
-  Future<void> _handleEffects(List<Effect> effects) async {
-    for (var effect in effects) {
+  Future<void> handleEffects(Future<List<Effect>> effects) async {
+    for (var effect in await effects) {
       switch (effect) {
         // update the value and trigger a UI repaint
-        case Effect_RenderTodoList():
-          todoListItems.value = await effect.field0.getTodosAsString();
+        case Effect_TodoListEffectRenderTodoList():
+          todoListItems.value = await effect.field0.lock.getTodosAsString();
+        case Effect_TodoListEffectRenderTodoItem():
+        // do nothing, the values did not change
       }
     }
   }

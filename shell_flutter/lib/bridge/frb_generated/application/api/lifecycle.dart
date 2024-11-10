@@ -5,29 +5,50 @@
 
 import '../../frb_generated.dart';
 import '../../lib.dart';
+import 'api_traits.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `init`, `setup`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<AppConfig>>
-abstract class AppConfig implements RustOpaqueInterface {
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<AppConfigImpl>>
+abstract class AppConfigImpl implements RustOpaqueInterface, AppConfig {
   PathBuf get appStateFilePath;
 
   set appStateFilePath(PathBuf appStateFilePath);
 
-  static Future<AppConfig> default_() =>
-      RustLib.instance.api.crateApplicationApiLifecycleAppConfigDefault();
-}
+  static Future<AppConfigImpl> default_() =>
+      RustLib.instance.api.crateApplicationApiLifecycleAppConfigImplDefault();
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Lifecycle>>
-abstract class Lifecycle implements RustOpaqueInterface {
-  static Future<void> get_() =>
-      RustLib.instance.api.crateApplicationApiLifecycleLifecycleGet();
+  @override
+  Future<void> getAppStateFilePath();
 
   // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
-  static Future<void> newInstance({String? path}) =>
-      RustLib.instance.api.crateApplicationApiLifecycleLifecycleNew(path: path);
+  /// call to overwrite default values.
+  /// Doesn't trigger initialization.
+  static Future<AppConfigImpl> newInstance({String? path}) =>
+      RustLib.instance.api
+          .crateApplicationApiLifecycleAppConfigImplNew(path: path);
+}
 
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<LifecycleImpl>>
+abstract class LifecycleImpl implements RustOpaqueInterface, Lifecycle {
+  @override
+  Future<void> appConfig();
+
+  @override
+  Future<void> appState();
+
+  static Future<void> get_() =>
+      RustLib.instance.api.crateApplicationApiLifecycleLifecycleImplGet();
+
+  // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
+  static Future<void> newInstance({String? path}) => RustLib.instance.api
+      .crateApplicationApiLifecycleLifecycleImplNew(path: path);
+
+  /// persist the app state to the previously stored location
+  @override
+  Future<void> persist();
+
+  @override
   Future<void> shutdown();
 }

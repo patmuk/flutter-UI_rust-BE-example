@@ -2,7 +2,7 @@
 // processing here to see codegen results
 //////////
 use crate::{
-    domain::todo_list::{TodoListEffect, TodoListModelLock, TodoListProcessingError},
+    domain::todo_list::{TodoItem, TodoListEffect, TodoListModelLock, TodoListProcessingError},
     utils::cqrs_traits::Cqrs,
 };
 
@@ -20,6 +20,7 @@ pub enum TodoCommand {
 #[derive(Debug)]
 pub enum TodoQuery {
     AllTodos,
+    GetTodo(usize),
 }
 
 /// All effects for the same reason all Processing Errors are in one emun:
@@ -42,6 +43,7 @@ pub enum Effect {
     // However, this safes a consecutive query.
     // Thus, return only data for which a query exists.
     TodoListEffectRenderTodoList(TodoListModelLock),
+    TodoListEffectRenderTodoItem(TodoItem),
 }
 
 impl Cqrs for TodoCommand {
@@ -65,6 +67,7 @@ impl TodoQuery {
         let todo_list_model_lock = &lifecycle.app_state.todo_list_model_lock;
         let result = match self {
             TodoQuery::AllTodos => todo_list_model_lock.query_get_all_todos(),
+            TodoQuery::GetTodo(todo_pos) => todo_list_model_lock.query_get_todo(todo_pos),
         }
         .map_err(ProcessingError::TodoListProcessingError)?;
         Ok(result
@@ -72,6 +75,9 @@ impl TodoQuery {
             .map(|effect| match effect {
                 TodoListEffect::RenderTodoList(model_lock) => {
                     Effect::TodoListEffectRenderTodoList(model_lock)
+                }
+                TodoListEffect::RenderTodoItem(todo_item) => {
+                    Effect::TodoListEffectRenderTodoItem(todo_item)
                 }
             })
             .collect())
@@ -99,6 +105,9 @@ impl TodoCommand {
             .map(|effect| match effect {
                 TodoListEffect::RenderTodoList(model_lock) => {
                     Effect::TodoListEffectRenderTodoList(model_lock)
+                }
+                TodoListEffect::RenderTodoItem(todo_item) => {
+                    Effect::TodoListEffectRenderTodoItem(todo_item)
                 }
             })
             .collect())

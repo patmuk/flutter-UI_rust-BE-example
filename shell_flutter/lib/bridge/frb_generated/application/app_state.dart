@@ -4,7 +4,18 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+import '../lib.dart';
+import 'api/api_traits.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<AppState>>
-abstract class AppState implements RustOpaqueInterface {}
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<AppStateImpl>>
+abstract class AppStateImpl implements RustOpaqueInterface, AppState {
+  @override
+  Future<bool> dirtyFlagValue();
+
+  @override
+  Future<void> markDirty();
+
+  @override
+  Future<void> persistToPath({required PathBuf path});
+}

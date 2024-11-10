@@ -3,7 +3,11 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
+import '../application/api/processing.dart';
+import '../domain/todo_list.dart';
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-abstract class CqrsModel {}
+abstract class Cqrs {
+  Future<List<Effect>> process();
+}

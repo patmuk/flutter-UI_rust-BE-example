@@ -2,7 +2,7 @@ use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
 use crate::application::bridge::frb_generated::RustAutoOpaque;
-use crate::utils::cqrs_traits::{CqrsModel, CqrsModelLock};
+// use crate::utils::cqrs_traits::{CqrsModel, CqrsModelLock};
 
 use super::common_value_objects::StateChanged;
 
@@ -10,7 +10,7 @@ use super::common_value_objects::StateChanged;
 pub struct TodoListModelLock {
     pub lock: RustAutoOpaque<TodoListModel>,
 }
-impl CqrsModelLock<TodoListModel> for TodoListModelLock {}
+// impl CqrsModelLock<TodoListModel> for TodoListModelLock {}
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
 #[frb(opaque)]
@@ -30,11 +30,11 @@ pub struct TodoListModel {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-struct TodoItem {
-    text: String,
+pub struct TodoItem {
+    pub text: String,
 }
 
-impl CqrsModel for TodoListModel {}
+// impl CqrsModel for TodoListModel {}
 
 #[derive(Debug)]
 pub enum TodoListEffect {
@@ -56,6 +56,7 @@ pub enum TodoListEffect {
     /// to avoid scanning the entire vec, this must be the first element.
     // this indicates that the model has changed, so that the app's state should be persisted.
     RenderTodoList(TodoListModelLock),
+    RenderTodoItem(TodoItem),
 }
 
 impl From<TodoListModel> for TodoListModelLock {
@@ -109,6 +110,18 @@ impl TodoListModelLock {
     ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
         Ok(vec![TodoListEffect::RenderTodoList(self.clone())])
     }
+    pub(crate) fn query_get_todo(
+        &self,
+        todo_pos: usize,
+    ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
+        let items = &self.lock.blocking_read().items;
+        if todo_pos > items.len() {
+            Err(TodoListProcessingError::TodoDoesNotExist(todo_pos))
+        } else {
+            let item = &items[todo_pos - 1];
+            Ok(vec![TodoListEffect::RenderTodoItem(item.clone())])
+        }
+    }
 }
 
 impl TodoListModel {
@@ -142,9 +155,16 @@ impl PartialEq for TodoListEffect {
                 // be aware of a potential deadlock here!
                 // (lock on own, waiting for other and in another thread vice-versa!)
                 let own_items = &own_model_lock.lock.blocking_read().items;
+
                 let other_items = &other_model_lock.lock.blocking_read().items;
                 own_items == other_items
             }
+            (TodoListEffect::RenderTodoList(_), TodoListEffect::RenderTodoItem(_)) => false,
+            (TodoListEffect::RenderTodoItem(_), TodoListEffect::RenderTodoList(_)) => false,
+            (
+                TodoListEffect::RenderTodoItem(todo_item),
+                TodoListEffect::RenderTodoItem(other_todo_item),
+            ) => todo_item == other_todo_item,
         }
     }
 }

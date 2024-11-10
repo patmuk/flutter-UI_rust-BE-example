@@ -61,18 +61,18 @@ impl AppState for AppStateImpl {
     // called by the lifecycle initialization. Get the app state over the lifecycle singleton.
     fn load_or_new<A: AppConfig>(app_config: &A) -> Self {
         debug!("creating the app state from persisted or default values");
-        let app_state = match AppStateImpl::load(app_config.app_state_file_path()) {
+        let app_state = match AppStateImpl::load(app_config.get_app_state_file_path()) {
             Err(AppStateLoadError::ReadFile(err, path)) if err.kind() == IoErrorKind::NotFound => {
                 info!(
                     "No app state file found in {:?}, creating new state there.",
                     &path
                 );
-                AppStateImpl::new(app_config.app_state_file_path())
+                AppStateImpl::new(app_config.get_app_state_file_path())
             }
             Err(err) => {
                 panic!(
                     "Error loading app state from file {:?}: {}",
-                    &app_config.app_state_file_path(),
+                    &app_config.get_app_state_file_path(),
                     err
                 );
                 // TODO better handling

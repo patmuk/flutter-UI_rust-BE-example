@@ -24,7 +24,7 @@ pub trait AppConfig: Default + std::fmt::Debug {
     /// Doesn't trigger initialization.
     fn new(path: Option<String>) -> Self;
     // app state storage location
-    fn app_state_file_path(&self) -> &std::path::PathBuf;
+    fn get_app_state_file_path(&self) -> &std::path::PathBuf;
 }
 pub trait AppState {
     fn load_or_new<A: AppConfig>(app_config: &A) -> Self

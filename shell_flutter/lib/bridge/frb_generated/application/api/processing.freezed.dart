@@ -15,662 +15,25 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$Cqrs {
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String field0) todoCommandAddTodo,
-    required TResult Function(BigInt field0) todoCommandRemoveTodo,
-    required TResult Function() todoCommandCleanList,
-    required TResult Function() todoQueryAllTodos,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String field0)? todoCommandAddTodo,
-    TResult? Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult? Function()? todoCommandCleanList,
-    TResult? Function()? todoQueryAllTodos,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? todoCommandAddTodo,
-    TResult Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult Function()? todoCommandCleanList,
-    TResult Function()? todoQueryAllTodos,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(Cqrs_TodoCommandAddTodo value) todoCommandAddTodo,
-    required TResult Function(Cqrs_TodoCommandRemoveTodo value)
-        todoCommandRemoveTodo,
-    required TResult Function(Cqrs_TodoCommandCleanList value)
-        todoCommandCleanList,
-    required TResult Function(Cqrs_TodoQueryAllTodos value) todoQueryAllTodos,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult? Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult? Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult? Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $CqrsCopyWith<$Res> {
-  factory $CqrsCopyWith(Cqrs value, $Res Function(Cqrs) then) =
-      _$CqrsCopyWithImpl<$Res, Cqrs>;
-}
-
-/// @nodoc
-class _$CqrsCopyWithImpl<$Res, $Val extends Cqrs>
-    implements $CqrsCopyWith<$Res> {
-  _$CqrsCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of Cqrs
-  /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-abstract class _$$Cqrs_TodoCommandAddTodoImplCopyWith<$Res> {
-  factory _$$Cqrs_TodoCommandAddTodoImplCopyWith(
-          _$Cqrs_TodoCommandAddTodoImpl value,
-          $Res Function(_$Cqrs_TodoCommandAddTodoImpl) then) =
-      __$$Cqrs_TodoCommandAddTodoImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String field0});
-}
-
-/// @nodoc
-class __$$Cqrs_TodoCommandAddTodoImplCopyWithImpl<$Res>
-    extends _$CqrsCopyWithImpl<$Res, _$Cqrs_TodoCommandAddTodoImpl>
-    implements _$$Cqrs_TodoCommandAddTodoImplCopyWith<$Res> {
-  __$$Cqrs_TodoCommandAddTodoImplCopyWithImpl(
-      _$Cqrs_TodoCommandAddTodoImpl _value,
-      $Res Function(_$Cqrs_TodoCommandAddTodoImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of Cqrs
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? field0 = null,
-  }) {
-    return _then(_$Cqrs_TodoCommandAddTodoImpl(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$Cqrs_TodoCommandAddTodoImpl extends Cqrs_TodoCommandAddTodo {
-  const _$Cqrs_TodoCommandAddTodoImpl(this.field0) : super._();
-
-  @override
-  final String field0;
-
-  @override
-  String toString() {
-    return 'Cqrs.todoCommandAddTodo(field0: $field0)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$Cqrs_TodoCommandAddTodoImpl &&
-            (identical(other.field0, field0) || other.field0 == field0));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, field0);
-
-  /// Create a copy of Cqrs
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$Cqrs_TodoCommandAddTodoImplCopyWith<_$Cqrs_TodoCommandAddTodoImpl>
-      get copyWith => __$$Cqrs_TodoCommandAddTodoImplCopyWithImpl<
-          _$Cqrs_TodoCommandAddTodoImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String field0) todoCommandAddTodo,
-    required TResult Function(BigInt field0) todoCommandRemoveTodo,
-    required TResult Function() todoCommandCleanList,
-    required TResult Function() todoQueryAllTodos,
-  }) {
-    return todoCommandAddTodo(field0);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String field0)? todoCommandAddTodo,
-    TResult? Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult? Function()? todoCommandCleanList,
-    TResult? Function()? todoQueryAllTodos,
-  }) {
-    return todoCommandAddTodo?.call(field0);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? todoCommandAddTodo,
-    TResult Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult Function()? todoCommandCleanList,
-    TResult Function()? todoQueryAllTodos,
-    required TResult orElse(),
-  }) {
-    if (todoCommandAddTodo != null) {
-      return todoCommandAddTodo(field0);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(Cqrs_TodoCommandAddTodo value) todoCommandAddTodo,
-    required TResult Function(Cqrs_TodoCommandRemoveTodo value)
-        todoCommandRemoveTodo,
-    required TResult Function(Cqrs_TodoCommandCleanList value)
-        todoCommandCleanList,
-    required TResult Function(Cqrs_TodoQueryAllTodos value) todoQueryAllTodos,
-  }) {
-    return todoCommandAddTodo(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult? Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult? Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult? Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-  }) {
-    return todoCommandAddTodo?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-    required TResult orElse(),
-  }) {
-    if (todoCommandAddTodo != null) {
-      return todoCommandAddTodo(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class Cqrs_TodoCommandAddTodo extends Cqrs {
-  const factory Cqrs_TodoCommandAddTodo(final String field0) =
-      _$Cqrs_TodoCommandAddTodoImpl;
-  const Cqrs_TodoCommandAddTodo._() : super._();
-
-  String get field0;
-
-  /// Create a copy of Cqrs
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$Cqrs_TodoCommandAddTodoImplCopyWith<_$Cqrs_TodoCommandAddTodoImpl>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$Cqrs_TodoCommandRemoveTodoImplCopyWith<$Res> {
-  factory _$$Cqrs_TodoCommandRemoveTodoImplCopyWith(
-          _$Cqrs_TodoCommandRemoveTodoImpl value,
-          $Res Function(_$Cqrs_TodoCommandRemoveTodoImpl) then) =
-      __$$Cqrs_TodoCommandRemoveTodoImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({BigInt field0});
-}
-
-/// @nodoc
-class __$$Cqrs_TodoCommandRemoveTodoImplCopyWithImpl<$Res>
-    extends _$CqrsCopyWithImpl<$Res, _$Cqrs_TodoCommandRemoveTodoImpl>
-    implements _$$Cqrs_TodoCommandRemoveTodoImplCopyWith<$Res> {
-  __$$Cqrs_TodoCommandRemoveTodoImplCopyWithImpl(
-      _$Cqrs_TodoCommandRemoveTodoImpl _value,
-      $Res Function(_$Cqrs_TodoCommandRemoveTodoImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of Cqrs
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? field0 = null,
-  }) {
-    return _then(_$Cqrs_TodoCommandRemoveTodoImpl(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
-              as BigInt,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$Cqrs_TodoCommandRemoveTodoImpl extends Cqrs_TodoCommandRemoveTodo {
-  const _$Cqrs_TodoCommandRemoveTodoImpl(this.field0) : super._();
-
-  @override
-  final BigInt field0;
-
-  @override
-  String toString() {
-    return 'Cqrs.todoCommandRemoveTodo(field0: $field0)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$Cqrs_TodoCommandRemoveTodoImpl &&
-            (identical(other.field0, field0) || other.field0 == field0));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, field0);
-
-  /// Create a copy of Cqrs
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$Cqrs_TodoCommandRemoveTodoImplCopyWith<_$Cqrs_TodoCommandRemoveTodoImpl>
-      get copyWith => __$$Cqrs_TodoCommandRemoveTodoImplCopyWithImpl<
-          _$Cqrs_TodoCommandRemoveTodoImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String field0) todoCommandAddTodo,
-    required TResult Function(BigInt field0) todoCommandRemoveTodo,
-    required TResult Function() todoCommandCleanList,
-    required TResult Function() todoQueryAllTodos,
-  }) {
-    return todoCommandRemoveTodo(field0);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String field0)? todoCommandAddTodo,
-    TResult? Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult? Function()? todoCommandCleanList,
-    TResult? Function()? todoQueryAllTodos,
-  }) {
-    return todoCommandRemoveTodo?.call(field0);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? todoCommandAddTodo,
-    TResult Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult Function()? todoCommandCleanList,
-    TResult Function()? todoQueryAllTodos,
-    required TResult orElse(),
-  }) {
-    if (todoCommandRemoveTodo != null) {
-      return todoCommandRemoveTodo(field0);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(Cqrs_TodoCommandAddTodo value) todoCommandAddTodo,
-    required TResult Function(Cqrs_TodoCommandRemoveTodo value)
-        todoCommandRemoveTodo,
-    required TResult Function(Cqrs_TodoCommandCleanList value)
-        todoCommandCleanList,
-    required TResult Function(Cqrs_TodoQueryAllTodos value) todoQueryAllTodos,
-  }) {
-    return todoCommandRemoveTodo(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult? Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult? Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult? Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-  }) {
-    return todoCommandRemoveTodo?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-    required TResult orElse(),
-  }) {
-    if (todoCommandRemoveTodo != null) {
-      return todoCommandRemoveTodo(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class Cqrs_TodoCommandRemoveTodo extends Cqrs {
-  const factory Cqrs_TodoCommandRemoveTodo(final BigInt field0) =
-      _$Cqrs_TodoCommandRemoveTodoImpl;
-  const Cqrs_TodoCommandRemoveTodo._() : super._();
-
-  BigInt get field0;
-
-  /// Create a copy of Cqrs
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$Cqrs_TodoCommandRemoveTodoImplCopyWith<_$Cqrs_TodoCommandRemoveTodoImpl>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$Cqrs_TodoCommandCleanListImplCopyWith<$Res> {
-  factory _$$Cqrs_TodoCommandCleanListImplCopyWith(
-          _$Cqrs_TodoCommandCleanListImpl value,
-          $Res Function(_$Cqrs_TodoCommandCleanListImpl) then) =
-      __$$Cqrs_TodoCommandCleanListImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$Cqrs_TodoCommandCleanListImplCopyWithImpl<$Res>
-    extends _$CqrsCopyWithImpl<$Res, _$Cqrs_TodoCommandCleanListImpl>
-    implements _$$Cqrs_TodoCommandCleanListImplCopyWith<$Res> {
-  __$$Cqrs_TodoCommandCleanListImplCopyWithImpl(
-      _$Cqrs_TodoCommandCleanListImpl _value,
-      $Res Function(_$Cqrs_TodoCommandCleanListImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of Cqrs
-  /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-
-class _$Cqrs_TodoCommandCleanListImpl extends Cqrs_TodoCommandCleanList {
-  const _$Cqrs_TodoCommandCleanListImpl() : super._();
-
-  @override
-  String toString() {
-    return 'Cqrs.todoCommandCleanList()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$Cqrs_TodoCommandCleanListImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String field0) todoCommandAddTodo,
-    required TResult Function(BigInt field0) todoCommandRemoveTodo,
-    required TResult Function() todoCommandCleanList,
-    required TResult Function() todoQueryAllTodos,
-  }) {
-    return todoCommandCleanList();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String field0)? todoCommandAddTodo,
-    TResult? Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult? Function()? todoCommandCleanList,
-    TResult? Function()? todoQueryAllTodos,
-  }) {
-    return todoCommandCleanList?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? todoCommandAddTodo,
-    TResult Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult Function()? todoCommandCleanList,
-    TResult Function()? todoQueryAllTodos,
-    required TResult orElse(),
-  }) {
-    if (todoCommandCleanList != null) {
-      return todoCommandCleanList();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(Cqrs_TodoCommandAddTodo value) todoCommandAddTodo,
-    required TResult Function(Cqrs_TodoCommandRemoveTodo value)
-        todoCommandRemoveTodo,
-    required TResult Function(Cqrs_TodoCommandCleanList value)
-        todoCommandCleanList,
-    required TResult Function(Cqrs_TodoQueryAllTodos value) todoQueryAllTodos,
-  }) {
-    return todoCommandCleanList(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult? Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult? Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult? Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-  }) {
-    return todoCommandCleanList?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-    required TResult orElse(),
-  }) {
-    if (todoCommandCleanList != null) {
-      return todoCommandCleanList(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class Cqrs_TodoCommandCleanList extends Cqrs {
-  const factory Cqrs_TodoCommandCleanList() = _$Cqrs_TodoCommandCleanListImpl;
-  const Cqrs_TodoCommandCleanList._() : super._();
-}
-
-/// @nodoc
-abstract class _$$Cqrs_TodoQueryAllTodosImplCopyWith<$Res> {
-  factory _$$Cqrs_TodoQueryAllTodosImplCopyWith(
-          _$Cqrs_TodoQueryAllTodosImpl value,
-          $Res Function(_$Cqrs_TodoQueryAllTodosImpl) then) =
-      __$$Cqrs_TodoQueryAllTodosImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$Cqrs_TodoQueryAllTodosImplCopyWithImpl<$Res>
-    extends _$CqrsCopyWithImpl<$Res, _$Cqrs_TodoQueryAllTodosImpl>
-    implements _$$Cqrs_TodoQueryAllTodosImplCopyWith<$Res> {
-  __$$Cqrs_TodoQueryAllTodosImplCopyWithImpl(
-      _$Cqrs_TodoQueryAllTodosImpl _value,
-      $Res Function(_$Cqrs_TodoQueryAllTodosImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of Cqrs
-  /// with the given fields replaced by the non-null parameter values.
-}
-
-/// @nodoc
-
-class _$Cqrs_TodoQueryAllTodosImpl extends Cqrs_TodoQueryAllTodos {
-  const _$Cqrs_TodoQueryAllTodosImpl() : super._();
-
-  @override
-  String toString() {
-    return 'Cqrs.todoQueryAllTodos()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$Cqrs_TodoQueryAllTodosImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String field0) todoCommandAddTodo,
-    required TResult Function(BigInt field0) todoCommandRemoveTodo,
-    required TResult Function() todoCommandCleanList,
-    required TResult Function() todoQueryAllTodos,
-  }) {
-    return todoQueryAllTodos();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String field0)? todoCommandAddTodo,
-    TResult? Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult? Function()? todoCommandCleanList,
-    TResult? Function()? todoQueryAllTodos,
-  }) {
-    return todoQueryAllTodos?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? todoCommandAddTodo,
-    TResult Function(BigInt field0)? todoCommandRemoveTodo,
-    TResult Function()? todoCommandCleanList,
-    TResult Function()? todoQueryAllTodos,
-    required TResult orElse(),
-  }) {
-    if (todoQueryAllTodos != null) {
-      return todoQueryAllTodos();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(Cqrs_TodoCommandAddTodo value) todoCommandAddTodo,
-    required TResult Function(Cqrs_TodoCommandRemoveTodo value)
-        todoCommandRemoveTodo,
-    required TResult Function(Cqrs_TodoCommandCleanList value)
-        todoCommandCleanList,
-    required TResult Function(Cqrs_TodoQueryAllTodos value) todoQueryAllTodos,
-  }) {
-    return todoQueryAllTodos(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult? Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult? Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult? Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-  }) {
-    return todoQueryAllTodos?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(Cqrs_TodoCommandAddTodo value)? todoCommandAddTodo,
-    TResult Function(Cqrs_TodoCommandRemoveTodo value)? todoCommandRemoveTodo,
-    TResult Function(Cqrs_TodoCommandCleanList value)? todoCommandCleanList,
-    TResult Function(Cqrs_TodoQueryAllTodos value)? todoQueryAllTodos,
-    required TResult orElse(),
-  }) {
-    if (todoQueryAllTodos != null) {
-      return todoQueryAllTodos(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class Cqrs_TodoQueryAllTodos extends Cqrs {
-  const factory Cqrs_TodoQueryAllTodos() = _$Cqrs_TodoQueryAllTodosImpl;
-  const Cqrs_TodoQueryAllTodos._() : super._();
-}
-
-/// @nodoc
 mixin _$Effect {
-  TodoListModel get field0 => throw _privateConstructorUsedError;
+  Object get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(TodoListModel field0)
+    required TResult Function(TodoListModelLock field0)
         todoListEffectRenderTodoList,
+    required TResult Function(TodoItem field0) todoListEffectRenderTodoItem,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(TodoListModel field0)? todoListEffectRenderTodoList,
+    TResult? Function(TodoListModelLock field0)? todoListEffectRenderTodoList,
+    TResult? Function(TodoItem field0)? todoListEffectRenderTodoItem,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(TodoListModel field0)? todoListEffectRenderTodoList,
+    TResult Function(TodoListModelLock field0)? todoListEffectRenderTodoList,
+    TResult Function(TodoItem field0)? todoListEffectRenderTodoItem,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -678,34 +41,33 @@ mixin _$Effect {
   TResult map<TResult extends Object?>({
     required TResult Function(Effect_TodoListEffectRenderTodoList value)
         todoListEffectRenderTodoList,
+    required TResult Function(Effect_TodoListEffectRenderTodoItem value)
+        todoListEffectRenderTodoItem,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(Effect_TodoListEffectRenderTodoList value)?
         todoListEffectRenderTodoList,
+    TResult? Function(Effect_TodoListEffectRenderTodoItem value)?
+        todoListEffectRenderTodoItem,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(Effect_TodoListEffectRenderTodoList value)?
         todoListEffectRenderTodoList,
+    TResult Function(Effect_TodoListEffectRenderTodoItem value)?
+        todoListEffectRenderTodoItem,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
-
-  /// Create a copy of Effect
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $EffectCopyWith<Effect> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $EffectCopyWith<$Res> {
   factory $EffectCopyWith(Effect value, $Res Function(Effect) then) =
       _$EffectCopyWithImpl<$Res, Effect>;
-  @useResult
-  $Res call({TodoListModel field0});
 }
 
 /// @nodoc
@@ -720,30 +82,16 @@ class _$EffectCopyWithImpl<$Res, $Val extends Effect>
 
   /// Create a copy of Effect
   /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? field0 = null,
-  }) {
-    return _then(_value.copyWith(
-      field0: null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
-              as TodoListModel,
-    ) as $Val);
-  }
 }
 
 /// @nodoc
-abstract class _$$Effect_TodoListEffectRenderTodoListImplCopyWith<$Res>
-    implements $EffectCopyWith<$Res> {
+abstract class _$$Effect_TodoListEffectRenderTodoListImplCopyWith<$Res> {
   factory _$$Effect_TodoListEffectRenderTodoListImplCopyWith(
           _$Effect_TodoListEffectRenderTodoListImpl value,
           $Res Function(_$Effect_TodoListEffectRenderTodoListImpl) then) =
       __$$Effect_TodoListEffectRenderTodoListImplCopyWithImpl<$Res>;
-  @override
   @useResult
-  $Res call({TodoListModel field0});
+  $Res call({TodoListModelLock field0});
 }
 
 /// @nodoc
@@ -767,7 +115,7 @@ class __$$Effect_TodoListEffectRenderTodoListImplCopyWithImpl<$Res>
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
-              as TodoListModel,
+              as TodoListModelLock,
     ));
   }
 }
@@ -779,7 +127,7 @@ class _$Effect_TodoListEffectRenderTodoListImpl
   const _$Effect_TodoListEffectRenderTodoListImpl(this.field0) : super._();
 
   @override
-  final TodoListModel field0;
+  final TodoListModelLock field0;
 
   @override
   String toString() {
@@ -810,8 +158,9 @@ class _$Effect_TodoListEffectRenderTodoListImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(TodoListModel field0)
+    required TResult Function(TodoListModelLock field0)
         todoListEffectRenderTodoList,
+    required TResult Function(TodoItem field0) todoListEffectRenderTodoItem,
   }) {
     return todoListEffectRenderTodoList(field0);
   }
@@ -819,7 +168,8 @@ class _$Effect_TodoListEffectRenderTodoListImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(TodoListModel field0)? todoListEffectRenderTodoList,
+    TResult? Function(TodoListModelLock field0)? todoListEffectRenderTodoList,
+    TResult? Function(TodoItem field0)? todoListEffectRenderTodoItem,
   }) {
     return todoListEffectRenderTodoList?.call(field0);
   }
@@ -827,7 +177,8 @@ class _$Effect_TodoListEffectRenderTodoListImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(TodoListModel field0)? todoListEffectRenderTodoList,
+    TResult Function(TodoListModelLock field0)? todoListEffectRenderTodoList,
+    TResult Function(TodoItem field0)? todoListEffectRenderTodoItem,
     required TResult orElse(),
   }) {
     if (todoListEffectRenderTodoList != null) {
@@ -841,6 +192,8 @@ class _$Effect_TodoListEffectRenderTodoListImpl
   TResult map<TResult extends Object?>({
     required TResult Function(Effect_TodoListEffectRenderTodoList value)
         todoListEffectRenderTodoList,
+    required TResult Function(Effect_TodoListEffectRenderTodoItem value)
+        todoListEffectRenderTodoItem,
   }) {
     return todoListEffectRenderTodoList(this);
   }
@@ -850,6 +203,8 @@ class _$Effect_TodoListEffectRenderTodoListImpl
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(Effect_TodoListEffectRenderTodoList value)?
         todoListEffectRenderTodoList,
+    TResult? Function(Effect_TodoListEffectRenderTodoItem value)?
+        todoListEffectRenderTodoItem,
   }) {
     return todoListEffectRenderTodoList?.call(this);
   }
@@ -859,6 +214,8 @@ class _$Effect_TodoListEffectRenderTodoListImpl
   TResult maybeMap<TResult extends Object?>({
     TResult Function(Effect_TodoListEffectRenderTodoList value)?
         todoListEffectRenderTodoList,
+    TResult Function(Effect_TodoListEffectRenderTodoItem value)?
+        todoListEffectRenderTodoItem,
     required TResult orElse(),
   }) {
     if (todoListEffectRenderTodoList != null) {
@@ -870,17 +227,968 @@ class _$Effect_TodoListEffectRenderTodoListImpl
 
 abstract class Effect_TodoListEffectRenderTodoList extends Effect {
   const factory Effect_TodoListEffectRenderTodoList(
-      final TodoListModel field0) = _$Effect_TodoListEffectRenderTodoListImpl;
+          final TodoListModelLock field0) =
+      _$Effect_TodoListEffectRenderTodoListImpl;
   const Effect_TodoListEffectRenderTodoList._() : super._();
 
   @override
-  TodoListModel get field0;
+  TodoListModelLock get field0;
 
   /// Create a copy of Effect
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$Effect_TodoListEffectRenderTodoListImplCopyWith<
           _$Effect_TodoListEffectRenderTodoListImpl>
       get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$Effect_TodoListEffectRenderTodoItemImplCopyWith<$Res> {
+  factory _$$Effect_TodoListEffectRenderTodoItemImplCopyWith(
+          _$Effect_TodoListEffectRenderTodoItemImpl value,
+          $Res Function(_$Effect_TodoListEffectRenderTodoItemImpl) then) =
+      __$$Effect_TodoListEffectRenderTodoItemImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({TodoItem field0});
+}
+
+/// @nodoc
+class __$$Effect_TodoListEffectRenderTodoItemImplCopyWithImpl<$Res>
+    extends _$EffectCopyWithImpl<$Res,
+        _$Effect_TodoListEffectRenderTodoItemImpl>
+    implements _$$Effect_TodoListEffectRenderTodoItemImplCopyWith<$Res> {
+  __$$Effect_TodoListEffectRenderTodoItemImplCopyWithImpl(
+      _$Effect_TodoListEffectRenderTodoItemImpl _value,
+      $Res Function(_$Effect_TodoListEffectRenderTodoItemImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$Effect_TodoListEffectRenderTodoItemImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as TodoItem,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$Effect_TodoListEffectRenderTodoItemImpl
+    extends Effect_TodoListEffectRenderTodoItem {
+  const _$Effect_TodoListEffectRenderTodoItemImpl(this.field0) : super._();
+
+  @override
+  final TodoItem field0;
+
+  @override
+  String toString() {
+    return 'Effect.todoListEffectRenderTodoItem(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$Effect_TodoListEffectRenderTodoItemImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$Effect_TodoListEffectRenderTodoItemImplCopyWith<
+          _$Effect_TodoListEffectRenderTodoItemImpl>
+      get copyWith => __$$Effect_TodoListEffectRenderTodoItemImplCopyWithImpl<
+          _$Effect_TodoListEffectRenderTodoItemImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModelLock field0)
+        todoListEffectRenderTodoList,
+    required TResult Function(TodoItem field0) todoListEffectRenderTodoItem,
+  }) {
+    return todoListEffectRenderTodoItem(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModelLock field0)? todoListEffectRenderTodoList,
+    TResult? Function(TodoItem field0)? todoListEffectRenderTodoItem,
+  }) {
+    return todoListEffectRenderTodoItem?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModelLock field0)? todoListEffectRenderTodoList,
+    TResult Function(TodoItem field0)? todoListEffectRenderTodoItem,
+    required TResult orElse(),
+  }) {
+    if (todoListEffectRenderTodoItem != null) {
+      return todoListEffectRenderTodoItem(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Effect_TodoListEffectRenderTodoList value)
+        todoListEffectRenderTodoList,
+    required TResult Function(Effect_TodoListEffectRenderTodoItem value)
+        todoListEffectRenderTodoItem,
+  }) {
+    return todoListEffectRenderTodoItem(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Effect_TodoListEffectRenderTodoList value)?
+        todoListEffectRenderTodoList,
+    TResult? Function(Effect_TodoListEffectRenderTodoItem value)?
+        todoListEffectRenderTodoItem,
+  }) {
+    return todoListEffectRenderTodoItem?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Effect_TodoListEffectRenderTodoList value)?
+        todoListEffectRenderTodoList,
+    TResult Function(Effect_TodoListEffectRenderTodoItem value)?
+        todoListEffectRenderTodoItem,
+    required TResult orElse(),
+  }) {
+    if (todoListEffectRenderTodoItem != null) {
+      return todoListEffectRenderTodoItem(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class Effect_TodoListEffectRenderTodoItem extends Effect {
+  const factory Effect_TodoListEffectRenderTodoItem(final TodoItem field0) =
+      _$Effect_TodoListEffectRenderTodoItemImpl;
+  const Effect_TodoListEffectRenderTodoItem._() : super._();
+
+  @override
+  TodoItem get field0;
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$Effect_TodoListEffectRenderTodoItemImplCopyWith<
+          _$Effect_TodoListEffectRenderTodoItemImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$TodoCommand {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String field0) addTodo,
+    required TResult Function(BigInt field0) removeTodo,
+    required TResult Function() cleanList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String field0)? addTodo,
+    TResult? Function(BigInt field0)? removeTodo,
+    TResult? Function()? cleanList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String field0)? addTodo,
+    TResult Function(BigInt field0)? removeTodo,
+    TResult Function()? cleanList,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCommand_AddTodo value) addTodo,
+    required TResult Function(TodoCommand_RemoveTodo value) removeTodo,
+    required TResult Function(TodoCommand_CleanList value) cleanList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCommand_AddTodo value)? addTodo,
+    TResult? Function(TodoCommand_RemoveTodo value)? removeTodo,
+    TResult? Function(TodoCommand_CleanList value)? cleanList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCommand_AddTodo value)? addTodo,
+    TResult Function(TodoCommand_RemoveTodo value)? removeTodo,
+    TResult Function(TodoCommand_CleanList value)? cleanList,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TodoCommandCopyWith<$Res> {
+  factory $TodoCommandCopyWith(
+          TodoCommand value, $Res Function(TodoCommand) then) =
+      _$TodoCommandCopyWithImpl<$Res, TodoCommand>;
+}
+
+/// @nodoc
+class _$TodoCommandCopyWithImpl<$Res, $Val extends TodoCommand>
+    implements $TodoCommandCopyWith<$Res> {
+  _$TodoCommandCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TodoCommand
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+abstract class _$$TodoCommand_AddTodoImplCopyWith<$Res> {
+  factory _$$TodoCommand_AddTodoImplCopyWith(_$TodoCommand_AddTodoImpl value,
+          $Res Function(_$TodoCommand_AddTodoImpl) then) =
+      __$$TodoCommand_AddTodoImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String field0});
+}
+
+/// @nodoc
+class __$$TodoCommand_AddTodoImplCopyWithImpl<$Res>
+    extends _$TodoCommandCopyWithImpl<$Res, _$TodoCommand_AddTodoImpl>
+    implements _$$TodoCommand_AddTodoImplCopyWith<$Res> {
+  __$$TodoCommand_AddTodoImplCopyWithImpl(_$TodoCommand_AddTodoImpl _value,
+      $Res Function(_$TodoCommand_AddTodoImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$TodoCommand_AddTodoImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$TodoCommand_AddTodoImpl extends TodoCommand_AddTodo {
+  const _$TodoCommand_AddTodoImpl(this.field0) : super._();
+
+  @override
+  final String field0;
+
+  @override
+  String toString() {
+    return 'TodoCommand.addTodo(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodoCommand_AddTodoImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of TodoCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TodoCommand_AddTodoImplCopyWith<_$TodoCommand_AddTodoImpl> get copyWith =>
+      __$$TodoCommand_AddTodoImplCopyWithImpl<_$TodoCommand_AddTodoImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String field0) addTodo,
+    required TResult Function(BigInt field0) removeTodo,
+    required TResult Function() cleanList,
+  }) {
+    return addTodo(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String field0)? addTodo,
+    TResult? Function(BigInt field0)? removeTodo,
+    TResult? Function()? cleanList,
+  }) {
+    return addTodo?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String field0)? addTodo,
+    TResult Function(BigInt field0)? removeTodo,
+    TResult Function()? cleanList,
+    required TResult orElse(),
+  }) {
+    if (addTodo != null) {
+      return addTodo(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCommand_AddTodo value) addTodo,
+    required TResult Function(TodoCommand_RemoveTodo value) removeTodo,
+    required TResult Function(TodoCommand_CleanList value) cleanList,
+  }) {
+    return addTodo(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCommand_AddTodo value)? addTodo,
+    TResult? Function(TodoCommand_RemoveTodo value)? removeTodo,
+    TResult? Function(TodoCommand_CleanList value)? cleanList,
+  }) {
+    return addTodo?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCommand_AddTodo value)? addTodo,
+    TResult Function(TodoCommand_RemoveTodo value)? removeTodo,
+    TResult Function(TodoCommand_CleanList value)? cleanList,
+    required TResult orElse(),
+  }) {
+    if (addTodo != null) {
+      return addTodo(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoCommand_AddTodo extends TodoCommand {
+  const factory TodoCommand_AddTodo(final String field0) =
+      _$TodoCommand_AddTodoImpl;
+  const TodoCommand_AddTodo._() : super._();
+
+  String get field0;
+
+  /// Create a copy of TodoCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TodoCommand_AddTodoImplCopyWith<_$TodoCommand_AddTodoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$TodoCommand_RemoveTodoImplCopyWith<$Res> {
+  factory _$$TodoCommand_RemoveTodoImplCopyWith(
+          _$TodoCommand_RemoveTodoImpl value,
+          $Res Function(_$TodoCommand_RemoveTodoImpl) then) =
+      __$$TodoCommand_RemoveTodoImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({BigInt field0});
+}
+
+/// @nodoc
+class __$$TodoCommand_RemoveTodoImplCopyWithImpl<$Res>
+    extends _$TodoCommandCopyWithImpl<$Res, _$TodoCommand_RemoveTodoImpl>
+    implements _$$TodoCommand_RemoveTodoImplCopyWith<$Res> {
+  __$$TodoCommand_RemoveTodoImplCopyWithImpl(
+      _$TodoCommand_RemoveTodoImpl _value,
+      $Res Function(_$TodoCommand_RemoveTodoImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$TodoCommand_RemoveTodoImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as BigInt,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$TodoCommand_RemoveTodoImpl extends TodoCommand_RemoveTodo {
+  const _$TodoCommand_RemoveTodoImpl(this.field0) : super._();
+
+  @override
+  final BigInt field0;
+
+  @override
+  String toString() {
+    return 'TodoCommand.removeTodo(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodoCommand_RemoveTodoImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of TodoCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TodoCommand_RemoveTodoImplCopyWith<_$TodoCommand_RemoveTodoImpl>
+      get copyWith => __$$TodoCommand_RemoveTodoImplCopyWithImpl<
+          _$TodoCommand_RemoveTodoImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String field0) addTodo,
+    required TResult Function(BigInt field0) removeTodo,
+    required TResult Function() cleanList,
+  }) {
+    return removeTodo(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String field0)? addTodo,
+    TResult? Function(BigInt field0)? removeTodo,
+    TResult? Function()? cleanList,
+  }) {
+    return removeTodo?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String field0)? addTodo,
+    TResult Function(BigInt field0)? removeTodo,
+    TResult Function()? cleanList,
+    required TResult orElse(),
+  }) {
+    if (removeTodo != null) {
+      return removeTodo(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCommand_AddTodo value) addTodo,
+    required TResult Function(TodoCommand_RemoveTodo value) removeTodo,
+    required TResult Function(TodoCommand_CleanList value) cleanList,
+  }) {
+    return removeTodo(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCommand_AddTodo value)? addTodo,
+    TResult? Function(TodoCommand_RemoveTodo value)? removeTodo,
+    TResult? Function(TodoCommand_CleanList value)? cleanList,
+  }) {
+    return removeTodo?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCommand_AddTodo value)? addTodo,
+    TResult Function(TodoCommand_RemoveTodo value)? removeTodo,
+    TResult Function(TodoCommand_CleanList value)? cleanList,
+    required TResult orElse(),
+  }) {
+    if (removeTodo != null) {
+      return removeTodo(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoCommand_RemoveTodo extends TodoCommand {
+  const factory TodoCommand_RemoveTodo(final BigInt field0) =
+      _$TodoCommand_RemoveTodoImpl;
+  const TodoCommand_RemoveTodo._() : super._();
+
+  BigInt get field0;
+
+  /// Create a copy of TodoCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TodoCommand_RemoveTodoImplCopyWith<_$TodoCommand_RemoveTodoImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$TodoCommand_CleanListImplCopyWith<$Res> {
+  factory _$$TodoCommand_CleanListImplCopyWith(
+          _$TodoCommand_CleanListImpl value,
+          $Res Function(_$TodoCommand_CleanListImpl) then) =
+      __$$TodoCommand_CleanListImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$TodoCommand_CleanListImplCopyWithImpl<$Res>
+    extends _$TodoCommandCopyWithImpl<$Res, _$TodoCommand_CleanListImpl>
+    implements _$$TodoCommand_CleanListImplCopyWith<$Res> {
+  __$$TodoCommand_CleanListImplCopyWithImpl(_$TodoCommand_CleanListImpl _value,
+      $Res Function(_$TodoCommand_CleanListImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoCommand
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$TodoCommand_CleanListImpl extends TodoCommand_CleanList {
+  const _$TodoCommand_CleanListImpl() : super._();
+
+  @override
+  String toString() {
+    return 'TodoCommand.cleanList()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodoCommand_CleanListImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String field0) addTodo,
+    required TResult Function(BigInt field0) removeTodo,
+    required TResult Function() cleanList,
+  }) {
+    return cleanList();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String field0)? addTodo,
+    TResult? Function(BigInt field0)? removeTodo,
+    TResult? Function()? cleanList,
+  }) {
+    return cleanList?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String field0)? addTodo,
+    TResult Function(BigInt field0)? removeTodo,
+    TResult Function()? cleanList,
+    required TResult orElse(),
+  }) {
+    if (cleanList != null) {
+      return cleanList();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCommand_AddTodo value) addTodo,
+    required TResult Function(TodoCommand_RemoveTodo value) removeTodo,
+    required TResult Function(TodoCommand_CleanList value) cleanList,
+  }) {
+    return cleanList(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCommand_AddTodo value)? addTodo,
+    TResult? Function(TodoCommand_RemoveTodo value)? removeTodo,
+    TResult? Function(TodoCommand_CleanList value)? cleanList,
+  }) {
+    return cleanList?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCommand_AddTodo value)? addTodo,
+    TResult Function(TodoCommand_RemoveTodo value)? removeTodo,
+    TResult Function(TodoCommand_CleanList value)? cleanList,
+    required TResult orElse(),
+  }) {
+    if (cleanList != null) {
+      return cleanList(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoCommand_CleanList extends TodoCommand {
+  const factory TodoCommand_CleanList() = _$TodoCommand_CleanListImpl;
+  const TodoCommand_CleanList._() : super._();
+}
+
+/// @nodoc
+mixin _$TodoQuery {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() allTodos,
+    required TResult Function(BigInt field0) getTodo,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? allTodos,
+    TResult? Function(BigInt field0)? getTodo,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? allTodos,
+    TResult Function(BigInt field0)? getTodo,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoQuery_AllTodos value) allTodos,
+    required TResult Function(TodoQuery_GetTodo value) getTodo,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoQuery_AllTodos value)? allTodos,
+    TResult? Function(TodoQuery_GetTodo value)? getTodo,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoQuery_AllTodos value)? allTodos,
+    TResult Function(TodoQuery_GetTodo value)? getTodo,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TodoQueryCopyWith<$Res> {
+  factory $TodoQueryCopyWith(TodoQuery value, $Res Function(TodoQuery) then) =
+      _$TodoQueryCopyWithImpl<$Res, TodoQuery>;
+}
+
+/// @nodoc
+class _$TodoQueryCopyWithImpl<$Res, $Val extends TodoQuery>
+    implements $TodoQueryCopyWith<$Res> {
+  _$TodoQueryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TodoQuery
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+abstract class _$$TodoQuery_AllTodosImplCopyWith<$Res> {
+  factory _$$TodoQuery_AllTodosImplCopyWith(_$TodoQuery_AllTodosImpl value,
+          $Res Function(_$TodoQuery_AllTodosImpl) then) =
+      __$$TodoQuery_AllTodosImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$TodoQuery_AllTodosImplCopyWithImpl<$Res>
+    extends _$TodoQueryCopyWithImpl<$Res, _$TodoQuery_AllTodosImpl>
+    implements _$$TodoQuery_AllTodosImplCopyWith<$Res> {
+  __$$TodoQuery_AllTodosImplCopyWithImpl(_$TodoQuery_AllTodosImpl _value,
+      $Res Function(_$TodoQuery_AllTodosImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoQuery
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$TodoQuery_AllTodosImpl extends TodoQuery_AllTodos {
+  const _$TodoQuery_AllTodosImpl() : super._();
+
+  @override
+  String toString() {
+    return 'TodoQuery.allTodos()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$TodoQuery_AllTodosImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() allTodos,
+    required TResult Function(BigInt field0) getTodo,
+  }) {
+    return allTodos();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? allTodos,
+    TResult? Function(BigInt field0)? getTodo,
+  }) {
+    return allTodos?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? allTodos,
+    TResult Function(BigInt field0)? getTodo,
+    required TResult orElse(),
+  }) {
+    if (allTodos != null) {
+      return allTodos();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoQuery_AllTodos value) allTodos,
+    required TResult Function(TodoQuery_GetTodo value) getTodo,
+  }) {
+    return allTodos(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoQuery_AllTodos value)? allTodos,
+    TResult? Function(TodoQuery_GetTodo value)? getTodo,
+  }) {
+    return allTodos?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoQuery_AllTodos value)? allTodos,
+    TResult Function(TodoQuery_GetTodo value)? getTodo,
+    required TResult orElse(),
+  }) {
+    if (allTodos != null) {
+      return allTodos(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoQuery_AllTodos extends TodoQuery {
+  const factory TodoQuery_AllTodos() = _$TodoQuery_AllTodosImpl;
+  const TodoQuery_AllTodos._() : super._();
+}
+
+/// @nodoc
+abstract class _$$TodoQuery_GetTodoImplCopyWith<$Res> {
+  factory _$$TodoQuery_GetTodoImplCopyWith(_$TodoQuery_GetTodoImpl value,
+          $Res Function(_$TodoQuery_GetTodoImpl) then) =
+      __$$TodoQuery_GetTodoImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({BigInt field0});
+}
+
+/// @nodoc
+class __$$TodoQuery_GetTodoImplCopyWithImpl<$Res>
+    extends _$TodoQueryCopyWithImpl<$Res, _$TodoQuery_GetTodoImpl>
+    implements _$$TodoQuery_GetTodoImplCopyWith<$Res> {
+  __$$TodoQuery_GetTodoImplCopyWithImpl(_$TodoQuery_GetTodoImpl _value,
+      $Res Function(_$TodoQuery_GetTodoImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoQuery
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$TodoQuery_GetTodoImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as BigInt,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$TodoQuery_GetTodoImpl extends TodoQuery_GetTodo {
+  const _$TodoQuery_GetTodoImpl(this.field0) : super._();
+
+  @override
+  final BigInt field0;
+
+  @override
+  String toString() {
+    return 'TodoQuery.getTodo(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodoQuery_GetTodoImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of TodoQuery
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TodoQuery_GetTodoImplCopyWith<_$TodoQuery_GetTodoImpl> get copyWith =>
+      __$$TodoQuery_GetTodoImplCopyWithImpl<_$TodoQuery_GetTodoImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() allTodos,
+    required TResult Function(BigInt field0) getTodo,
+  }) {
+    return getTodo(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? allTodos,
+    TResult? Function(BigInt field0)? getTodo,
+  }) {
+    return getTodo?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? allTodos,
+    TResult Function(BigInt field0)? getTodo,
+    required TResult orElse(),
+  }) {
+    if (getTodo != null) {
+      return getTodo(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoQuery_AllTodos value) allTodos,
+    required TResult Function(TodoQuery_GetTodo value) getTodo,
+  }) {
+    return getTodo(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoQuery_AllTodos value)? allTodos,
+    TResult? Function(TodoQuery_GetTodo value)? getTodo,
+  }) {
+    return getTodo?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoQuery_AllTodos value)? allTodos,
+    TResult Function(TodoQuery_GetTodo value)? getTodo,
+    required TResult orElse(),
+  }) {
+    if (getTodo != null) {
+      return getTodo(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoQuery_GetTodo extends TodoQuery {
+  const factory TodoQuery_GetTodo(final BigInt field0) =
+      _$TodoQuery_GetTodoImpl;
+  const TodoQuery_GetTodo._() : super._();
+
+  BigInt get field0;
+
+  /// Create a copy of TodoQuery
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TodoQuery_GetTodoImplCopyWith<_$TodoQuery_GetTodoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

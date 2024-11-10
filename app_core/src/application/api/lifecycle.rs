@@ -56,7 +56,9 @@ impl api_traits::Lifecycle for LifecycleImpl {
         // blocks on the Locks of inner fields
         // TODO implent timeout and throw an error?
         self.app_state
-            .persist_to_path(api_traits::AppConfig::app_state_file_path(&self.app_config))
+            .persist_to_path(api_traits::AppConfig::get_app_state_file_path(
+                &self.app_config,
+            ))
     }
 }
 // app state storage location
@@ -84,7 +86,7 @@ impl api_traits::AppConfig for AppConfigImpl {
             }
         }
     }
-    fn app_state_file_path(&self) -> &PathBuf {
+    fn get_app_state_file_path(&self) -> &PathBuf {
         &self.app_state_file_path
     }
 }
