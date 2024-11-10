@@ -1,5 +1,8 @@
 use crate::{
-    domain::todo_list::{TodoListEffect, TodoListModelLock, TodoListProcessingError},
+    domain::{
+        common_value_objects::StateChanged,
+        todo_list::{TodoListEffect, TodoListModelLock, TodoListProcessingError},
+    },
     utils::cqrs_traits::Cqrs,
 };
 
@@ -24,8 +27,6 @@ pub enum TodoCommand {
 pub enum TodoQuery {
     AllTodos,
 }
-
-// TODO codegen it
 
 /// All effects for the same reason all Processing Errors are in one emun:
 /// - easier handling for the consumer (match)
@@ -74,9 +75,6 @@ impl TodoQuery {
         self,
         lifecycle: &LifecycleImpl,
     ) -> Result<Vec<Effect>, ProcessingError> {
-        // let app_state = *lifecycle.app_state();
-        // let app_state: &AppStateImpl = lifecycle.app_state();
-        // let app_state: &AppStateImpl = &*lifecycle.app_state();
         let todo_list_model_lock = &lifecycle.app_state.todo_list_model_lock;
         let result = match self {
             TodoQuery::AllTodos => todo_list_model_lock.query_get_all_todos(),
@@ -97,17 +95,14 @@ impl TodoCommand {
         self,
         lifecycle: &LifecycleImpl,
     ) -> Result<Vec<Effect>, ProcessingError> {
-        //todo get AppStateImpl for codegen -> from Lifecycle trait impl type
         let app_state = &lifecycle.app_state;
         let todo_list_model_lock = &app_state.todo_list_model_lock;
-        let result = match self {
+        let (state_changed, result) = match self {
             TodoCommand::AddTodo(todo) => todo_list_model_lock.command_add_todo(todo),
             TodoCommand::RemoveTodo(todo_pos) => todo_list_model_lock.command_remove_todo(todo_pos),
             TodoCommand::CleanList => todo_list_model_lock.command_clean_list(),
         }
         .map_err(ProcessingError::TodoListProcessingError)?;
-        let (state_changed, result) = result;
-
         if state_changed {
             app_state.mark_dirty();
             lifecycle.persist().map_err(ProcessingError::NotPersisted)?;
