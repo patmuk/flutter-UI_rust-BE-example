@@ -36,7 +36,7 @@ fn handle_effects(effects: &Vec<Effect>) {
                     .for_each(|todo| println!("   - {:?}", todo))
             }
             Effect::TodoListEffectRenderTodoItem(todo_item) => {
-                Effect::TodoListEffectRenderTodoList(todo_item)
+                println!("got item {}", todo_item.text);
             }
         }
     }
