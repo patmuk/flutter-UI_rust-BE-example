@@ -5,9 +5,7 @@ pub(crate) trait CqrsModelLock<CqrsModel>:
     Default + From<CqrsModel> + std::marker::Sized + Clone
 {
 }
-//     fn get<'a>(&'a self) -> &'a Lock;
-//     fn clone(&self) -> Lock;
-// }
+
 pub trait Cqrs: Debug {
     type Effect;
     type ProcessingError: Debug;

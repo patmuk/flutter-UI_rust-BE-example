@@ -7,7 +7,6 @@ use crate::utils::cqrs_traits::{CqrsModel, CqrsModelLock};
 use super::common_value_objects::StateChanged;
 
 #[derive(Debug, Default, Clone)]
-// #[frb(non_opaque)]
 pub struct TodoListModelLock {
     pub lock: RustAutoOpaque<TodoListModel>,
 }

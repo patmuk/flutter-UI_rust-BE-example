@@ -1,8 +1,8 @@
+///////////
+// processing here to see codegen results
+//////////
 use crate::{
-    domain::{
-        common_value_objects::StateChanged,
-        todo_list::{TodoListEffect, TodoListModelLock, TodoListProcessingError},
-    },
+    domain::todo_list::{TodoListEffect, TodoListModelLock, TodoListProcessingError},
     utils::cqrs_traits::Cqrs,
 };
 
@@ -11,12 +11,6 @@ use super::{
     lifecycle::LifecycleImpl,
 };
 
-///////////
-// processing here to see codegen results
-//////////
-//TODO replace with macro_rules!([TodoComand, TodoQuery])
-// TODO consider changing the name to TodoCommand_AddTodo
-// test codegen for Dart!!!
 #[derive(Debug)]
 pub enum TodoCommand {
     AddTodo(String),
