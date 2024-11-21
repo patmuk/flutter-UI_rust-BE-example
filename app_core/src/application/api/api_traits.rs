@@ -6,7 +6,7 @@ pub trait Lifecycle {
     /// to avoid an illegal state (app state not loaded) we do the setup and init in one go
     /// get the instance with get()
     fn new(path: Option<String>) -> &'static Self;
-    fn get() -> &'static Self;
+    fn get_singleton() -> &'static Self;
     fn app_config(&self) -> &impl AppConfig;
     fn app_state(&self) -> &impl AppState;
     /// call to initialize the app.

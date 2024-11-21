@@ -2,9 +2,9 @@ use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
 use crate::application::bridge::frb_generated::RustAutoOpaque;
-// use crate::utils::cqrs_traits::{CqrsModel, CqrsModelLock};
+use crate::utils::cqrs_traits::CqrsModel;
 
-use super::common_value_objects::StateChanged;
+use crate::domain::common_value_objects::StateChanged;
 
 #[derive(Debug, Default, Clone)]
 pub struct TodoListModelLock {
@@ -34,7 +34,7 @@ pub struct TodoItem {
     pub text: String,
 }
 
-// impl CqrsModel for TodoListModel {}
+impl CqrsModel for TodoListModel {}
 
 #[derive(Debug)]
 pub enum TodoListEffect {

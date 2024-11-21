@@ -1,12 +1,11 @@
-use crate::application::api::api_traits::{AppConfig, AppState};
+use crate::application::api::api_traits::{AppConfig, AppState, Lifecycle};
+use generate_cqrs_api_macros::generate_api;
 use log::{debug, trace};
 
 use crate::application::app_state::AppStateImpl;
 use std::io;
 use std::path::PathBuf;
 use std::sync::OnceLock;
-
-use super::api_traits;
 
 static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
 
@@ -17,7 +16,8 @@ pub struct LifecycleImpl {
     pub(crate) app_state: AppStateImpl,
 }
 
-impl api_traits::Lifecycle for LifecycleImpl {
+#[generate_api("app_core/src/domain/todo_list.rs")]
+impl Lifecycle for LifecycleImpl {
     // to avoid an illegal state (app state not loaded) we do the setup and init in one go
     fn new(path: Option<String>) -> &'static Self {
         SINGLETON.get_or_init(|| {
@@ -31,7 +31,7 @@ impl api_traits::Lifecycle for LifecycleImpl {
         })
     }
 
-    fn get() -> &'static Self {
+    fn get_singleton() -> &'static Self {
         SINGLETON
             .get()
             .expect("Lifecycle: should been initialized with  ::new()!")
@@ -56,9 +56,7 @@ impl api_traits::Lifecycle for LifecycleImpl {
         // blocks on the Locks of inner fields
         // TODO implent timeout and throw an error?
         self.app_state
-            .persist_to_path(api_traits::AppConfig::get_app_state_file_path(
-                &self.app_config,
-            ))
+            .persist_to_path(AppConfig::get_app_state_file_path(&self.app_config))
     }
 }
 // app state storage location
@@ -67,7 +65,7 @@ pub struct AppConfigImpl {
     pub app_state_file_path: PathBuf,
 }
 
-impl api_traits::AppConfig for AppConfigImpl {
+impl AppConfig for AppConfigImpl {
     /// call to overwrite default values.
     /// Doesn't trigger initialization.
     fn new(path: Option<String>) -> Self {

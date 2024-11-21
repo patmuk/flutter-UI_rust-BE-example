@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use crate::domain::todo_list::TodoListModel;
 use crate::domain::todo_list::TodoListModelLock;
 
-use super::api::api_traits::{AppConfig, AppState};
+use crate::application::api::api_traits::{AppConfig, AppState};
 
 /// holds the complete state of the app, as a global static variable
 /// use `RustAutoOpaque<T>`, which is `Arc<RwLock<T>>`, on the fields,
@@ -172,7 +172,7 @@ mod tests {
 
     use crate::application::api::api_traits::AppState;
 
-    use super::{AppStateImpl, AppStateLoadError};
+    use crate::application::app_state::{AppStateImpl, AppStateLoadError};
 
     /// Path to the temporary test directory
 

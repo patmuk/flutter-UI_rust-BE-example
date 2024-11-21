@@ -142,6 +142,7 @@ dependencies = [
  "quote",
  "serde",
  "serial_test 3.1.1",
+ "simple_logger",
  "syn 2.0.82",
  "thiserror",
 ]
