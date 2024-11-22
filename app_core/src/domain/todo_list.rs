@@ -1,8 +1,8 @@
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
+use crate::application::api::lifecycle::{CqrsModel, CqrsModelLock};
 use crate::application::bridge::frb_generated::RustAutoOpaque;
-use crate::utils::cqrs_traits::{CqrsModel, CqrsModelLock};
 
 use crate::domain::common_value_objects::StateChanged;
 

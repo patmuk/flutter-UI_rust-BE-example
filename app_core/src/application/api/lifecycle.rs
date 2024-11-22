@@ -1,10 +1,8 @@
-use crate::application::api::api_traits::{AppConfig, AppState, Lifecycle};
 use generate_cqrs_api_macros::generate_api;
-use log::{debug, trace};
+use log::trace;
 
 use crate::application::app_state::AppStateImpl;
 use std::io;
-use std::path::PathBuf;
 use std::sync::OnceLock;
 
 static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();

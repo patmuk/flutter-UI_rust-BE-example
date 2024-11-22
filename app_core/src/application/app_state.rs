@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use crate::domain::todo_list::TodoListModel;
 use crate::domain::todo_list::TodoListModelLock;
 
-use crate::application::api::api_traits::{AppConfig, AppState};
+use crate::application::api::lifecycle::{AppConfig, AppState};
 
 /// holds the complete state of the app, as a global static variable
 /// use `RustAutoOpaque<T>`, which is `Arc<RwLock<T>>`, on the fields,
@@ -170,7 +170,7 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::LazyLock;
 
-    use crate::application::api::api_traits::AppState;
+    use crate::application::api::lifecycle::AppState;
 
     use crate::application::app_state::{AppStateImpl, AppStateLoadError};
 
