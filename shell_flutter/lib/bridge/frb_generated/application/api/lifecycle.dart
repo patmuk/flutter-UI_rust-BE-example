@@ -6,12 +6,12 @@
 import '../../domain/todo_list.dart';
 import '../../frb_generated.dart';
 import '../../lib.dart';
-import 'api_traits.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lifecycle.freezed.dart';
 
 // These functions are ignored because they are not marked as `pub`: `process_with_lifecycle`, `process_with_lifecycle`
+// These functions are ignored because they have generic arguments: `init`, `init`, `load_or_new`, `load_or_new`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `source`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<AppConfigImpl>>
@@ -59,6 +59,36 @@ abstract class LifecycleImpl implements RustOpaqueInterface, Lifecycle {
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ProcessingError>>
 abstract class ProcessingError implements RustOpaqueInterface {}
+
+abstract class AppConfig {
+  Future<void> getAppStateFilePath();
+}
+
+abstract class AppState {
+  Future<bool> dirtyFlagValue();
+
+  Future<void> markDirty();
+
+  Future<void> persistToPath({required PathBuf path});
+}
+
+abstract class Cqrs {
+  Future<List<Effect>> process();
+}
+
+abstract class CqrsModel {}
+
+abstract class CqrsModelLock {}
+
+abstract class Lifecycle {
+  Future<void> appConfig();
+
+  Future<void> appState();
+
+  Future<void> persist();
+
+  Future<void> shutdown();
+}
 
 @freezed
 sealed class Effect with _$Effect {

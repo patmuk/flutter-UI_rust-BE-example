@@ -5,7 +5,7 @@
 
 import '../frb_generated.dart';
 import '../lib.dart';
-import 'api/api_traits.dart';
+import 'api/lifecycle.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<AppStateImpl>>

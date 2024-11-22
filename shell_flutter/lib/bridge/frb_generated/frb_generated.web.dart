@@ -6,7 +6,6 @@
 // Static analysis wrongly picks the IO variant, thus ignore this
 // ignore_for_file: argument_type_not_assignable
 
-import 'application/api/api_traits.dart';
 import 'application/api/lifecycle.dart';
 import 'application/app_state.dart';
 import 'dart:async';
@@ -15,7 +14,6 @@ import 'domain/todo_list.dart';
 import 'frb_generated.dart';
 import 'lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_web.dart';
-import 'utils/cqrs_traits.dart';
 
 abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RustLibApiImplPlatform({

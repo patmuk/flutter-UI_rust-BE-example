@@ -3,8 +3,8 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
+import '../application/api/lifecycle.dart';
 import '../frb_generated.dart';
-import '../utils/cqrs_traits.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `command_add_todo`, `command_clean_list`, `command_remove_todo`, `query_get_all_todos`, `query_get_todo`
