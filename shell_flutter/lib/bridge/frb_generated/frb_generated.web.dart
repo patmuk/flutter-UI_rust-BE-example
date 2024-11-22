@@ -8,7 +8,6 @@
 
 import 'application/api/api_traits.dart';
 import 'application/api/lifecycle.dart';
-import 'application/api/processing.dart';
 import 'application/app_state.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -160,22 +159,29 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Cqrs dco_decode_TraitDef_Cqrs(dynamic raw);
 
   @protected
+  CqrsModel dco_decode_TraitDef_CqrsModel(dynamic raw);
+
+  @protected
+  CqrsModelLock dco_decode_TraitDef_CqrsModelLock(dynamic raw);
+
+  @protected
   Lifecycle dco_decode_TraitDef_Lifecycle(dynamic raw);
 
   @protected
   bool dco_decode_bool(dynamic raw);
 
   @protected
-  TodoCommand dco_decode_box_autoadd_todo_command(dynamic raw);
+  TodoItem dco_decode_box_autoadd_todo_item(dynamic raw);
 
   @protected
-  TodoItem dco_decode_box_autoadd_todo_item(dynamic raw);
+  TodoListModelCommand dco_decode_box_autoadd_todo_list_model_command(
+      dynamic raw);
 
   @protected
   TodoListModelLock dco_decode_box_autoadd_todo_list_model_lock(dynamic raw);
 
   @protected
-  TodoQuery dco_decode_box_autoadd_todo_query(dynamic raw);
+  TodoListModelQuery dco_decode_box_autoadd_todo_list_model_query(dynamic raw);
 
   @protected
   Effect dco_decode_effect(dynamic raw);
@@ -193,16 +199,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? dco_decode_opt_String(dynamic raw);
 
   @protected
-  TodoCommand dco_decode_todo_command(dynamic raw);
+  TodoItem dco_decode_todo_item(dynamic raw);
 
   @protected
-  TodoItem dco_decode_todo_item(dynamic raw);
+  TodoListModelCommand dco_decode_todo_list_model_command(dynamic raw);
 
   @protected
   TodoListModelLock dco_decode_todo_list_model_lock(dynamic raw);
 
   @protected
-  TodoQuery dco_decode_todo_query(dynamic raw);
+  TodoListModelQuery dco_decode_todo_list_model_query(dynamic raw);
 
   @protected
   int dco_decode_u_8(dynamic raw);
@@ -318,17 +324,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
-  TodoCommand sse_decode_box_autoadd_todo_command(SseDeserializer deserializer);
+  TodoItem sse_decode_box_autoadd_todo_item(SseDeserializer deserializer);
 
   @protected
-  TodoItem sse_decode_box_autoadd_todo_item(SseDeserializer deserializer);
+  TodoListModelCommand sse_decode_box_autoadd_todo_list_model_command(
+      SseDeserializer deserializer);
 
   @protected
   TodoListModelLock sse_decode_box_autoadd_todo_list_model_lock(
       SseDeserializer deserializer);
 
   @protected
-  TodoQuery sse_decode_box_autoadd_todo_query(SseDeserializer deserializer);
+  TodoListModelQuery sse_decode_box_autoadd_todo_list_model_query(
+      SseDeserializer deserializer);
 
   @protected
   Effect sse_decode_effect(SseDeserializer deserializer);
@@ -346,17 +354,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? sse_decode_opt_String(SseDeserializer deserializer);
 
   @protected
-  TodoCommand sse_decode_todo_command(SseDeserializer deserializer);
+  TodoItem sse_decode_todo_item(SseDeserializer deserializer);
 
   @protected
-  TodoItem sse_decode_todo_item(SseDeserializer deserializer);
+  TodoListModelCommand sse_decode_todo_list_model_command(
+      SseDeserializer deserializer);
 
   @protected
   TodoListModelLock sse_decode_todo_list_model_lock(
       SseDeserializer deserializer);
 
   @protected
-  TodoQuery sse_decode_todo_query(SseDeserializer deserializer);
+  TodoListModelQuery sse_decode_todo_list_model_query(
+      SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_8(SseDeserializer deserializer);
@@ -476,20 +486,20 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_todo_command(
-      TodoCommand self, SseSerializer serializer);
-
-  @protected
   void sse_encode_box_autoadd_todo_item(
       TodoItem self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_todo_list_model_command(
+      TodoListModelCommand self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_todo_list_model_lock(
       TodoListModelLock self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_todo_query(
-      TodoQuery self, SseSerializer serializer);
+  void sse_encode_box_autoadd_todo_list_model_query(
+      TodoListModelQuery self, SseSerializer serializer);
 
   @protected
   void sse_encode_effect(Effect self, SseSerializer serializer);
@@ -508,17 +518,19 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_String(String? self, SseSerializer serializer);
 
   @protected
-  void sse_encode_todo_command(TodoCommand self, SseSerializer serializer);
+  void sse_encode_todo_item(TodoItem self, SseSerializer serializer);
 
   @protected
-  void sse_encode_todo_item(TodoItem self, SseSerializer serializer);
+  void sse_encode_todo_list_model_command(
+      TodoListModelCommand self, SseSerializer serializer);
 
   @protected
   void sse_encode_todo_list_model_lock(
       TodoListModelLock self, SseSerializer serializer);
 
   @protected
-  void sse_encode_todo_query(TodoQuery self, SseSerializer serializer);
+  void sse_encode_todo_list_model_query(
+      TodoListModelQuery self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_8(int self, SseSerializer serializer);

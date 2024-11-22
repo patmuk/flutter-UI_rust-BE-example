@@ -5,7 +5,6 @@
 
 import 'application/api/api_traits.dart';
 import 'application/api/lifecycle.dart';
-import 'application/api/processing.dart';
 import 'application/app_state.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -72,7 +71,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.5.0';
 
   @override
-  int get rustContentHash => 1538377246;
+  int get rustContentHash => -1488086117;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -104,7 +103,7 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApplicationApiLifecycleLifecycleImplAppState(
       {required LifecycleImpl that});
 
-  Future<void> crateApplicationApiLifecycleLifecycleImplGet();
+  Future<void> crateApplicationApiLifecycleLifecycleImplGetSingleton();
 
   Future<void> crateApplicationApiLifecycleLifecycleImplNew({String? path});
 
@@ -114,11 +113,11 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApplicationApiLifecycleLifecycleImplShutdown(
       {required LifecycleImpl that});
 
-  Future<List<Effect>> crateApplicationApiProcessingTodoCommandProcess(
-      {required TodoCommand that});
+  Future<List<Effect>> crateApplicationApiLifecycleTodoListModelCommandProcess(
+      {required TodoListModelCommand that});
 
-  Future<List<Effect>> crateApplicationApiProcessingTodoQueryProcess(
-      {required TodoQuery that});
+  Future<List<Effect>> crateApplicationApiLifecycleTodoListModelQueryProcess(
+      {required TodoListModelQuery that});
 
   Future<bool> crateApplicationAppStateAppStateImplDirtyFlagValue(
       {required AppStateImpl that});
@@ -134,7 +133,11 @@ abstract class RustLibApi extends BaseApi {
   Future<List<String>> crateDomainTodoListTodoListModelGetTodosAsString(
       {required TodoListModel that});
 
+  Future<TodoListModel> crateDomainTodoListTodoListModelNew();
+
   Future<TodoListModelLock> crateDomainTodoListTodoListModelLockDefault();
+
+  Future<TodoListModelLock> crateDomainTodoListTodoListModelLockNew();
 
   RustArcIncrementStrongCountFnType
       get rust_arc_increment_strong_count_AppConfigImpl;
@@ -394,7 +397,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
-  Future<void> crateApplicationApiLifecycleLifecycleImplGet() {
+  Future<void> crateApplicationApiLifecycleLifecycleImplGetSingleton() {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
@@ -405,17 +408,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeSuccessData: sse_decode_unit,
         decodeErrorData: null,
       ),
-      constMeta: kCrateApplicationApiLifecycleLifecycleImplGetConstMeta,
+      constMeta:
+          kCrateApplicationApiLifecycleLifecycleImplGetSingletonConstMeta,
       argValues: [],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApplicationApiLifecycleLifecycleImplGetConstMeta =>
-      const TaskConstMeta(
-        debugName: "LifecycleImpl_get",
-        argNames: [],
-      );
+  TaskConstMeta
+      get kCrateApplicationApiLifecycleLifecycleImplGetSingletonConstMeta =>
+          const TaskConstMeta(
+            debugName: "LifecycleImpl_get_singleton",
+            argNames: [],
+          );
 
   @override
   Future<void> crateApplicationApiLifecycleLifecycleImplNew({String? path}) {
@@ -499,12 +504,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
-  Future<List<Effect>> crateApplicationApiProcessingTodoCommandProcess(
-      {required TodoCommand that}) {
+  Future<List<Effect>> crateApplicationApiLifecycleTodoListModelCommandProcess(
+      {required TodoListModelCommand that}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_todo_command(that, serializer);
+        sse_encode_box_autoadd_todo_list_model_command(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 23, port: port_);
       },
@@ -513,25 +518,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData:
             sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProcessingError,
       ),
-      constMeta: kCrateApplicationApiProcessingTodoCommandProcessConstMeta,
+      constMeta:
+          kCrateApplicationApiLifecycleTodoListModelCommandProcessConstMeta,
       argValues: [that],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApplicationApiProcessingTodoCommandProcessConstMeta =>
-      const TaskConstMeta(
-        debugName: "todo_command_process",
-        argNames: ["that"],
-      );
+  TaskConstMeta
+      get kCrateApplicationApiLifecycleTodoListModelCommandProcessConstMeta =>
+          const TaskConstMeta(
+            debugName: "todo_list_model_command_process",
+            argNames: ["that"],
+          );
 
   @override
-  Future<List<Effect>> crateApplicationApiProcessingTodoQueryProcess(
-      {required TodoQuery that}) {
+  Future<List<Effect>> crateApplicationApiLifecycleTodoListModelQueryProcess(
+      {required TodoListModelQuery that}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_todo_query(that, serializer);
+        sse_encode_box_autoadd_todo_list_model_query(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 24, port: port_);
       },
@@ -540,17 +547,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData:
             sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProcessingError,
       ),
-      constMeta: kCrateApplicationApiProcessingTodoQueryProcessConstMeta,
+      constMeta:
+          kCrateApplicationApiLifecycleTodoListModelQueryProcessConstMeta,
       argValues: [that],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateApplicationApiProcessingTodoQueryProcessConstMeta =>
-      const TaskConstMeta(
-        debugName: "todo_query_process",
-        argNames: ["that"],
-      );
+  TaskConstMeta
+      get kCrateApplicationApiLifecycleTodoListModelQueryProcessConstMeta =>
+          const TaskConstMeta(
+            debugName: "todo_list_model_query_process",
+            argNames: ["that"],
+          );
 
   @override
   Future<bool> crateApplicationAppStateAppStateImplDirtyFlagValue(
@@ -691,12 +700,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
-  Future<TodoListModelLock> crateDomainTodoListTodoListModelLockDefault() {
+  Future<TodoListModel> crateDomainTodoListTodoListModelNew() {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 30, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData:
+            sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateDomainTodoListTodoListModelNewConstMeta,
+      argValues: [],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateDomainTodoListTodoListModelNewConstMeta =>
+      const TaskConstMeta(
+        debugName: "TodoListModel_new",
+        argNames: [],
+      );
+
+  @override
+  Future<TodoListModelLock> crateDomainTodoListTodoListModelLockDefault() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 31, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_todo_list_model_lock,
@@ -711,6 +745,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateDomainTodoListTodoListModelLockDefaultConstMeta =>
       const TaskConstMeta(
         debugName: "todo_list_model_lock_default",
+        argNames: [],
+      );
+
+  @override
+  Future<TodoListModelLock> crateDomainTodoListTodoListModelLockNew() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 32, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_todo_list_model_lock,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateDomainTodoListTodoListModelLockNewConstMeta,
+      argValues: [],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateDomainTodoListTodoListModelLockNewConstMeta =>
+      const TaskConstMeta(
+        debugName: "todo_list_model_lock_new",
         argNames: [],
       );
 
@@ -946,6 +1004,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  CqrsModel dco_decode_TraitDef_CqrsModel(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    throw UnimplementedError();
+  }
+
+  @protected
+  CqrsModelLock dco_decode_TraitDef_CqrsModelLock(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    throw UnimplementedError();
+  }
+
+  @protected
   Lifecycle dco_decode_TraitDef_Lifecycle(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     throw UnimplementedError();
@@ -958,15 +1028,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TodoCommand dco_decode_box_autoadd_todo_command(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return dco_decode_todo_command(raw);
-  }
-
-  @protected
   TodoItem dco_decode_box_autoadd_todo_item(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_todo_item(raw);
+  }
+
+  @protected
+  TodoListModelCommand dco_decode_box_autoadd_todo_list_model_command(
+      dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_todo_list_model_command(raw);
   }
 
   @protected
@@ -976,9 +1047,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TodoQuery dco_decode_box_autoadd_todo_query(dynamic raw) {
+  TodoListModelQuery dco_decode_box_autoadd_todo_list_model_query(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return dco_decode_todo_query(raw);
+    return dco_decode_todo_list_model_query(raw);
   }
 
   @protected
@@ -986,11 +1057,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     switch (raw[0]) {
       case 0:
-        return Effect_TodoListEffectRenderTodoList(
+        return Effect_TodoListModelRenderTodoList(
           dco_decode_box_autoadd_todo_list_model_lock(raw[1]),
         );
       case 1:
-        return Effect_TodoListEffectRenderTodoItem(
+        return Effect_TodoListModelRenderTodoItem(
           dco_decode_box_autoadd_todo_item(raw[1]),
         );
       default:
@@ -1023,25 +1094,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TodoCommand dco_decode_todo_command(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    switch (raw[0]) {
-      case 0:
-        return TodoCommand_AddTodo(
-          dco_decode_String(raw[1]),
-        );
-      case 1:
-        return TodoCommand_RemoveTodo(
-          dco_decode_usize(raw[1]),
-        );
-      case 2:
-        return const TodoCommand_CleanList();
-      default:
-        throw Exception("unreachable");
-    }
-  }
-
-  @protected
   TodoItem dco_decode_todo_item(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1050,6 +1102,25 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return TodoItem(
       text: dco_decode_String(arr[0]),
     );
+  }
+
+  @protected
+  TodoListModelCommand dco_decode_todo_list_model_command(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return TodoListModelCommand_AddTodo(
+          dco_decode_String(raw[1]),
+        );
+      case 1:
+        return const TodoListModelCommand_CleanList();
+      case 2:
+        return TodoListModelCommand_RemoveTodo(
+          dco_decode_usize(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   @protected
@@ -1066,13 +1137,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TodoQuery dco_decode_todo_query(dynamic raw) {
+  TodoListModelQuery dco_decode_todo_list_model_query(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     switch (raw[0]) {
       case 0:
-        return const TodoQuery_AllTodos();
+        return const TodoListModelQuery_GetAllTodos();
       case 1:
-        return TodoQuery_GetTodo(
+        return TodoListModelQuery_GetTodo(
           dco_decode_usize(raw[1]),
         );
       default:
@@ -1292,16 +1363,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TodoCommand sse_decode_box_autoadd_todo_command(
-      SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return (sse_decode_todo_command(deserializer));
-  }
-
-  @protected
   TodoItem sse_decode_box_autoadd_todo_item(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_todo_item(deserializer));
+  }
+
+  @protected
+  TodoListModelCommand sse_decode_box_autoadd_todo_list_model_command(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_todo_list_model_command(deserializer));
   }
 
   @protected
@@ -1312,9 +1383,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TodoQuery sse_decode_box_autoadd_todo_query(SseDeserializer deserializer) {
+  TodoListModelQuery sse_decode_box_autoadd_todo_list_model_query(
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return (sse_decode_todo_query(deserializer));
+    return (sse_decode_todo_list_model_query(deserializer));
   }
 
   @protected
@@ -1326,10 +1398,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 0:
         var var_field0 =
             sse_decode_box_autoadd_todo_list_model_lock(deserializer);
-        return Effect_TodoListEffectRenderTodoList(var_field0);
+        return Effect_TodoListModelRenderTodoList(var_field0);
       case 1:
         var var_field0 = sse_decode_box_autoadd_todo_item(deserializer);
-        return Effect_TodoListEffectRenderTodoItem(var_field0);
+        return Effect_TodoListModelRenderTodoItem(var_field0);
       default:
         throw UnimplementedError('');
     }
@@ -1378,29 +1450,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TodoCommand sse_decode_todo_command(SseDeserializer deserializer) {
+  TodoItem sse_decode_todo_item(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_text = sse_decode_String(deserializer);
+    return TodoItem(text: var_text);
+  }
+
+  @protected
+  TodoListModelCommand sse_decode_todo_list_model_command(
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var tag_ = sse_decode_i_32(deserializer);
     switch (tag_) {
       case 0:
         var var_field0 = sse_decode_String(deserializer);
-        return TodoCommand_AddTodo(var_field0);
+        return TodoListModelCommand_AddTodo(var_field0);
       case 1:
-        var var_field0 = sse_decode_usize(deserializer);
-        return TodoCommand_RemoveTodo(var_field0);
+        return const TodoListModelCommand_CleanList();
       case 2:
-        return const TodoCommand_CleanList();
+        var var_field0 = sse_decode_usize(deserializer);
+        return TodoListModelCommand_RemoveTodo(var_field0);
       default:
         throw UnimplementedError('');
     }
-  }
-
-  @protected
-  TodoItem sse_decode_todo_item(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_text = sse_decode_String(deserializer);
-    return TodoItem(text: var_text);
   }
 
   @protected
@@ -1414,16 +1487,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  TodoQuery sse_decode_todo_query(SseDeserializer deserializer) {
+  TodoListModelQuery sse_decode_todo_list_model_query(
+      SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var tag_ = sse_decode_i_32(deserializer);
     switch (tag_) {
       case 0:
-        return const TodoQuery_AllTodos();
+        return const TodoListModelQuery_GetAllTodos();
       case 1:
         var var_field0 = sse_decode_usize(deserializer);
-        return TodoQuery_GetTodo(var_field0);
+        return TodoListModelQuery_GetTodo(var_field0);
       default:
         throw UnimplementedError('');
     }
@@ -1658,17 +1732,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_box_autoadd_todo_command(
-      TodoCommand self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_todo_command(self, serializer);
-  }
-
-  @protected
   void sse_encode_box_autoadd_todo_item(
       TodoItem self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_todo_item(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_todo_list_model_command(
+      TodoListModelCommand self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_todo_list_model_command(self, serializer);
   }
 
   @protected
@@ -1679,20 +1753,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_box_autoadd_todo_query(
-      TodoQuery self, SseSerializer serializer) {
+  void sse_encode_box_autoadd_todo_list_model_query(
+      TodoListModelQuery self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_todo_query(self, serializer);
+    sse_encode_todo_list_model_query(self, serializer);
   }
 
   @protected
   void sse_encode_effect(Effect self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
-      case Effect_TodoListEffectRenderTodoList(field0: final field0):
+      case Effect_TodoListModelRenderTodoList(field0: final field0):
         sse_encode_i_32(0, serializer);
         sse_encode_box_autoadd_todo_list_model_lock(field0, serializer);
-      case Effect_TodoListEffectRenderTodoItem(field0: final field0):
+      case Effect_TodoListModelRenderTodoItem(field0: final field0):
         sse_encode_i_32(1, serializer);
         sse_encode_box_autoadd_todo_item(field0, serializer);
       default:
@@ -1737,26 +1811,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_todo_command(TodoCommand self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    switch (self) {
-      case TodoCommand_AddTodo(field0: final field0):
-        sse_encode_i_32(0, serializer);
-        sse_encode_String(field0, serializer);
-      case TodoCommand_RemoveTodo(field0: final field0):
-        sse_encode_i_32(1, serializer);
-        sse_encode_usize(field0, serializer);
-      case TodoCommand_CleanList():
-        sse_encode_i_32(2, serializer);
-      default:
-        throw UnimplementedError('');
-    }
-  }
-
-  @protected
   void sse_encode_todo_item(TodoItem self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.text, serializer);
+  }
+
+  @protected
+  void sse_encode_todo_list_model_command(
+      TodoListModelCommand self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case TodoListModelCommand_AddTodo(field0: final field0):
+        sse_encode_i_32(0, serializer);
+        sse_encode_String(field0, serializer);
+      case TodoListModelCommand_CleanList():
+        sse_encode_i_32(1, serializer);
+      case TodoListModelCommand_RemoveTodo(field0: final field0):
+        sse_encode_i_32(2, serializer);
+        sse_encode_usize(field0, serializer);
+      default:
+        throw UnimplementedError('');
+    }
   }
 
   @protected
@@ -1768,12 +1843,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_todo_query(TodoQuery self, SseSerializer serializer) {
+  void sse_encode_todo_list_model_query(
+      TodoListModelQuery self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
-      case TodoQuery_AllTodos():
+      case TodoListModelQuery_GetAllTodos():
         sse_encode_i_32(0, serializer);
-      case TodoQuery_GetTodo(field0: final field0):
+      case TodoListModelQuery_GetTodo(field0: final field0):
         sse_encode_i_32(1, serializer);
         sse_encode_usize(field0, serializer);
       default:

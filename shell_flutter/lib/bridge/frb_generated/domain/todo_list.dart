@@ -4,6 +4,7 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+import '../utils/cqrs_traits.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `command_add_todo`, `command_clean_list`, `command_remove_todo`, `query_get_all_todos`, `query_get_todo`
@@ -11,7 +12,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<TodoListModel>>
-abstract class TodoListModel implements RustOpaqueInterface {
+abstract class TodoListModel implements RustOpaqueInterface, CqrsModel {
   static Future<TodoListModel> default_() =>
       RustLib.instance.api.crateDomainTodoListTodoListModelDefault();
 
@@ -23,6 +24,10 @@ abstract class TodoListModel implements RustOpaqueInterface {
   /// is heavy to clone, we use a custom function to `clone()` only the lightweight and
   /// only needed part for presentation.
   Future<List<String>> getTodosAsString();
+
+  // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
+  static Future<TodoListModel> newInstance() =>
+      RustLib.instance.api.crateDomainTodoListTodoListModelNew();
 }
 
 class TodoItem {
@@ -52,6 +57,10 @@ class TodoListModelLock {
 
   static Future<TodoListModelLock> default_() =>
       RustLib.instance.api.crateDomainTodoListTodoListModelLockDefault();
+
+  // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
+  static Future<TodoListModelLock> newInstance() =>
+      RustLib.instance.api.crateDomainTodoListTodoListModelLockNew();
 
   @override
   int get hashCode => lock.hashCode;

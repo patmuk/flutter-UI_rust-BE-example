@@ -3,12 +3,16 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
+import '../../domain/todo_list.dart';
 import '../../frb_generated.dart';
 import '../../lib.dart';
 import 'api_traits.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
+part 'lifecycle.freezed.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`
+// These functions are ignored because they are not marked as `pub`: `process_with_lifecycle`, `process_with_lifecycle`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `source`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<AppConfigImpl>>
 abstract class AppConfigImpl implements RustOpaqueInterface, AppConfig {
@@ -38,8 +42,8 @@ abstract class LifecycleImpl implements RustOpaqueInterface, Lifecycle {
   @override
   Future<void> appState();
 
-  static Future<void> get_() =>
-      RustLib.instance.api.crateApplicationApiLifecycleLifecycleImplGet();
+  static Future<void> getSingleton() => RustLib.instance.api
+      .crateApplicationApiLifecycleLifecycleImplGetSingleton();
 
   // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
   static Future<void> newInstance({String? path}) => RustLib.instance.api
@@ -51,4 +55,56 @@ abstract class LifecycleImpl implements RustOpaqueInterface, Lifecycle {
 
   @override
   Future<void> shutdown();
+}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<ProcessingError>>
+abstract class ProcessingError implements RustOpaqueInterface {}
+
+@freezed
+sealed class Effect with _$Effect {
+  const Effect._();
+
+  /// this indicates that the model has changed, so that the app's state should be persisted.
+  /// to avoid scanning the entire vec, this must be the first element.
+  const factory Effect.todoListModelRenderTodoList(
+    TodoListModelLock field0,
+  ) = Effect_TodoListModelRenderTodoList;
+  const factory Effect.todoListModelRenderTodoItem(
+    TodoItem field0,
+  ) = Effect_TodoListModelRenderTodoItem;
+}
+
+@freezed
+sealed class TodoListModelCommand with _$TodoListModelCommand {
+  const TodoListModelCommand._();
+
+  const factory TodoListModelCommand.addTodo(
+    String field0,
+  ) = TodoListModelCommand_AddTodo;
+  const factory TodoListModelCommand.cleanList() =
+      TodoListModelCommand_CleanList;
+  const factory TodoListModelCommand.removeTodo(
+    BigInt field0,
+  ) = TodoListModelCommand_RemoveTodo;
+
+  Future<List<Effect>> process() => RustLib.instance.api
+          .crateApplicationApiLifecycleTodoListModelCommandProcess(
+        that: this,
+      );
+}
+
+@freezed
+sealed class TodoListModelQuery with _$TodoListModelQuery {
+  const TodoListModelQuery._();
+
+  const factory TodoListModelQuery.getAllTodos() =
+      TodoListModelQuery_GetAllTodos;
+  const factory TodoListModelQuery.getTodo(
+    BigInt field0,
+  ) = TodoListModelQuery_GetTodo;
+
+  Future<List<Effect>> process() => RustLib.instance.api
+          .crateApplicationApiLifecycleTodoListModelQueryProcess(
+        that: this,
+      );
 }

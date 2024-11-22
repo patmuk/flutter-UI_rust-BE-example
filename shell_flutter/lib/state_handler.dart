@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart';
-import 'package:shell_flutter/bridge/frb_generated/application/api/processing.dart';
+import 'package:shell_flutter/bridge/frb_generated/domain/todo_list.dart';
 import 'package:shell_flutter/bridge/frb_generated/frb_generated.dart';
 
 /// This singleton handles the state, and all communication with the lower layers (implemented in Rust).
@@ -39,7 +39,7 @@ class StateHandler {
     // initialise all Listeners with the loaded model
     // by calling the respective querries
     // the value is set by _handleEffects() automatically
-    singleton.handleEffects(const TodoQuery.allTodos().process());
+    singleton.handleEffects(const TodoListModelQuery.getAllTodos().process());
     return singleton;
   }
 
@@ -47,10 +47,14 @@ class StateHandler {
     for (var effect in await effects) {
       switch (effect) {
         // update the value and trigger a UI repaint
-        case Effect_TodoListEffectRenderTodoList():
+        // we don't destinguish between whole list or just one item
+        case Effect_TodoListModelRenderTodoList():
           todoListItems.value = await effect.field0.lock.getTodosAsString();
-        case Effect_TodoListEffectRenderTodoItem():
-        // do nothing, the values did not change
+          break;
+        case Effect_TodoListModelRenderTodoItem():
+          // do nothing with it
+          effect.field0;
+          break;
       }
     }
   }
