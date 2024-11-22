@@ -2,7 +2,7 @@ use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
 use crate::application::bridge::frb_generated::RustAutoOpaque;
-use crate::utils::cqrs_traits::CqrsModel;
+use crate::utils::cqrs_traits::{CqrsModel, CqrsModelLock};
 
 use crate::domain::common_value_objects::StateChanged;
 
@@ -10,7 +10,7 @@ use crate::domain::common_value_objects::StateChanged;
 pub struct TodoListModelLock {
     pub lock: RustAutoOpaque<TodoListModel>,
 }
-// impl CqrsModelLock<TodoListModel> for TodoListModelLock {}
+impl CqrsModelLock<TodoListModel> for TodoListModelLock {}
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
 #[frb(opaque)]
