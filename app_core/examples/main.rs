@@ -1,7 +1,4 @@
-use app_core::application::api::api_traits::Lifecycle;
-use app_core::application::api::lifecycle::LifecycleImpl;
-use app_core::application::api::processing::{Effect, ProcessingError, TodoCommand, TodoQuery};
-use app_core::utils::cqrs_traits::Cqrs;
+use app_core::application::api::lifecycle::*;
 
 fn main() {
     // initiializes the app and loads the app state
@@ -10,10 +7,13 @@ fn main() {
     // following CQRS, this is how to query for the state
     // following the crux-style, one should not call view() directly, but evaluate the Effect, which tells
     // the caller ('shell') what to do (in this case render the viewModel):
-    process_and_handle_effects(TodoQuery::AllTodos).expect("Could not read all todo's!");
+    process_and_handle_effects(TodoListModelQuery::GetAllTodos)
+        .expect("Could not read all todo's!");
 
-    process_and_handle_effects(TodoCommand::AddTodo("Proper Test todo".to_string()))
-        .expect("Couldn't add a todo!");
+    process_and_handle_effects(TodoListModelCommand::AddTodo(
+        "Proper Test todo".to_string(),
+    ))
+    .expect("Couldn't add a todo!");
 
     // if possible call this function to clean up, like wrting the app's state to disk
     lifecycle.shutdown().expect("Could not persist the state!");
@@ -26,7 +26,7 @@ fn process_and_handle_effects(cqrs: impl Cqrs) -> Result<(), ProcessingError> {
 fn handle_effects(effects: &Vec<Effect>) {
     for effect in effects {
         match effect {
-            Effect::TodoListEffectRenderTodoList(todo_list_model_lock) => {
+            Effect::TodoListModelRenderTodoList(todo_list_model_lock) => {
                 println!("Rendering view:\n");
                 todo_list_model_lock
                     .lock
@@ -35,7 +35,7 @@ fn handle_effects(effects: &Vec<Effect>) {
                     .iter()
                     .for_each(|todo| println!("   - {:?}", todo))
             }
-            Effect::TodoListEffectRenderTodoItem(todo_item) => {
+            Effect::TodoListModelRenderTodoItem(todo_item) => {
                 println!("got item {}", todo_item.text);
             }
         }
