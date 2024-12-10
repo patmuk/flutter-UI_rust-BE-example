@@ -8,7 +8,7 @@ crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies]
 flutter_rust_bridge = "=2.5.0"
-thiserror = "^1.0.51"
+thiserror = "^2.0.6"
 
 log = "^0.4"
 simple_logger = "^5.0.0"
