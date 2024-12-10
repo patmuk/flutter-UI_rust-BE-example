@@ -1,7 +1,4 @@
-use app_core::application::api::api_traits::Lifecycle;
-use app_core::application::api::lifecycle::LifecycleImpl;
-use app_core::application::api::processing::{Effect, ProcessingError, TodoCommand, TodoQuery};
-use app_core::utils::cqrs_traits::Cqrs;
+use app_core::application::api::lifecycle::*;
 use std::error::Error;
 use std::process;
 
@@ -24,7 +21,7 @@ fn main() {
                           =====================\n";
     println!("{}", USAGE);
     let lifecycle: &LifecycleImpl = Lifecycle::new(None);
-    let _ = process_and_handle_effects(TodoQuery::AllTodos);
+    let _ = process_and_handle_effects(TodoListModelQuery::GetAllTodos);
 
     loop {
         match stdin.read_line(&mut user_input) {
@@ -35,30 +32,30 @@ fn main() {
             Ok(_) if user_input.starts_with('a') => {
                 let todo = user_input.split_at(2).1.trim();
 
-                let _ = process_and_handle_effects(TodoCommand::AddTodo(todo.to_string()))
+                let _ = process_and_handle_effects(TodoListModelCommand::AddTodo(todo.to_string()))
                     .expect("Could not add a todo");
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('v') => {
-                let _ = process_and_handle_effects(TodoQuery::AllTodos);
+                let _ = process_and_handle_effects(TodoListModelQuery::GetAllTodos);
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('n') => {
                 let index = parse_index(&user_input).expect("Your command is wrong: {}");
                 println!("\nShowing (only) todo at index {}\n", index);
-                let _ = process_and_handle_effects(TodoQuery::GetTodo(index))
+                let _ = process_and_handle_effects(TodoListModelQuery::GetTodo(index))
                     .expect("failed to remove a todo");
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('r') => {
                 let index = parse_index(&user_input).expect("Wrong command: ");
                 println!("\nRemoving todo at index {}\n", index);
-                let _ = process_and_handle_effects(TodoCommand::RemoveTodo(index))
+                let _ = process_and_handle_effects(TodoListModelCommand::RemoveTodo(index))
                     .expect("failed to remove a todo");
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('c') => {
-                process_and_handle_effects(TodoCommand::CleanList)
+                process_and_handle_effects(TodoListModelCommand::CleanList)
                     .expect("failed to clean the list");
                 user_input.clear();
             }
@@ -67,10 +64,10 @@ fn main() {
                 process::exit(0);
             }
             Ok(_) => {
-                println!("\nI don't understand your command '{user_input}'");
+                println!("I don't understand your command '{user_input}'");
                 user_input.clear()
             }
-            Err(_) => panic!("\ninput not comprehensible {user_input}"),
+            Err(_) => panic!("input not comprehensible {user_input}"),
         };
     }
 }
@@ -100,7 +97,7 @@ fn process_and_handle_effects(cqrs: impl Cqrs) -> Result<(), ProcessingError> {
 fn handle_effects(effects: Vec<Effect>) {
     for effect in effects {
         match effect {
-            Effect::TodoListEffectRenderTodoList(todo_list_model_lock) => {
+            Effect::TodoListModelRenderTodoList(todo_list_model_lock) => {
                 println!("Rendering view:\n");
                 todo_list_model_lock
                     .lock
@@ -110,7 +107,7 @@ fn handle_effects(effects: Vec<Effect>) {
                     .enumerate()
                     .for_each(|(index, item)| println!("\t{}. {}", index + 1, item))
             }
-            Effect::TodoListEffectRenderTodoItem(todo_item) => {
+            Effect::TodoListModelRenderTodoItem(todo_item) => {
                 println!("\tGot todo item: {}", todo_item.text)
             }
         }
