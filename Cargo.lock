@@ -137,7 +137,7 @@ dependencies = [
  "cps",
  "flutter_rust_bridge",
  "flutter_rust_bridge_codegen",
- "generate_cqrs_api_macros",
+ "generate_cqrs_api_macro",
  "log",
  "quote",
  "serde",
@@ -834,17 +834,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "generate_cqrs_api_macros"
+name = "generate_cqrs_api_macro"
 version = "0.1.0"
 dependencies = [
- "generate_cqrs_api_macros_impl",
+ "generate_cqrs_api_macro_impl",
  "log",
  "proc-macro2",
  "simple_logger",
 ]
 
 [[package]]
-name = "generate_cqrs_api_macros_impl"
+name = "generate_cqrs_api_macro_impl"
 version = "0.1.0"
 dependencies = [
  "log",

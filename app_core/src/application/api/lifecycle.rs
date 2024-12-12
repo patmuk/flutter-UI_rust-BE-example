@@ -1,4 +1,4 @@
-use generate_cqrs_api_macros::generate_api;
+use generate_cqrs_api_macro::generate_api;
 use log::trace;
 
 use crate::application::app_state::AppStateImpl;
