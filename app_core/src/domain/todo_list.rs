@@ -4,8 +4,6 @@ use serde::{Deserialize, Serialize};
 use crate::application::api::lifecycle::{CqrsModel, CqrsModelLock};
 use crate::application::bridge::frb_generated::RustAutoOpaque;
 
-use crate::domain::common_value_objects::StateChanged;
-
 #[derive(Debug, Default, Clone)]
 pub struct TodoListModelLock {
     pub lock: RustAutoOpaque<TodoListModel>,
@@ -78,7 +76,7 @@ impl TodoListModelLock {
     pub(crate) fn command_add_todo(
         &self,
         todo: String,
-    ) -> Result<(StateChanged, Vec<TodoListEffect>), TodoListProcessingError> {
+    ) -> Result<(bool, Vec<TodoListEffect>), TodoListProcessingError> {
         self.lock
             .blocking_write()
             .items
@@ -90,7 +88,7 @@ impl TodoListModelLock {
     pub(crate) fn command_remove_todo(
         &self,
         todo_pos: usize,
-    ) -> Result<(StateChanged, Vec<TodoListEffect>), TodoListProcessingError> {
+    ) -> Result<(bool, Vec<TodoListEffect>), TodoListProcessingError> {
         let items = &mut self.lock.blocking_write().items;
         if todo_pos > items.len() {
             Err(TodoListProcessingError::TodoDoesNotExist(todo_pos))
@@ -101,7 +99,7 @@ impl TodoListModelLock {
     }
     pub(crate) fn command_clean_list(
         &self,
-    ) -> Result<(StateChanged, Vec<TodoListEffect>), TodoListProcessingError> {
+    ) -> Result<(bool, Vec<TodoListEffect>), TodoListProcessingError> {
         self.lock.blocking_write().items.clear();
         Ok((true, vec![TodoListEffect::RenderTodoList(self.clone())]))
     }
