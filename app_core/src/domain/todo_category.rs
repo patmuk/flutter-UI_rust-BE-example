@@ -104,10 +104,15 @@ impl TodoCategoryModelLock {
     }
     pub(crate) fn get_todo_category(
         &self,
+        get_model: bool,
     ) -> Result<Vec<TodoCategoryEffect>, TodoCategoryProcessingError> {
-        Ok(vec![TodoCategoryEffect::RenderTodoCategory(
-            self.lock.blocking_read().title.clone(),
-        )])
+        if get_model {
+            self.get_todo_category_model()
+        } else {
+            Ok(vec![TodoCategoryEffect::RenderTodoCategory(
+                self.lock.blocking_read().title.clone(),
+            )])
+        }
     }
 }
 
@@ -268,7 +273,7 @@ mod tests {
         });
 
         // get the todo list
-        let result = model_lock.get_todo_category();
+        let result = model_lock.get_todo_category(false);
         assert!(result.is_ok());
         let effects = result.unwrap();
         assert_eq!(1, effects.len());

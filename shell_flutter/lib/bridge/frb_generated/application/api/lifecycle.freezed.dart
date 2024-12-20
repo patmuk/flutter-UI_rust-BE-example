@@ -1715,6 +1715,502 @@ abstract class TodoCategoryModelCommand_UpdateTitle
 }
 
 /// @nodoc
+mixin _$TodoCategoryModelQuery {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(bool field0) getTodoCategory,
+    required TResult Function() getTodoCategoryModel,
+    required TResult Function() getTodoList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(bool field0)? getTodoCategory,
+    TResult? Function()? getTodoCategoryModel,
+    TResult? Function()? getTodoList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(bool field0)? getTodoCategory,
+    TResult Function()? getTodoCategoryModel,
+    TResult Function()? getTodoList,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCategoryModelQuery_GetTodoCategory value)
+        getTodoCategory,
+    required TResult Function(TodoCategoryModelQuery_GetTodoCategoryModel value)
+        getTodoCategoryModel,
+    required TResult Function(TodoCategoryModelQuery_GetTodoList value)
+        getTodoList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCategoryModelQuery_GetTodoCategory value)?
+        getTodoCategory,
+    TResult? Function(TodoCategoryModelQuery_GetTodoCategoryModel value)?
+        getTodoCategoryModel,
+    TResult? Function(TodoCategoryModelQuery_GetTodoList value)? getTodoList,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCategoryModelQuery_GetTodoCategory value)?
+        getTodoCategory,
+    TResult Function(TodoCategoryModelQuery_GetTodoCategoryModel value)?
+        getTodoCategoryModel,
+    TResult Function(TodoCategoryModelQuery_GetTodoList value)? getTodoList,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TodoCategoryModelQueryCopyWith<$Res> {
+  factory $TodoCategoryModelQueryCopyWith(TodoCategoryModelQuery value,
+          $Res Function(TodoCategoryModelQuery) then) =
+      _$TodoCategoryModelQueryCopyWithImpl<$Res, TodoCategoryModelQuery>;
+}
+
+/// @nodoc
+class _$TodoCategoryModelQueryCopyWithImpl<$Res,
+        $Val extends TodoCategoryModelQuery>
+    implements $TodoCategoryModelQueryCopyWith<$Res> {
+  _$TodoCategoryModelQueryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TodoCategoryModelQuery
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+abstract class _$$TodoCategoryModelQuery_GetTodoCategoryImplCopyWith<$Res> {
+  factory _$$TodoCategoryModelQuery_GetTodoCategoryImplCopyWith(
+          _$TodoCategoryModelQuery_GetTodoCategoryImpl value,
+          $Res Function(_$TodoCategoryModelQuery_GetTodoCategoryImpl) then) =
+      __$$TodoCategoryModelQuery_GetTodoCategoryImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool field0});
+}
+
+/// @nodoc
+class __$$TodoCategoryModelQuery_GetTodoCategoryImplCopyWithImpl<$Res>
+    extends _$TodoCategoryModelQueryCopyWithImpl<$Res,
+        _$TodoCategoryModelQuery_GetTodoCategoryImpl>
+    implements _$$TodoCategoryModelQuery_GetTodoCategoryImplCopyWith<$Res> {
+  __$$TodoCategoryModelQuery_GetTodoCategoryImplCopyWithImpl(
+      _$TodoCategoryModelQuery_GetTodoCategoryImpl _value,
+      $Res Function(_$TodoCategoryModelQuery_GetTodoCategoryImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoCategoryModelQuery
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$TodoCategoryModelQuery_GetTodoCategoryImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$TodoCategoryModelQuery_GetTodoCategoryImpl
+    extends TodoCategoryModelQuery_GetTodoCategory {
+  const _$TodoCategoryModelQuery_GetTodoCategoryImpl(this.field0) : super._();
+
+  @override
+  final bool field0;
+
+  @override
+  String toString() {
+    return 'TodoCategoryModelQuery.getTodoCategory(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodoCategoryModelQuery_GetTodoCategoryImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of TodoCategoryModelQuery
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TodoCategoryModelQuery_GetTodoCategoryImplCopyWith<
+          _$TodoCategoryModelQuery_GetTodoCategoryImpl>
+      get copyWith =>
+          __$$TodoCategoryModelQuery_GetTodoCategoryImplCopyWithImpl<
+              _$TodoCategoryModelQuery_GetTodoCategoryImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(bool field0) getTodoCategory,
+    required TResult Function() getTodoCategoryModel,
+    required TResult Function() getTodoList,
+  }) {
+    return getTodoCategory(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(bool field0)? getTodoCategory,
+    TResult? Function()? getTodoCategoryModel,
+    TResult? Function()? getTodoList,
+  }) {
+    return getTodoCategory?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(bool field0)? getTodoCategory,
+    TResult Function()? getTodoCategoryModel,
+    TResult Function()? getTodoList,
+    required TResult orElse(),
+  }) {
+    if (getTodoCategory != null) {
+      return getTodoCategory(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCategoryModelQuery_GetTodoCategory value)
+        getTodoCategory,
+    required TResult Function(TodoCategoryModelQuery_GetTodoCategoryModel value)
+        getTodoCategoryModel,
+    required TResult Function(TodoCategoryModelQuery_GetTodoList value)
+        getTodoList,
+  }) {
+    return getTodoCategory(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCategoryModelQuery_GetTodoCategory value)?
+        getTodoCategory,
+    TResult? Function(TodoCategoryModelQuery_GetTodoCategoryModel value)?
+        getTodoCategoryModel,
+    TResult? Function(TodoCategoryModelQuery_GetTodoList value)? getTodoList,
+  }) {
+    return getTodoCategory?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCategoryModelQuery_GetTodoCategory value)?
+        getTodoCategory,
+    TResult Function(TodoCategoryModelQuery_GetTodoCategoryModel value)?
+        getTodoCategoryModel,
+    TResult Function(TodoCategoryModelQuery_GetTodoList value)? getTodoList,
+    required TResult orElse(),
+  }) {
+    if (getTodoCategory != null) {
+      return getTodoCategory(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoCategoryModelQuery_GetTodoCategory
+    extends TodoCategoryModelQuery {
+  const factory TodoCategoryModelQuery_GetTodoCategory(final bool field0) =
+      _$TodoCategoryModelQuery_GetTodoCategoryImpl;
+  const TodoCategoryModelQuery_GetTodoCategory._() : super._();
+
+  bool get field0;
+
+  /// Create a copy of TodoCategoryModelQuery
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TodoCategoryModelQuery_GetTodoCategoryImplCopyWith<
+          _$TodoCategoryModelQuery_GetTodoCategoryImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$TodoCategoryModelQuery_GetTodoCategoryModelImplCopyWith<
+    $Res> {
+  factory _$$TodoCategoryModelQuery_GetTodoCategoryModelImplCopyWith(
+          _$TodoCategoryModelQuery_GetTodoCategoryModelImpl value,
+          $Res Function(_$TodoCategoryModelQuery_GetTodoCategoryModelImpl)
+              then) =
+      __$$TodoCategoryModelQuery_GetTodoCategoryModelImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$TodoCategoryModelQuery_GetTodoCategoryModelImplCopyWithImpl<$Res>
+    extends _$TodoCategoryModelQueryCopyWithImpl<$Res,
+        _$TodoCategoryModelQuery_GetTodoCategoryModelImpl>
+    implements
+        _$$TodoCategoryModelQuery_GetTodoCategoryModelImplCopyWith<$Res> {
+  __$$TodoCategoryModelQuery_GetTodoCategoryModelImplCopyWithImpl(
+      _$TodoCategoryModelQuery_GetTodoCategoryModelImpl _value,
+      $Res Function(_$TodoCategoryModelQuery_GetTodoCategoryModelImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoCategoryModelQuery
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$TodoCategoryModelQuery_GetTodoCategoryModelImpl
+    extends TodoCategoryModelQuery_GetTodoCategoryModel {
+  const _$TodoCategoryModelQuery_GetTodoCategoryModelImpl() : super._();
+
+  @override
+  String toString() {
+    return 'TodoCategoryModelQuery.getTodoCategoryModel()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodoCategoryModelQuery_GetTodoCategoryModelImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(bool field0) getTodoCategory,
+    required TResult Function() getTodoCategoryModel,
+    required TResult Function() getTodoList,
+  }) {
+    return getTodoCategoryModel();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(bool field0)? getTodoCategory,
+    TResult? Function()? getTodoCategoryModel,
+    TResult? Function()? getTodoList,
+  }) {
+    return getTodoCategoryModel?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(bool field0)? getTodoCategory,
+    TResult Function()? getTodoCategoryModel,
+    TResult Function()? getTodoList,
+    required TResult orElse(),
+  }) {
+    if (getTodoCategoryModel != null) {
+      return getTodoCategoryModel();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCategoryModelQuery_GetTodoCategory value)
+        getTodoCategory,
+    required TResult Function(TodoCategoryModelQuery_GetTodoCategoryModel value)
+        getTodoCategoryModel,
+    required TResult Function(TodoCategoryModelQuery_GetTodoList value)
+        getTodoList,
+  }) {
+    return getTodoCategoryModel(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCategoryModelQuery_GetTodoCategory value)?
+        getTodoCategory,
+    TResult? Function(TodoCategoryModelQuery_GetTodoCategoryModel value)?
+        getTodoCategoryModel,
+    TResult? Function(TodoCategoryModelQuery_GetTodoList value)? getTodoList,
+  }) {
+    return getTodoCategoryModel?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCategoryModelQuery_GetTodoCategory value)?
+        getTodoCategory,
+    TResult Function(TodoCategoryModelQuery_GetTodoCategoryModel value)?
+        getTodoCategoryModel,
+    TResult Function(TodoCategoryModelQuery_GetTodoList value)? getTodoList,
+    required TResult orElse(),
+  }) {
+    if (getTodoCategoryModel != null) {
+      return getTodoCategoryModel(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoCategoryModelQuery_GetTodoCategoryModel
+    extends TodoCategoryModelQuery {
+  const factory TodoCategoryModelQuery_GetTodoCategoryModel() =
+      _$TodoCategoryModelQuery_GetTodoCategoryModelImpl;
+  const TodoCategoryModelQuery_GetTodoCategoryModel._() : super._();
+}
+
+/// @nodoc
+abstract class _$$TodoCategoryModelQuery_GetTodoListImplCopyWith<$Res> {
+  factory _$$TodoCategoryModelQuery_GetTodoListImplCopyWith(
+          _$TodoCategoryModelQuery_GetTodoListImpl value,
+          $Res Function(_$TodoCategoryModelQuery_GetTodoListImpl) then) =
+      __$$TodoCategoryModelQuery_GetTodoListImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$TodoCategoryModelQuery_GetTodoListImplCopyWithImpl<$Res>
+    extends _$TodoCategoryModelQueryCopyWithImpl<$Res,
+        _$TodoCategoryModelQuery_GetTodoListImpl>
+    implements _$$TodoCategoryModelQuery_GetTodoListImplCopyWith<$Res> {
+  __$$TodoCategoryModelQuery_GetTodoListImplCopyWithImpl(
+      _$TodoCategoryModelQuery_GetTodoListImpl _value,
+      $Res Function(_$TodoCategoryModelQuery_GetTodoListImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoCategoryModelQuery
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$TodoCategoryModelQuery_GetTodoListImpl
+    extends TodoCategoryModelQuery_GetTodoList {
+  const _$TodoCategoryModelQuery_GetTodoListImpl() : super._();
+
+  @override
+  String toString() {
+    return 'TodoCategoryModelQuery.getTodoList()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodoCategoryModelQuery_GetTodoListImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(bool field0) getTodoCategory,
+    required TResult Function() getTodoCategoryModel,
+    required TResult Function() getTodoList,
+  }) {
+    return getTodoList();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(bool field0)? getTodoCategory,
+    TResult? Function()? getTodoCategoryModel,
+    TResult? Function()? getTodoList,
+  }) {
+    return getTodoList?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(bool field0)? getTodoCategory,
+    TResult Function()? getTodoCategoryModel,
+    TResult Function()? getTodoList,
+    required TResult orElse(),
+  }) {
+    if (getTodoList != null) {
+      return getTodoList();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCategoryModelQuery_GetTodoCategory value)
+        getTodoCategory,
+    required TResult Function(TodoCategoryModelQuery_GetTodoCategoryModel value)
+        getTodoCategoryModel,
+    required TResult Function(TodoCategoryModelQuery_GetTodoList value)
+        getTodoList,
+  }) {
+    return getTodoList(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCategoryModelQuery_GetTodoCategory value)?
+        getTodoCategory,
+    TResult? Function(TodoCategoryModelQuery_GetTodoCategoryModel value)?
+        getTodoCategoryModel,
+    TResult? Function(TodoCategoryModelQuery_GetTodoList value)? getTodoList,
+  }) {
+    return getTodoList?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCategoryModelQuery_GetTodoCategory value)?
+        getTodoCategory,
+    TResult Function(TodoCategoryModelQuery_GetTodoCategoryModel value)?
+        getTodoCategoryModel,
+    TResult Function(TodoCategoryModelQuery_GetTodoList value)? getTodoList,
+    required TResult orElse(),
+  }) {
+    if (getTodoList != null) {
+      return getTodoList(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoCategoryModelQuery_GetTodoList
+    extends TodoCategoryModelQuery {
+  const factory TodoCategoryModelQuery_GetTodoList() =
+      _$TodoCategoryModelQuery_GetTodoListImpl;
+  const TodoCategoryModelQuery_GetTodoList._() : super._();
+}
+
+/// @nodoc
 mixin _$TodoListModelCommand {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({

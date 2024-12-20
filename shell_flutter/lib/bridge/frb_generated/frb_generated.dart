@@ -571,7 +571,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_todo_category_model_query(that, serializer);
+        sse_encode_box_autoadd_todo_category_model_query(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 26, port: port_);
       },
@@ -1292,6 +1292,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModelQuery dco_decode_box_autoadd_todo_category_model_query(
+      dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_todo_category_model_query(raw);
+  }
+
+  @protected
   TodoItem dco_decode_box_autoadd_todo_item(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_todo_item(raw);
@@ -1347,12 +1354,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       default:
         throw Exception("unreachable");
     }
-  }
-
-  @protected
-  int dco_decode_i_32(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return raw as int;
   }
 
   @protected
@@ -1412,7 +1413,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   TodoCategoryModelQuery dco_decode_todo_category_model_query(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return TodoCategoryModelQuery.values[raw as int];
+    switch (raw[0]) {
+      case 0:
+        return TodoCategoryModelQuery_GetTodoCategory(
+          dco_decode_bool(raw[1]),
+        );
+      case 1:
+        return const TodoCategoryModelQuery_GetTodoCategoryModel();
+      case 2:
+        return const TodoCategoryModelQuery_GetTodoList();
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   @protected
@@ -1737,6 +1749,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModelQuery sse_decode_box_autoadd_todo_category_model_query(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_todo_category_model_query(deserializer));
+  }
+
+  @protected
   TodoItem sse_decode_box_autoadd_todo_item(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_todo_item(deserializer));
@@ -1793,12 +1812,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       default:
         throw UnimplementedError('');
     }
-  }
-
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getInt32();
   }
 
   @protected
@@ -1876,8 +1889,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TodoCategoryModelQuery sse_decode_todo_category_model_query(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var inner = sse_decode_i_32(deserializer);
-    return TodoCategoryModelQuery.values[inner];
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        var var_field0 = sse_decode_bool(deserializer);
+        return TodoCategoryModelQuery_GetTodoCategory(var_field0);
+      case 1:
+        return const TodoCategoryModelQuery_GetTodoCategoryModel();
+      case 2:
+        return const TodoCategoryModelQuery_GetTodoList();
+      default:
+        throw UnimplementedError('');
+    }
   }
 
   @protected
@@ -1949,6 +1973,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   BigInt sse_decode_usize(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getBigUint64();
+  }
+
+  @protected
+  int sse_decode_i_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getInt32();
   }
 
   @protected
@@ -2210,6 +2240,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_todo_category_model_query(
+      TodoCategoryModelQuery self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_todo_category_model_query(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_todo_item(
       TodoItem self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -2264,12 +2301,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       default:
         throw UnimplementedError('');
     }
-  }
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putInt32(self);
   }
 
   @protected
@@ -2336,7 +2367,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_todo_category_model_query(
       TodoCategoryModelQuery self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_i_32(self.index, serializer);
+    switch (self) {
+      case TodoCategoryModelQuery_GetTodoCategory(field0: final field0):
+        sse_encode_i_32(0, serializer);
+        sse_encode_bool(field0, serializer);
+      case TodoCategoryModelQuery_GetTodoCategoryModel():
+        sse_encode_i_32(1, serializer);
+      case TodoCategoryModelQuery_GetTodoList():
+        sse_encode_i_32(2, serializer);
+      default:
+        throw UnimplementedError('');
+    }
   }
 
   @protected
@@ -2401,6 +2442,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_usize(BigInt self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putBigUint64(self);
+  }
+
+  @protected
+  void sse_encode_i_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putInt32(self);
   }
 }
 

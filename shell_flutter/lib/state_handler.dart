@@ -40,8 +40,9 @@ class StateHandler {
     // initialise all Listeners with the loaded model
     // by calling the respective querries
     // the value is set by _handleEffects() automatically
-    // singleton.handleEffects(const TodoCategoryModel .getAllTodos().process());
-    singleton.handleEffects(const TodoListModelQuery.getAllTodos().process());
+    singleton.handleEffects(
+        const TodoCategoryModelQuery.getTodoCategoryModel().process());
+    // singleton.handleEffects(const TodoListModelQuery.getAllTodos().process());
     return singleton;
   }
 

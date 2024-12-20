@@ -202,6 +202,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       dynamic raw);
 
   @protected
+  TodoCategoryModelQuery dco_decode_box_autoadd_todo_category_model_query(
+      dynamic raw);
+
+  @protected
   TodoItem dco_decode_box_autoadd_todo_item(dynamic raw);
 
   @protected
@@ -216,9 +220,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Effect dco_decode_effect(dynamic raw);
-
-  @protected
-  int dco_decode_i_32(dynamic raw);
 
   @protected
   List<String> dco_decode_list_String(dynamic raw);
@@ -395,6 +396,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  TodoCategoryModelQuery sse_decode_box_autoadd_todo_category_model_query(
+      SseDeserializer deserializer);
+
+  @protected
   TodoItem sse_decode_box_autoadd_todo_item(SseDeserializer deserializer);
 
   @protected
@@ -411,9 +416,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Effect sse_decode_effect(SseDeserializer deserializer);
-
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
   List<String> sse_decode_list_String(SseDeserializer deserializer);
@@ -462,6 +464,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   BigInt sse_decode_usize(SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
   void sse_encode_AnyhowException(
@@ -597,6 +602,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       TodoCategoryModelLock self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_todo_category_model_query(
+      TodoCategoryModelQuery self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_todo_item(
       TodoItem self, SseSerializer serializer);
 
@@ -614,9 +623,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_effect(Effect self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
@@ -666,6 +672,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_usize(BigInt self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_i_32(int self, SseSerializer serializer);
 }
 
 // Section: wire_class

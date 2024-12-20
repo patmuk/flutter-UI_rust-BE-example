@@ -134,11 +134,17 @@ sealed class TodoCategoryModelCommand with _$TodoCategoryModelCommand {
       );
 }
 
-enum TodoCategoryModelQuery {
-  getTodoCategory,
-  getTodoCategoryModel,
-  getTodoList,
-  ;
+@freezed
+sealed class TodoCategoryModelQuery with _$TodoCategoryModelQuery {
+  const TodoCategoryModelQuery._();
+
+  const factory TodoCategoryModelQuery.getTodoCategory(
+    bool field0,
+  ) = TodoCategoryModelQuery_GetTodoCategory;
+  const factory TodoCategoryModelQuery.getTodoCategoryModel() =
+      TodoCategoryModelQuery_GetTodoCategoryModel;
+  const factory TodoCategoryModelQuery.getTodoList() =
+      TodoCategoryModelQuery_GetTodoList;
 
   Future<List<Effect>> process() => RustLib.instance.api
           .crateApplicationApiLifecycleTodoCategoryModelQueryProcess(
