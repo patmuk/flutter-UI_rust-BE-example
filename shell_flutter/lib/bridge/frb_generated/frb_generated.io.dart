@@ -192,6 +192,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool dco_decode_bool(dynamic raw);
 
   @protected
+  TodoCategoryModelCommand dco_decode_box_autoadd_todo_category_model_command(
+      dynamic raw);
+
+  @protected
+  TodoCategoryModelLock dco_decode_box_autoadd_todo_category_model_lock(
+      dynamic raw);
+
+  @protected
   TodoItem dco_decode_box_autoadd_todo_item(dynamic raw);
 
   @protected
@@ -208,6 +216,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Effect dco_decode_effect(dynamic raw);
 
   @protected
+  int dco_decode_i_32(dynamic raw);
+
+  @protected
   List<String> dco_decode_list_String(dynamic raw);
 
   @protected
@@ -220,7 +231,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? dco_decode_opt_String(dynamic raw);
 
   @protected
+  TodoCategoryModelCommand dco_decode_todo_category_model_command(dynamic raw);
+
+  @protected
   TodoCategoryModelLock dco_decode_todo_category_model_lock(dynamic raw);
+
+  @protected
+  TodoCategoryModelQuery dco_decode_todo_category_model_query(dynamic raw);
 
   @protected
   TodoItem dco_decode_todo_item(dynamic raw);
@@ -368,6 +385,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
+  TodoCategoryModelCommand sse_decode_box_autoadd_todo_category_model_command(
+      SseDeserializer deserializer);
+
+  @protected
+  TodoCategoryModelLock sse_decode_box_autoadd_todo_category_model_lock(
+      SseDeserializer deserializer);
+
+  @protected
   TodoItem sse_decode_box_autoadd_todo_item(SseDeserializer deserializer);
 
   @protected
@@ -386,6 +411,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Effect sse_decode_effect(SseDeserializer deserializer);
 
   @protected
+  int sse_decode_i_32(SseDeserializer deserializer);
+
+  @protected
   List<String> sse_decode_list_String(SseDeserializer deserializer);
 
   @protected
@@ -398,7 +426,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String? sse_decode_opt_String(SseDeserializer deserializer);
 
   @protected
+  TodoCategoryModelCommand sse_decode_todo_category_model_command(
+      SseDeserializer deserializer);
+
+  @protected
   TodoCategoryModelLock sse_decode_todo_category_model_lock(
+      SseDeserializer deserializer);
+
+  @protected
+  TodoCategoryModelQuery sse_decode_todo_category_model_query(
       SseDeserializer deserializer);
 
   @protected
@@ -424,9 +460,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   BigInt sse_decode_usize(SseDeserializer deserializer);
-
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer);
 
   @protected
   void sse_encode_AnyhowException(
@@ -554,6 +587,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_todo_category_model_command(
+      TodoCategoryModelCommand self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_todo_category_model_lock(
+      TodoCategoryModelLock self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_todo_item(
       TodoItem self, SseSerializer serializer);
 
@@ -573,6 +614,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_effect(Effect self, SseSerializer serializer);
 
   @protected
+  void sse_encode_i_32(int self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
 
   @protected
@@ -586,8 +630,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_String(String? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_todo_category_model_command(
+      TodoCategoryModelCommand self, SseSerializer serializer);
+
+  @protected
   void sse_encode_todo_category_model_lock(
       TodoCategoryModelLock self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_todo_category_model_query(
+      TodoCategoryModelQuery self, SseSerializer serializer);
 
   @protected
   void sse_encode_todo_item(TodoItem self, SseSerializer serializer);
@@ -612,9 +664,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_usize(BigInt self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer);
 }
 
 // Section: wire_class

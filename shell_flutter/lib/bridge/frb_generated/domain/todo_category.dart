@@ -6,6 +6,7 @@
 import '../application/api/lifecycle.dart';
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'todo_list.dart';
 
 // These functions are ignored because they are not marked as `pub`: `get_todo_category_model`, `get_todo_category`, `get_todo_list`, `set_todo_list`, `update_title`
 // These types are ignored because they are not used by any `pub` functions: `TodoCategoryEffect`, `TodoCategoryProcessingError`
@@ -24,6 +25,10 @@ abstract class TodoCategoryModel implements RustOpaqueInterface, CqrsModel {
   /// is heavy to clone, we use a custom function to `clone()` only the lightweight and
   /// only needed part for presentation.
   Future<String> getTitle();
+
+  Future<TodoListModelLock> getTodoListLock();
+
+  Future<List<String>> getTodos();
 }
 
 class TodoCategoryModelLock {

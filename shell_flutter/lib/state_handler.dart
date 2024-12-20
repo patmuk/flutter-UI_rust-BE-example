@@ -21,6 +21,8 @@ class StateHandler {
   // for more fine-granular UI updates, we create a listener for individual fields
   // of the TodoListModel.
   final ValueNotifier<List<String>> todoListItems = ValueNotifier(List.empty());
+  final ValueNotifier<String> todoListTitle =
+      ValueNotifier("Click here to set a title");
 
   // private Factory, so async can be used (not possible in a constructor or factory)
   // call only once to create the singleton
@@ -38,6 +40,7 @@ class StateHandler {
     // initialise all Listeners with the loaded model
     // by calling the respective querries
     // the value is set by _handleEffects() automatically
+    // singleton.handleEffects(const TodoCategoryModel .getAllTodos().process());
     singleton.handleEffects(const TodoListModelQuery.getAllTodos().process());
     return singleton;
   }
@@ -47,12 +50,25 @@ class StateHandler {
       switch (effect) {
         // update the value and trigger a UI repaint
         // we don't destinguish between whole list or just one item
+        case Effect_TodoCategoryModelRenderTodoList():
+          todoListItems.value = await effect.field0.lock.getTodosAsString();
+          break;
         case Effect_TodoListModelRenderTodoList():
           todoListItems.value = await effect.field0.lock.getTodosAsString();
           break;
         case Effect_TodoListModelRenderTodoItem():
           // do nothing with it
           effect.field0;
+          break;
+        case Effect_TodoCategoryModelRenderTodoCategoryModel():
+          todoListTitle.value = await effect.field0.lock.getTitle();
+          todoListItems.value = await effect.field0.lock.getTodos();
+          break;
+        case Effect_TodoCategoryModelRenderTodoCategory():
+          todoListTitle.value = effect.field0;
+          break;
+        case Effect_TodoCategoryModelUpdateTitel():
+          todoListTitle.value = effect.field0;
           break;
       }
     }

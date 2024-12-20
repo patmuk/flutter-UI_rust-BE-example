@@ -22,18 +22,36 @@ mixin _$Effect {
     required TResult Function(TodoListModelLock field0)
         todoListModelRenderTodoList,
     required TResult Function(TodoItem field0) todoListModelRenderTodoItem,
+    required TResult Function(TodoCategoryModelLock field0)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(String field0)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(TodoListModelLock field0)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(String field0) todoCategoryModelUpdateTitel,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(TodoListModelLock field0)? todoListModelRenderTodoList,
     TResult? Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult? Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult? Function(TodoListModelLock field0)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(String field0)? todoCategoryModelUpdateTitel,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(TodoListModelLock field0)? todoListModelRenderTodoList,
     TResult Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult Function(TodoListModelLock field0)? todoCategoryModelRenderTodoList,
+    TResult Function(String field0)? todoCategoryModelUpdateTitel,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -43,6 +61,15 @@ mixin _$Effect {
         todoListModelRenderTodoList,
     required TResult Function(Effect_TodoListModelRenderTodoItem value)
         todoListModelRenderTodoItem,
+    required TResult Function(
+            Effect_TodoCategoryModelRenderTodoCategoryModel value)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoList value)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(Effect_TodoCategoryModelUpdateTitel value)
+        todoCategoryModelUpdateTitel,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -51,6 +78,14 @@ mixin _$Effect {
         todoListModelRenderTodoList,
     TResult? Function(Effect_TodoListModelRenderTodoItem value)?
         todoListModelRenderTodoItem,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -59,6 +94,14 @@ mixin _$Effect {
         todoListModelRenderTodoList,
     TResult Function(Effect_TodoListModelRenderTodoItem value)?
         todoListModelRenderTodoItem,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -160,6 +203,13 @@ class _$Effect_TodoListModelRenderTodoListImpl
     required TResult Function(TodoListModelLock field0)
         todoListModelRenderTodoList,
     required TResult Function(TodoItem field0) todoListModelRenderTodoItem,
+    required TResult Function(TodoCategoryModelLock field0)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(String field0)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(TodoListModelLock field0)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(String field0) todoCategoryModelUpdateTitel,
   }) {
     return todoListModelRenderTodoList(field0);
   }
@@ -169,6 +219,12 @@ class _$Effect_TodoListModelRenderTodoListImpl
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(TodoListModelLock field0)? todoListModelRenderTodoList,
     TResult? Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult? Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult? Function(TodoListModelLock field0)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(String field0)? todoCategoryModelUpdateTitel,
   }) {
     return todoListModelRenderTodoList?.call(field0);
   }
@@ -178,6 +234,11 @@ class _$Effect_TodoListModelRenderTodoListImpl
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(TodoListModelLock field0)? todoListModelRenderTodoList,
     TResult Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult Function(TodoListModelLock field0)? todoCategoryModelRenderTodoList,
+    TResult Function(String field0)? todoCategoryModelUpdateTitel,
     required TResult orElse(),
   }) {
     if (todoListModelRenderTodoList != null) {
@@ -193,6 +254,15 @@ class _$Effect_TodoListModelRenderTodoListImpl
         todoListModelRenderTodoList,
     required TResult Function(Effect_TodoListModelRenderTodoItem value)
         todoListModelRenderTodoItem,
+    required TResult Function(
+            Effect_TodoCategoryModelRenderTodoCategoryModel value)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoList value)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(Effect_TodoCategoryModelUpdateTitel value)
+        todoCategoryModelUpdateTitel,
   }) {
     return todoListModelRenderTodoList(this);
   }
@@ -204,6 +274,14 @@ class _$Effect_TodoListModelRenderTodoListImpl
         todoListModelRenderTodoList,
     TResult? Function(Effect_TodoListModelRenderTodoItem value)?
         todoListModelRenderTodoItem,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
   }) {
     return todoListModelRenderTodoList?.call(this);
   }
@@ -215,6 +293,14 @@ class _$Effect_TodoListModelRenderTodoListImpl
         todoListModelRenderTodoList,
     TResult Function(Effect_TodoListModelRenderTodoItem value)?
         todoListModelRenderTodoItem,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
     required TResult orElse(),
   }) {
     if (todoListModelRenderTodoList != null) {
@@ -317,6 +403,13 @@ class _$Effect_TodoListModelRenderTodoItemImpl
     required TResult Function(TodoListModelLock field0)
         todoListModelRenderTodoList,
     required TResult Function(TodoItem field0) todoListModelRenderTodoItem,
+    required TResult Function(TodoCategoryModelLock field0)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(String field0)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(TodoListModelLock field0)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(String field0) todoCategoryModelUpdateTitel,
   }) {
     return todoListModelRenderTodoItem(field0);
   }
@@ -326,6 +419,12 @@ class _$Effect_TodoListModelRenderTodoItemImpl
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(TodoListModelLock field0)? todoListModelRenderTodoList,
     TResult? Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult? Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult? Function(TodoListModelLock field0)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(String field0)? todoCategoryModelUpdateTitel,
   }) {
     return todoListModelRenderTodoItem?.call(field0);
   }
@@ -335,6 +434,11 @@ class _$Effect_TodoListModelRenderTodoItemImpl
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(TodoListModelLock field0)? todoListModelRenderTodoList,
     TResult Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult Function(TodoListModelLock field0)? todoCategoryModelRenderTodoList,
+    TResult Function(String field0)? todoCategoryModelUpdateTitel,
     required TResult orElse(),
   }) {
     if (todoListModelRenderTodoItem != null) {
@@ -350,6 +454,15 @@ class _$Effect_TodoListModelRenderTodoItemImpl
         todoListModelRenderTodoList,
     required TResult Function(Effect_TodoListModelRenderTodoItem value)
         todoListModelRenderTodoItem,
+    required TResult Function(
+            Effect_TodoCategoryModelRenderTodoCategoryModel value)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoList value)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(Effect_TodoCategoryModelUpdateTitel value)
+        todoCategoryModelUpdateTitel,
   }) {
     return todoListModelRenderTodoItem(this);
   }
@@ -361,6 +474,14 @@ class _$Effect_TodoListModelRenderTodoItemImpl
         todoListModelRenderTodoList,
     TResult? Function(Effect_TodoListModelRenderTodoItem value)?
         todoListModelRenderTodoItem,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
   }) {
     return todoListModelRenderTodoItem?.call(this);
   }
@@ -372,6 +493,14 @@ class _$Effect_TodoListModelRenderTodoItemImpl
         todoListModelRenderTodoList,
     TResult Function(Effect_TodoListModelRenderTodoItem value)?
         todoListModelRenderTodoItem,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
     required TResult orElse(),
   }) {
     if (todoListModelRenderTodoItem != null) {
@@ -394,6 +523,1194 @@ abstract class Effect_TodoListModelRenderTodoItem extends Effect {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$Effect_TodoListModelRenderTodoItemImplCopyWith<
           _$Effect_TodoListModelRenderTodoItemImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$Effect_TodoCategoryModelRenderTodoCategoryModelImplCopyWith<
+    $Res> {
+  factory _$$Effect_TodoCategoryModelRenderTodoCategoryModelImplCopyWith(
+          _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl value,
+          $Res Function(_$Effect_TodoCategoryModelRenderTodoCategoryModelImpl)
+              then) =
+      __$$Effect_TodoCategoryModelRenderTodoCategoryModelImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({TodoCategoryModelLock field0});
+}
+
+/// @nodoc
+class __$$Effect_TodoCategoryModelRenderTodoCategoryModelImplCopyWithImpl<$Res>
+    extends _$EffectCopyWithImpl<$Res,
+        _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl>
+    implements
+        _$$Effect_TodoCategoryModelRenderTodoCategoryModelImplCopyWith<$Res> {
+  __$$Effect_TodoCategoryModelRenderTodoCategoryModelImplCopyWithImpl(
+      _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl _value,
+      $Res Function(_$Effect_TodoCategoryModelRenderTodoCategoryModelImpl)
+          _then)
+      : super(_value, _then);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$Effect_TodoCategoryModelRenderTodoCategoryModelImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as TodoCategoryModelLock,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl
+    extends Effect_TodoCategoryModelRenderTodoCategoryModel {
+  const _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl(this.field0)
+      : super._();
+
+  @override
+  final TodoCategoryModelLock field0;
+
+  @override
+  String toString() {
+    return 'Effect.todoCategoryModelRenderTodoCategoryModel(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$Effect_TodoCategoryModelRenderTodoCategoryModelImplCopyWith<
+          _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl>
+      get copyWith =>
+          __$$Effect_TodoCategoryModelRenderTodoCategoryModelImplCopyWithImpl<
+                  _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl>(
+              this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModelLock field0)
+        todoListModelRenderTodoList,
+    required TResult Function(TodoItem field0) todoListModelRenderTodoItem,
+    required TResult Function(TodoCategoryModelLock field0)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(String field0)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(TodoListModelLock field0)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(String field0) todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoCategoryModel(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModelLock field0)? todoListModelRenderTodoList,
+    TResult? Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult? Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult? Function(TodoListModelLock field0)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(String field0)? todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoCategoryModel?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModelLock field0)? todoListModelRenderTodoList,
+    TResult Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult Function(TodoListModelLock field0)? todoCategoryModelRenderTodoList,
+    TResult Function(String field0)? todoCategoryModelUpdateTitel,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryModelRenderTodoCategoryModel != null) {
+      return todoCategoryModelRenderTodoCategoryModel(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Effect_TodoListModelRenderTodoList value)
+        todoListModelRenderTodoList,
+    required TResult Function(Effect_TodoListModelRenderTodoItem value)
+        todoListModelRenderTodoItem,
+    required TResult Function(
+            Effect_TodoCategoryModelRenderTodoCategoryModel value)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoList value)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(Effect_TodoCategoryModelUpdateTitel value)
+        todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoCategoryModel(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Effect_TodoListModelRenderTodoList value)?
+        todoListModelRenderTodoList,
+    TResult? Function(Effect_TodoListModelRenderTodoItem value)?
+        todoListModelRenderTodoItem,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoCategoryModel?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Effect_TodoListModelRenderTodoList value)?
+        todoListModelRenderTodoList,
+    TResult Function(Effect_TodoListModelRenderTodoItem value)?
+        todoListModelRenderTodoItem,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryModelRenderTodoCategoryModel != null) {
+      return todoCategoryModelRenderTodoCategoryModel(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class Effect_TodoCategoryModelRenderTodoCategoryModel extends Effect {
+  const factory Effect_TodoCategoryModelRenderTodoCategoryModel(
+          final TodoCategoryModelLock field0) =
+      _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl;
+  const Effect_TodoCategoryModelRenderTodoCategoryModel._() : super._();
+
+  @override
+  TodoCategoryModelLock get field0;
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$Effect_TodoCategoryModelRenderTodoCategoryModelImplCopyWith<
+          _$Effect_TodoCategoryModelRenderTodoCategoryModelImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$Effect_TodoCategoryModelRenderTodoCategoryImplCopyWith<$Res> {
+  factory _$$Effect_TodoCategoryModelRenderTodoCategoryImplCopyWith(
+          _$Effect_TodoCategoryModelRenderTodoCategoryImpl value,
+          $Res Function(_$Effect_TodoCategoryModelRenderTodoCategoryImpl)
+              then) =
+      __$$Effect_TodoCategoryModelRenderTodoCategoryImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String field0});
+}
+
+/// @nodoc
+class __$$Effect_TodoCategoryModelRenderTodoCategoryImplCopyWithImpl<$Res>
+    extends _$EffectCopyWithImpl<$Res,
+        _$Effect_TodoCategoryModelRenderTodoCategoryImpl>
+    implements _$$Effect_TodoCategoryModelRenderTodoCategoryImplCopyWith<$Res> {
+  __$$Effect_TodoCategoryModelRenderTodoCategoryImplCopyWithImpl(
+      _$Effect_TodoCategoryModelRenderTodoCategoryImpl _value,
+      $Res Function(_$Effect_TodoCategoryModelRenderTodoCategoryImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$Effect_TodoCategoryModelRenderTodoCategoryImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$Effect_TodoCategoryModelRenderTodoCategoryImpl
+    extends Effect_TodoCategoryModelRenderTodoCategory {
+  const _$Effect_TodoCategoryModelRenderTodoCategoryImpl(this.field0)
+      : super._();
+
+  @override
+  final String field0;
+
+  @override
+  String toString() {
+    return 'Effect.todoCategoryModelRenderTodoCategory(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$Effect_TodoCategoryModelRenderTodoCategoryImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$Effect_TodoCategoryModelRenderTodoCategoryImplCopyWith<
+          _$Effect_TodoCategoryModelRenderTodoCategoryImpl>
+      get copyWith =>
+          __$$Effect_TodoCategoryModelRenderTodoCategoryImplCopyWithImpl<
+                  _$Effect_TodoCategoryModelRenderTodoCategoryImpl>(
+              this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModelLock field0)
+        todoListModelRenderTodoList,
+    required TResult Function(TodoItem field0) todoListModelRenderTodoItem,
+    required TResult Function(TodoCategoryModelLock field0)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(String field0)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(TodoListModelLock field0)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(String field0) todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoCategory(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModelLock field0)? todoListModelRenderTodoList,
+    TResult? Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult? Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult? Function(TodoListModelLock field0)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(String field0)? todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoCategory?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModelLock field0)? todoListModelRenderTodoList,
+    TResult Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult Function(TodoListModelLock field0)? todoCategoryModelRenderTodoList,
+    TResult Function(String field0)? todoCategoryModelUpdateTitel,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryModelRenderTodoCategory != null) {
+      return todoCategoryModelRenderTodoCategory(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Effect_TodoListModelRenderTodoList value)
+        todoListModelRenderTodoList,
+    required TResult Function(Effect_TodoListModelRenderTodoItem value)
+        todoListModelRenderTodoItem,
+    required TResult Function(
+            Effect_TodoCategoryModelRenderTodoCategoryModel value)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoList value)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(Effect_TodoCategoryModelUpdateTitel value)
+        todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoCategory(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Effect_TodoListModelRenderTodoList value)?
+        todoListModelRenderTodoList,
+    TResult? Function(Effect_TodoListModelRenderTodoItem value)?
+        todoListModelRenderTodoItem,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoCategory?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Effect_TodoListModelRenderTodoList value)?
+        todoListModelRenderTodoList,
+    TResult Function(Effect_TodoListModelRenderTodoItem value)?
+        todoListModelRenderTodoItem,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryModelRenderTodoCategory != null) {
+      return todoCategoryModelRenderTodoCategory(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class Effect_TodoCategoryModelRenderTodoCategory extends Effect {
+  const factory Effect_TodoCategoryModelRenderTodoCategory(
+      final String field0) = _$Effect_TodoCategoryModelRenderTodoCategoryImpl;
+  const Effect_TodoCategoryModelRenderTodoCategory._() : super._();
+
+  @override
+  String get field0;
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$Effect_TodoCategoryModelRenderTodoCategoryImplCopyWith<
+          _$Effect_TodoCategoryModelRenderTodoCategoryImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$Effect_TodoCategoryModelRenderTodoListImplCopyWith<$Res> {
+  factory _$$Effect_TodoCategoryModelRenderTodoListImplCopyWith(
+          _$Effect_TodoCategoryModelRenderTodoListImpl value,
+          $Res Function(_$Effect_TodoCategoryModelRenderTodoListImpl) then) =
+      __$$Effect_TodoCategoryModelRenderTodoListImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({TodoListModelLock field0});
+}
+
+/// @nodoc
+class __$$Effect_TodoCategoryModelRenderTodoListImplCopyWithImpl<$Res>
+    extends _$EffectCopyWithImpl<$Res,
+        _$Effect_TodoCategoryModelRenderTodoListImpl>
+    implements _$$Effect_TodoCategoryModelRenderTodoListImplCopyWith<$Res> {
+  __$$Effect_TodoCategoryModelRenderTodoListImplCopyWithImpl(
+      _$Effect_TodoCategoryModelRenderTodoListImpl _value,
+      $Res Function(_$Effect_TodoCategoryModelRenderTodoListImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$Effect_TodoCategoryModelRenderTodoListImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as TodoListModelLock,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$Effect_TodoCategoryModelRenderTodoListImpl
+    extends Effect_TodoCategoryModelRenderTodoList {
+  const _$Effect_TodoCategoryModelRenderTodoListImpl(this.field0) : super._();
+
+  @override
+  final TodoListModelLock field0;
+
+  @override
+  String toString() {
+    return 'Effect.todoCategoryModelRenderTodoList(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$Effect_TodoCategoryModelRenderTodoListImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$Effect_TodoCategoryModelRenderTodoListImplCopyWith<
+          _$Effect_TodoCategoryModelRenderTodoListImpl>
+      get copyWith =>
+          __$$Effect_TodoCategoryModelRenderTodoListImplCopyWithImpl<
+              _$Effect_TodoCategoryModelRenderTodoListImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModelLock field0)
+        todoListModelRenderTodoList,
+    required TResult Function(TodoItem field0) todoListModelRenderTodoItem,
+    required TResult Function(TodoCategoryModelLock field0)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(String field0)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(TodoListModelLock field0)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(String field0) todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoList(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModelLock field0)? todoListModelRenderTodoList,
+    TResult? Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult? Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult? Function(TodoListModelLock field0)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(String field0)? todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoList?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModelLock field0)? todoListModelRenderTodoList,
+    TResult Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult Function(TodoListModelLock field0)? todoCategoryModelRenderTodoList,
+    TResult Function(String field0)? todoCategoryModelUpdateTitel,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryModelRenderTodoList != null) {
+      return todoCategoryModelRenderTodoList(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Effect_TodoListModelRenderTodoList value)
+        todoListModelRenderTodoList,
+    required TResult Function(Effect_TodoListModelRenderTodoItem value)
+        todoListModelRenderTodoItem,
+    required TResult Function(
+            Effect_TodoCategoryModelRenderTodoCategoryModel value)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoList value)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(Effect_TodoCategoryModelUpdateTitel value)
+        todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoList(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Effect_TodoListModelRenderTodoList value)?
+        todoListModelRenderTodoList,
+    TResult? Function(Effect_TodoListModelRenderTodoItem value)?
+        todoListModelRenderTodoItem,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelRenderTodoList?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Effect_TodoListModelRenderTodoList value)?
+        todoListModelRenderTodoList,
+    TResult Function(Effect_TodoListModelRenderTodoItem value)?
+        todoListModelRenderTodoItem,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryModelRenderTodoList != null) {
+      return todoCategoryModelRenderTodoList(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class Effect_TodoCategoryModelRenderTodoList extends Effect {
+  const factory Effect_TodoCategoryModelRenderTodoList(
+          final TodoListModelLock field0) =
+      _$Effect_TodoCategoryModelRenderTodoListImpl;
+  const Effect_TodoCategoryModelRenderTodoList._() : super._();
+
+  @override
+  TodoListModelLock get field0;
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$Effect_TodoCategoryModelRenderTodoListImplCopyWith<
+          _$Effect_TodoCategoryModelRenderTodoListImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$Effect_TodoCategoryModelUpdateTitelImplCopyWith<$Res> {
+  factory _$$Effect_TodoCategoryModelUpdateTitelImplCopyWith(
+          _$Effect_TodoCategoryModelUpdateTitelImpl value,
+          $Res Function(_$Effect_TodoCategoryModelUpdateTitelImpl) then) =
+      __$$Effect_TodoCategoryModelUpdateTitelImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String field0});
+}
+
+/// @nodoc
+class __$$Effect_TodoCategoryModelUpdateTitelImplCopyWithImpl<$Res>
+    extends _$EffectCopyWithImpl<$Res,
+        _$Effect_TodoCategoryModelUpdateTitelImpl>
+    implements _$$Effect_TodoCategoryModelUpdateTitelImplCopyWith<$Res> {
+  __$$Effect_TodoCategoryModelUpdateTitelImplCopyWithImpl(
+      _$Effect_TodoCategoryModelUpdateTitelImpl _value,
+      $Res Function(_$Effect_TodoCategoryModelUpdateTitelImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$Effect_TodoCategoryModelUpdateTitelImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$Effect_TodoCategoryModelUpdateTitelImpl
+    extends Effect_TodoCategoryModelUpdateTitel {
+  const _$Effect_TodoCategoryModelUpdateTitelImpl(this.field0) : super._();
+
+  @override
+  final String field0;
+
+  @override
+  String toString() {
+    return 'Effect.todoCategoryModelUpdateTitel(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$Effect_TodoCategoryModelUpdateTitelImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$Effect_TodoCategoryModelUpdateTitelImplCopyWith<
+          _$Effect_TodoCategoryModelUpdateTitelImpl>
+      get copyWith => __$$Effect_TodoCategoryModelUpdateTitelImplCopyWithImpl<
+          _$Effect_TodoCategoryModelUpdateTitelImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModelLock field0)
+        todoListModelRenderTodoList,
+    required TResult Function(TodoItem field0) todoListModelRenderTodoItem,
+    required TResult Function(TodoCategoryModelLock field0)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(String field0)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(TodoListModelLock field0)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(String field0) todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelUpdateTitel(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModelLock field0)? todoListModelRenderTodoList,
+    TResult? Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult? Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult? Function(TodoListModelLock field0)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(String field0)? todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelUpdateTitel?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModelLock field0)? todoListModelRenderTodoList,
+    TResult Function(TodoItem field0)? todoListModelRenderTodoItem,
+    TResult Function(TodoCategoryModelLock field0)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(String field0)? todoCategoryModelRenderTodoCategory,
+    TResult Function(TodoListModelLock field0)? todoCategoryModelRenderTodoList,
+    TResult Function(String field0)? todoCategoryModelUpdateTitel,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryModelUpdateTitel != null) {
+      return todoCategoryModelUpdateTitel(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(Effect_TodoListModelRenderTodoList value)
+        todoListModelRenderTodoList,
+    required TResult Function(Effect_TodoListModelRenderTodoItem value)
+        todoListModelRenderTodoItem,
+    required TResult Function(
+            Effect_TodoCategoryModelRenderTodoCategoryModel value)
+        todoCategoryModelRenderTodoCategoryModel,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)
+        todoCategoryModelRenderTodoCategory,
+    required TResult Function(Effect_TodoCategoryModelRenderTodoList value)
+        todoCategoryModelRenderTodoList,
+    required TResult Function(Effect_TodoCategoryModelUpdateTitel value)
+        todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelUpdateTitel(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(Effect_TodoListModelRenderTodoList value)?
+        todoListModelRenderTodoList,
+    TResult? Function(Effect_TodoListModelRenderTodoItem value)?
+        todoListModelRenderTodoItem,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult? Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult? Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
+  }) {
+    return todoCategoryModelUpdateTitel?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(Effect_TodoListModelRenderTodoList value)?
+        todoListModelRenderTodoList,
+    TResult Function(Effect_TodoListModelRenderTodoItem value)?
+        todoListModelRenderTodoItem,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategoryModel value)?
+        todoCategoryModelRenderTodoCategoryModel,
+    TResult Function(Effect_TodoCategoryModelRenderTodoCategory value)?
+        todoCategoryModelRenderTodoCategory,
+    TResult Function(Effect_TodoCategoryModelRenderTodoList value)?
+        todoCategoryModelRenderTodoList,
+    TResult Function(Effect_TodoCategoryModelUpdateTitel value)?
+        todoCategoryModelUpdateTitel,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryModelUpdateTitel != null) {
+      return todoCategoryModelUpdateTitel(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class Effect_TodoCategoryModelUpdateTitel extends Effect {
+  const factory Effect_TodoCategoryModelUpdateTitel(final String field0) =
+      _$Effect_TodoCategoryModelUpdateTitelImpl;
+  const Effect_TodoCategoryModelUpdateTitel._() : super._();
+
+  @override
+  String get field0;
+
+  /// Create a copy of Effect
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$Effect_TodoCategoryModelUpdateTitelImplCopyWith<
+          _$Effect_TodoCategoryModelUpdateTitelImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+mixin _$TodoCategoryModelCommand {
+  Object get field0 => throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModelLock field0) setTodoList,
+    required TResult Function(String field0) updateTitle,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModelLock field0)? setTodoList,
+    TResult? Function(String field0)? updateTitle,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModelLock field0)? setTodoList,
+    TResult Function(String field0)? updateTitle,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCategoryModelCommand_SetTodoList value)
+        setTodoList,
+    required TResult Function(TodoCategoryModelCommand_UpdateTitle value)
+        updateTitle,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCategoryModelCommand_SetTodoList value)? setTodoList,
+    TResult? Function(TodoCategoryModelCommand_UpdateTitle value)? updateTitle,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCategoryModelCommand_SetTodoList value)? setTodoList,
+    TResult Function(TodoCategoryModelCommand_UpdateTitle value)? updateTitle,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TodoCategoryModelCommandCopyWith<$Res> {
+  factory $TodoCategoryModelCommandCopyWith(TodoCategoryModelCommand value,
+          $Res Function(TodoCategoryModelCommand) then) =
+      _$TodoCategoryModelCommandCopyWithImpl<$Res, TodoCategoryModelCommand>;
+}
+
+/// @nodoc
+class _$TodoCategoryModelCommandCopyWithImpl<$Res,
+        $Val extends TodoCategoryModelCommand>
+    implements $TodoCategoryModelCommandCopyWith<$Res> {
+  _$TodoCategoryModelCommandCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TodoCategoryModelCommand
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+abstract class _$$TodoCategoryModelCommand_SetTodoListImplCopyWith<$Res> {
+  factory _$$TodoCategoryModelCommand_SetTodoListImplCopyWith(
+          _$TodoCategoryModelCommand_SetTodoListImpl value,
+          $Res Function(_$TodoCategoryModelCommand_SetTodoListImpl) then) =
+      __$$TodoCategoryModelCommand_SetTodoListImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({TodoListModelLock field0});
+}
+
+/// @nodoc
+class __$$TodoCategoryModelCommand_SetTodoListImplCopyWithImpl<$Res>
+    extends _$TodoCategoryModelCommandCopyWithImpl<$Res,
+        _$TodoCategoryModelCommand_SetTodoListImpl>
+    implements _$$TodoCategoryModelCommand_SetTodoListImplCopyWith<$Res> {
+  __$$TodoCategoryModelCommand_SetTodoListImplCopyWithImpl(
+      _$TodoCategoryModelCommand_SetTodoListImpl _value,
+      $Res Function(_$TodoCategoryModelCommand_SetTodoListImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoCategoryModelCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$TodoCategoryModelCommand_SetTodoListImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as TodoListModelLock,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$TodoCategoryModelCommand_SetTodoListImpl
+    extends TodoCategoryModelCommand_SetTodoList {
+  const _$TodoCategoryModelCommand_SetTodoListImpl(this.field0) : super._();
+
+  @override
+  final TodoListModelLock field0;
+
+  @override
+  String toString() {
+    return 'TodoCategoryModelCommand.setTodoList(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodoCategoryModelCommand_SetTodoListImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of TodoCategoryModelCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TodoCategoryModelCommand_SetTodoListImplCopyWith<
+          _$TodoCategoryModelCommand_SetTodoListImpl>
+      get copyWith => __$$TodoCategoryModelCommand_SetTodoListImplCopyWithImpl<
+          _$TodoCategoryModelCommand_SetTodoListImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModelLock field0) setTodoList,
+    required TResult Function(String field0) updateTitle,
+  }) {
+    return setTodoList(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModelLock field0)? setTodoList,
+    TResult? Function(String field0)? updateTitle,
+  }) {
+    return setTodoList?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModelLock field0)? setTodoList,
+    TResult Function(String field0)? updateTitle,
+    required TResult orElse(),
+  }) {
+    if (setTodoList != null) {
+      return setTodoList(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCategoryModelCommand_SetTodoList value)
+        setTodoList,
+    required TResult Function(TodoCategoryModelCommand_UpdateTitle value)
+        updateTitle,
+  }) {
+    return setTodoList(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCategoryModelCommand_SetTodoList value)? setTodoList,
+    TResult? Function(TodoCategoryModelCommand_UpdateTitle value)? updateTitle,
+  }) {
+    return setTodoList?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCategoryModelCommand_SetTodoList value)? setTodoList,
+    TResult Function(TodoCategoryModelCommand_UpdateTitle value)? updateTitle,
+    required TResult orElse(),
+  }) {
+    if (setTodoList != null) {
+      return setTodoList(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoCategoryModelCommand_SetTodoList
+    extends TodoCategoryModelCommand {
+  const factory TodoCategoryModelCommand_SetTodoList(
+          final TodoListModelLock field0) =
+      _$TodoCategoryModelCommand_SetTodoListImpl;
+  const TodoCategoryModelCommand_SetTodoList._() : super._();
+
+  @override
+  TodoListModelLock get field0;
+
+  /// Create a copy of TodoCategoryModelCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TodoCategoryModelCommand_SetTodoListImplCopyWith<
+          _$TodoCategoryModelCommand_SetTodoListImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$TodoCategoryModelCommand_UpdateTitleImplCopyWith<$Res> {
+  factory _$$TodoCategoryModelCommand_UpdateTitleImplCopyWith(
+          _$TodoCategoryModelCommand_UpdateTitleImpl value,
+          $Res Function(_$TodoCategoryModelCommand_UpdateTitleImpl) then) =
+      __$$TodoCategoryModelCommand_UpdateTitleImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String field0});
+}
+
+/// @nodoc
+class __$$TodoCategoryModelCommand_UpdateTitleImplCopyWithImpl<$Res>
+    extends _$TodoCategoryModelCommandCopyWithImpl<$Res,
+        _$TodoCategoryModelCommand_UpdateTitleImpl>
+    implements _$$TodoCategoryModelCommand_UpdateTitleImplCopyWith<$Res> {
+  __$$TodoCategoryModelCommand_UpdateTitleImplCopyWithImpl(
+      _$TodoCategoryModelCommand_UpdateTitleImpl _value,
+      $Res Function(_$TodoCategoryModelCommand_UpdateTitleImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TodoCategoryModelCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$TodoCategoryModelCommand_UpdateTitleImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$TodoCategoryModelCommand_UpdateTitleImpl
+    extends TodoCategoryModelCommand_UpdateTitle {
+  const _$TodoCategoryModelCommand_UpdateTitleImpl(this.field0) : super._();
+
+  @override
+  final String field0;
+
+  @override
+  String toString() {
+    return 'TodoCategoryModelCommand.updateTitle(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TodoCategoryModelCommand_UpdateTitleImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of TodoCategoryModelCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TodoCategoryModelCommand_UpdateTitleImplCopyWith<
+          _$TodoCategoryModelCommand_UpdateTitleImpl>
+      get copyWith => __$$TodoCategoryModelCommand_UpdateTitleImplCopyWithImpl<
+          _$TodoCategoryModelCommand_UpdateTitleImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListModelLock field0) setTodoList,
+    required TResult Function(String field0) updateTitle,
+  }) {
+    return updateTitle(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListModelLock field0)? setTodoList,
+    TResult? Function(String field0)? updateTitle,
+  }) {
+    return updateTitle?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListModelLock field0)? setTodoList,
+    TResult Function(String field0)? updateTitle,
+    required TResult orElse(),
+  }) {
+    if (updateTitle != null) {
+      return updateTitle(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TodoCategoryModelCommand_SetTodoList value)
+        setTodoList,
+    required TResult Function(TodoCategoryModelCommand_UpdateTitle value)
+        updateTitle,
+  }) {
+    return updateTitle(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TodoCategoryModelCommand_SetTodoList value)? setTodoList,
+    TResult? Function(TodoCategoryModelCommand_UpdateTitle value)? updateTitle,
+  }) {
+    return updateTitle?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TodoCategoryModelCommand_SetTodoList value)? setTodoList,
+    TResult Function(TodoCategoryModelCommand_UpdateTitle value)? updateTitle,
+    required TResult orElse(),
+  }) {
+    if (updateTitle != null) {
+      return updateTitle(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TodoCategoryModelCommand_UpdateTitle
+    extends TodoCategoryModelCommand {
+  const factory TodoCategoryModelCommand_UpdateTitle(final String field0) =
+      _$TodoCategoryModelCommand_UpdateTitleImpl;
+  const TodoCategoryModelCommand_UpdateTitle._() : super._();
+
+  @override
+  String get field0;
+
+  /// Create a copy of TodoCategoryModelCommand
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TodoCategoryModelCommand_UpdateTitleImplCopyWith<
+          _$TodoCategoryModelCommand_UpdateTitleImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 

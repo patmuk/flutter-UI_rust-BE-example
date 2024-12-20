@@ -3,6 +3,7 @@
 
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
+import '../../domain/todo_category.dart';
 import '../../domain/todo_list.dart';
 import '../../frb_generated.dart';
 import '../../lib.dart';
@@ -10,9 +11,9 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lifecycle.freezed.dart';
 
-// These functions are ignored because they are not marked as `pub`: `process_with_lifecycle`, `process_with_lifecycle`
+// These functions are ignored because they are not marked as `pub`: `process_with_lifecycle`, `process_with_lifecycle`, `process_with_lifecycle`, `process_with_lifecycle`
 // These functions are ignored because they have generic arguments: `init`, `init`, `load_or_new`, `load_or_new`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `source`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `source`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<AppConfigImpl>>
 abstract class AppConfigImpl implements RustOpaqueInterface, AppConfig {
@@ -102,6 +103,47 @@ sealed class Effect with _$Effect {
   const factory Effect.todoListModelRenderTodoItem(
     TodoItem field0,
   ) = Effect_TodoListModelRenderTodoItem;
+  const factory Effect.todoCategoryModelRenderTodoCategoryModel(
+    TodoCategoryModelLock field0,
+  ) = Effect_TodoCategoryModelRenderTodoCategoryModel;
+  const factory Effect.todoCategoryModelRenderTodoCategory(
+    String field0,
+  ) = Effect_TodoCategoryModelRenderTodoCategory;
+  const factory Effect.todoCategoryModelRenderTodoList(
+    TodoListModelLock field0,
+  ) = Effect_TodoCategoryModelRenderTodoList;
+  const factory Effect.todoCategoryModelUpdateTitel(
+    String field0,
+  ) = Effect_TodoCategoryModelUpdateTitel;
+}
+
+@freezed
+sealed class TodoCategoryModelCommand with _$TodoCategoryModelCommand {
+  const TodoCategoryModelCommand._();
+
+  const factory TodoCategoryModelCommand.setTodoList(
+    TodoListModelLock field0,
+  ) = TodoCategoryModelCommand_SetTodoList;
+  const factory TodoCategoryModelCommand.updateTitle(
+    String field0,
+  ) = TodoCategoryModelCommand_UpdateTitle;
+
+  Future<List<Effect>> process() => RustLib.instance.api
+          .crateApplicationApiLifecycleTodoCategoryModelCommandProcess(
+        that: this,
+      );
+}
+
+enum TodoCategoryModelQuery {
+  getTodoCategory,
+  getTodoCategoryModel,
+  getTodoList,
+  ;
+
+  Future<List<Effect>> process() => RustLib.instance.api
+          .crateApplicationApiLifecycleTodoCategoryModelQueryProcess(
+        that: this,
+      );
 }
 
 @freezed

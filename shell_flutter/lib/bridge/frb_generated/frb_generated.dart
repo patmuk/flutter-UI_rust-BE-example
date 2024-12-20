@@ -70,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.5.0';
 
   @override
-  int get rustContentHash => -1838382713;
+  int get rustContentHash => 188688900;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -112,6 +112,14 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApplicationApiLifecycleLifecycleImplShutdown(
       {required LifecycleImpl that});
 
+  Future<List<Effect>>
+      crateApplicationApiLifecycleTodoCategoryModelCommandProcess(
+          {required TodoCategoryModelCommand that});
+
+  Future<List<Effect>>
+      crateApplicationApiLifecycleTodoCategoryModelQueryProcess(
+          {required TodoCategoryModelQuery that});
+
   Future<List<Effect>> crateApplicationApiLifecycleTodoListModelCommandProcess(
       {required TodoListModelCommand that});
 
@@ -130,6 +138,13 @@ abstract class RustLibApi extends BaseApi {
   Future<TodoCategoryModel> crateDomainTodoCategoryTodoCategoryModelDefault();
 
   Future<String> crateDomainTodoCategoryTodoCategoryModelGetTitle(
+      {required TodoCategoryModel that});
+
+  Future<TodoListModelLock>
+      crateDomainTodoCategoryTodoCategoryModelGetTodoListLock(
+          {required TodoCategoryModel that});
+
+  Future<List<String>> crateDomainTodoCategoryTodoCategoryModelGetTodos(
       {required TodoCategoryModel that});
 
   Future<TodoCategoryModelLock>
@@ -520,6 +535,66 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
+  Future<List<Effect>>
+      crateApplicationApiLifecycleTodoCategoryModelCommandProcess(
+          {required TodoCategoryModelCommand that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_todo_category_model_command(that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 25, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_effect,
+        decodeErrorData:
+            sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProcessingError,
+      ),
+      constMeta:
+          kCrateApplicationApiLifecycleTodoCategoryModelCommandProcessConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta
+      get kCrateApplicationApiLifecycleTodoCategoryModelCommandProcessConstMeta =>
+          const TaskConstMeta(
+            debugName: "todo_category_model_command_process",
+            argNames: ["that"],
+          );
+
+  @override
+  Future<List<Effect>>
+      crateApplicationApiLifecycleTodoCategoryModelQueryProcess(
+          {required TodoCategoryModelQuery that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_todo_category_model_query(that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 26, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_effect,
+        decodeErrorData:
+            sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProcessingError,
+      ),
+      constMeta:
+          kCrateApplicationApiLifecycleTodoCategoryModelQueryProcessConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta
+      get kCrateApplicationApiLifecycleTodoCategoryModelQueryProcessConstMeta =>
+          const TaskConstMeta(
+            debugName: "todo_category_model_query_process",
+            argNames: ["that"],
+          );
+
+  @override
   Future<List<Effect>> crateApplicationApiLifecycleTodoListModelCommandProcess(
       {required TodoListModelCommand that}) {
     return handler.executeNormal(NormalTask(
@@ -527,7 +602,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_todo_list_model_command(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 25, port: port_);
+            funcId: 27, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_effect,
@@ -556,7 +631,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_todo_list_model_query(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 26, port: port_);
+            funcId: 28, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_effect,
@@ -586,7 +661,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateImpl(
             that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 27, port: port_);
+            funcId: 29, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -614,7 +689,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateImpl(
             that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 28, port: port_);
+            funcId: 30, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -643,7 +718,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPathBuf(
             path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 29, port: port_);
+            funcId: 31, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -668,7 +743,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 30, port: port_);
+            funcId: 32, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData:
@@ -696,7 +771,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
             that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 31, port: port_);
+            funcId: 33, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,
@@ -716,6 +791,64 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
+  Future<TodoListModelLock>
+      crateDomainTodoCategoryTodoCategoryModelGetTodoListLock(
+          {required TodoCategoryModel that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+            that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 34, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_todo_list_model_lock,
+        decodeErrorData: null,
+      ),
+      constMeta:
+          kCrateDomainTodoCategoryTodoCategoryModelGetTodoListLockConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta
+      get kCrateDomainTodoCategoryTodoCategoryModelGetTodoListLockConstMeta =>
+          const TaskConstMeta(
+            debugName: "TodoCategoryModel_get_todo_list_lock",
+            argNames: ["that"],
+          );
+
+  @override
+  Future<List<String>> crateDomainTodoCategoryTodoCategoryModelGetTodos(
+      {required TodoCategoryModel that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+            that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 35, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_String,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateDomainTodoCategoryTodoCategoryModelGetTodosConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta
+      get kCrateDomainTodoCategoryTodoCategoryModelGetTodosConstMeta =>
+          const TaskConstMeta(
+            debugName: "TodoCategoryModel_get_todos",
+            argNames: ["that"],
+          );
+
+  @override
   Future<TodoCategoryModelLock>
       crateDomainTodoCategoryTodoCategoryModelLockForModel(
           {required TodoCategoryModel model}) {
@@ -725,7 +858,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
             model, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 32, port: port_);
+            funcId: 36, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_todo_category_model_lock,
@@ -750,7 +883,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 33, port: port_);
+            funcId: 37, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData:
@@ -778,7 +911,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
             that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 34, port: port_);
+            funcId: 38, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_String,
@@ -803,7 +936,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 35, port: port_);
+            funcId: 39, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_todo_list_model_lock,
@@ -830,7 +963,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
             model, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 36, port: port_);
+            funcId: 40, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_todo_list_model_lock,
@@ -1145,6 +1278,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModelCommand dco_decode_box_autoadd_todo_category_model_command(
+      dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_todo_category_model_command(raw);
+  }
+
+  @protected
+  TodoCategoryModelLock dco_decode_box_autoadd_todo_category_model_lock(
+      dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_todo_category_model_lock(raw);
+  }
+
+  @protected
   TodoItem dco_decode_box_autoadd_todo_item(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_todo_item(raw);
@@ -1181,9 +1328,31 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         return Effect_TodoListModelRenderTodoItem(
           dco_decode_box_autoadd_todo_item(raw[1]),
         );
+      case 2:
+        return Effect_TodoCategoryModelRenderTodoCategoryModel(
+          dco_decode_box_autoadd_todo_category_model_lock(raw[1]),
+        );
+      case 3:
+        return Effect_TodoCategoryModelRenderTodoCategory(
+          dco_decode_String(raw[1]),
+        );
+      case 4:
+        return Effect_TodoCategoryModelRenderTodoList(
+          dco_decode_box_autoadd_todo_list_model_lock(raw[1]),
+        );
+      case 5:
+        return Effect_TodoCategoryModelUpdateTitel(
+          dco_decode_String(raw[1]),
+        );
       default:
         throw Exception("unreachable");
     }
+  }
+
+  @protected
+  int dco_decode_i_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
   }
 
   @protected
@@ -1211,6 +1380,23 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModelCommand dco_decode_todo_category_model_command(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return TodoCategoryModelCommand_SetTodoList(
+          dco_decode_box_autoadd_todo_list_model_lock(raw[1]),
+        );
+      case 1:
+        return TodoCategoryModelCommand_UpdateTitle(
+          dco_decode_String(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  @protected
   TodoCategoryModelLock dco_decode_todo_category_model_lock(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1221,6 +1407,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           dco_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
               arr[0]),
     );
+  }
+
+  @protected
+  TodoCategoryModelQuery dco_decode_todo_category_model_query(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return TodoCategoryModelQuery.values[raw as int];
   }
 
   @protected
@@ -1531,6 +1723,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModelCommand sse_decode_box_autoadd_todo_category_model_command(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_todo_category_model_command(deserializer));
+  }
+
+  @protected
+  TodoCategoryModelLock sse_decode_box_autoadd_todo_category_model_lock(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_todo_category_model_lock(deserializer));
+  }
+
+  @protected
   TodoItem sse_decode_box_autoadd_todo_item(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_todo_item(deserializer));
@@ -1570,9 +1776,29 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 1:
         var var_field0 = sse_decode_box_autoadd_todo_item(deserializer);
         return Effect_TodoListModelRenderTodoItem(var_field0);
+      case 2:
+        var var_field0 =
+            sse_decode_box_autoadd_todo_category_model_lock(deserializer);
+        return Effect_TodoCategoryModelRenderTodoCategoryModel(var_field0);
+      case 3:
+        var var_field0 = sse_decode_String(deserializer);
+        return Effect_TodoCategoryModelRenderTodoCategory(var_field0);
+      case 4:
+        var var_field0 =
+            sse_decode_box_autoadd_todo_list_model_lock(deserializer);
+        return Effect_TodoCategoryModelRenderTodoList(var_field0);
+      case 5:
+        var var_field0 = sse_decode_String(deserializer);
+        return Effect_TodoCategoryModelUpdateTitel(var_field0);
       default:
         throw UnimplementedError('');
     }
+  }
+
+  @protected
+  int sse_decode_i_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getInt32();
   }
 
   @protected
@@ -1618,6 +1844,25 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModelCommand sse_decode_todo_category_model_command(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        var var_field0 =
+            sse_decode_box_autoadd_todo_list_model_lock(deserializer);
+        return TodoCategoryModelCommand_SetTodoList(var_field0);
+      case 1:
+        var var_field0 = sse_decode_String(deserializer);
+        return TodoCategoryModelCommand_UpdateTitle(var_field0);
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
   TodoCategoryModelLock sse_decode_todo_category_model_lock(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -1625,6 +1870,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
             deserializer);
     return TodoCategoryModelLock(lock: var_lock);
+  }
+
+  @protected
+  TodoCategoryModelQuery sse_decode_todo_category_model_query(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return TodoCategoryModelQuery.values[inner];
   }
 
   @protected
@@ -1696,12 +1949,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   BigInt sse_decode_usize(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getBigUint64();
-  }
-
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getInt32();
   }
 
   @protected
@@ -1949,6 +2196,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_todo_category_model_command(
+      TodoCategoryModelCommand self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_todo_category_model_command(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_todo_category_model_lock(
+      TodoCategoryModelLock self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_todo_category_model_lock(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_todo_item(
       TodoItem self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -1986,9 +2247,29 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case Effect_TodoListModelRenderTodoItem(field0: final field0):
         sse_encode_i_32(1, serializer);
         sse_encode_box_autoadd_todo_item(field0, serializer);
+      case Effect_TodoCategoryModelRenderTodoCategoryModel(
+          field0: final field0
+        ):
+        sse_encode_i_32(2, serializer);
+        sse_encode_box_autoadd_todo_category_model_lock(field0, serializer);
+      case Effect_TodoCategoryModelRenderTodoCategory(field0: final field0):
+        sse_encode_i_32(3, serializer);
+        sse_encode_String(field0, serializer);
+      case Effect_TodoCategoryModelRenderTodoList(field0: final field0):
+        sse_encode_i_32(4, serializer);
+        sse_encode_box_autoadd_todo_list_model_lock(field0, serializer);
+      case Effect_TodoCategoryModelUpdateTitel(field0: final field0):
+        sse_encode_i_32(5, serializer);
+        sse_encode_String(field0, serializer);
       default:
         throw UnimplementedError('');
     }
+  }
+
+  @protected
+  void sse_encode_i_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putInt32(self);
   }
 
   @protected
@@ -2028,11 +2309,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_todo_category_model_command(
+      TodoCategoryModelCommand self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case TodoCategoryModelCommand_SetTodoList(field0: final field0):
+        sse_encode_i_32(0, serializer);
+        sse_encode_box_autoadd_todo_list_model_lock(field0, serializer);
+      case TodoCategoryModelCommand_UpdateTitle(field0: final field0):
+        sse_encode_i_32(1, serializer);
+        sse_encode_String(field0, serializer);
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
   void sse_encode_todo_category_model_lock(
       TodoCategoryModelLock self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
         self.lock, serializer);
+  }
+
+  @protected
+  void sse_encode_todo_category_model_query(
+      TodoCategoryModelQuery self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
   }
 
   @protected
@@ -2097,12 +2401,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_usize(BigInt self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putBigUint64(self);
-  }
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putInt32(self);
   }
 }
 
@@ -2284,6 +2582,16 @@ class TodoCategoryModelImpl extends RustOpaque implements TodoCategoryModel {
   /// only needed part for presentation.
   Future<String> getTitle() =>
       RustLib.instance.api.crateDomainTodoCategoryTodoCategoryModelGetTitle(
+        that: this,
+      );
+
+  Future<TodoListModelLock> getTodoListLock() => RustLib.instance.api
+          .crateDomainTodoCategoryTodoCategoryModelGetTodoListLock(
+        that: this,
+      );
+
+  Future<List<String>> getTodos() =>
+      RustLib.instance.api.crateDomainTodoCategoryTodoCategoryModelGetTodos(
         that: this,
       );
 }
