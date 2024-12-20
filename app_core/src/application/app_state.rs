@@ -9,10 +9,13 @@ use std::{
 use log::{debug, error, info, trace};
 use serde::{Deserialize, Serialize};
 
-use crate::domain::todo_list::TodoListModel;
-use crate::domain::todo_list::TodoListModelLock;
-
-use crate::application::api::lifecycle::{AppConfig, AppState};
+use crate::{
+    application::api::lifecycle::{AppConfig, AppState, CqrsModelLock},
+    domain::{
+        todo_category::{TodoCategoryModel, TodoCategoryModelLock},
+        todo_list::{TodoListModel, TodoListModelLock},
+    },
+};
 
 /// holds the complete state of the app, as a global static variable
 /// use `RustAutoOpaque<T>`, which is `Arc<RwLock<T>>`, on the fields,
@@ -21,40 +24,14 @@ use crate::application::api::lifecycle::{AppConfig, AppState};
 /// You could wrap the whole AppState in it,
 /// but the finer granular the better parallelism you will get.
 /// Just remember that you can not wrap children, if the parent is already wrapped.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct AppStateImpl {
     // We pretend that (parts of) the model are too hugh to performantly copy from Rust to Dart.
     // Thus we implement getters for the parts which need to be shown in the UI only.
     pub(crate) todo_list_model_lock: TodoListModelLock,
+    pub(crate) todo_category_model_lock: TodoCategoryModelLock,
     // flag, if writing to disc is needed
     dirty: AtomicBool,
-}
-
-impl Serialize for AppStateImpl {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        // Serialize the model, the dirty flag is always false after loading
-        self.todo_list_model_lock
-            .lock
-            .blocking_read()
-            .serialize(serializer)
-    }
-}
-
-impl<'de> Deserialize<'de> for AppStateImpl {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        // Deserialize the model and dirty flag. The dirty flag is always false after loading
-        let model = TodoListModel::deserialize(deserializer)?;
-        Ok(AppStateImpl {
-            todo_list_model_lock: model.into(),
-            dirty: AtomicBool::new(false),
-        })
-    }
 }
 
 impl AppState for AppStateImpl {
@@ -133,7 +110,8 @@ impl AppStateImpl {
             )
         });
         Self {
-            todo_list_model_lock: TodoListModelLock::default(),
+            todo_list_model_lock: TodoListModelLock::for_model(TodoListModel::default()),
+            todo_category_model_lock: TodoCategoryModelLock::for_model(TodoCategoryModel::default()),
             dirty: AtomicBool::new(false),
         }
     }

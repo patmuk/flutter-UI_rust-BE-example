@@ -14,7 +14,10 @@ pub struct LifecycleImpl {
     pub(crate) app_state: AppStateImpl,
 }
 
-#[generate_api("app_core/src/domain/todo_list.rs")]
+#[generate_api(
+    "app_core/src/domain/todo_list.rs",
+    "app_core/src/domain/todo_category.rs"
+)]
 impl Lifecycle for LifecycleImpl {
     // to avoid an illegal state (app state not loaded) we do the setup and init in one go
     fn new(path: Option<String>) -> &'static Self {

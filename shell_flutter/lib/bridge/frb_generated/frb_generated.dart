@@ -7,6 +7,7 @@ import 'application/api/lifecycle.dart';
 import 'application/app_state.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'domain/todo_category.dart';
 import 'domain/todo_list.dart';
 import 'frb_generated.dart';
 import 'frb_generated.io.dart'
@@ -69,7 +70,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.5.0';
 
   @override
-  int get rustContentHash => -1488086117;
+  int get rustContentHash => -1838382713;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -126,16 +127,24 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApplicationAppStateAppStateImplPersistToPath(
       {required AppStateImpl that, required PathBuf path});
 
+  Future<TodoCategoryModel> crateDomainTodoCategoryTodoCategoryModelDefault();
+
+  Future<String> crateDomainTodoCategoryTodoCategoryModelGetTitle(
+      {required TodoCategoryModel that});
+
+  Future<TodoCategoryModelLock>
+      crateDomainTodoCategoryTodoCategoryModelLockForModel(
+          {required TodoCategoryModel model});
+
   Future<TodoListModel> crateDomainTodoListTodoListModelDefault();
 
   Future<List<String>> crateDomainTodoListTodoListModelGetTodosAsString(
       {required TodoListModel that});
 
-  Future<TodoListModel> crateDomainTodoListTodoListModelNew();
-
   Future<TodoListModelLock> crateDomainTodoListTodoListModelLockDefault();
 
-  Future<TodoListModelLock> crateDomainTodoListTodoListModelLockNew();
+  Future<TodoListModelLock> crateDomainTodoListTodoListModelLockForModel(
+      {required TodoListModel model});
 
   RustArcIncrementStrongCountFnType
       get rust_arc_increment_strong_count_AppConfigImpl;
@@ -177,6 +186,15 @@ abstract class RustLibApi extends BaseApi {
 
   CrossPlatformFinalizerArg
       get rust_arc_decrement_strong_count_ProcessingErrorPtr;
+
+  RustArcIncrementStrongCountFnType
+      get rust_arc_increment_strong_count_TodoCategoryModel;
+
+  RustArcDecrementStrongCountFnType
+      get rust_arc_decrement_strong_count_TodoCategoryModel;
+
+  CrossPlatformFinalizerArg
+      get rust_arc_decrement_strong_count_TodoCategoryModelPtr;
 
   RustArcIncrementStrongCountFnType
       get rust_arc_increment_strong_count_TodoListModel;
@@ -509,7 +527,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_todo_list_model_command(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 26, port: port_);
+            funcId: 25, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_effect,
@@ -538,7 +556,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_todo_list_model_query(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 27, port: port_);
+            funcId: 26, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_effect,
@@ -568,7 +586,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateImpl(
             that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 28, port: port_);
+            funcId: 27, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -596,7 +614,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateImpl(
             that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 29, port: port_);
+            funcId: 28, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -625,7 +643,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPathBuf(
             path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 30, port: port_);
+            funcId: 29, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -645,12 +663,94 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
+  Future<TodoCategoryModel> crateDomainTodoCategoryTodoCategoryModelDefault() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 30, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData:
+            sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateDomainTodoCategoryTodoCategoryModelDefaultConstMeta,
+      argValues: [],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateDomainTodoCategoryTodoCategoryModelDefaultConstMeta =>
+      const TaskConstMeta(
+        debugName: "TodoCategoryModel_default",
+        argNames: [],
+      );
+
+  @override
+  Future<String> crateDomainTodoCategoryTodoCategoryModelGetTitle(
+      {required TodoCategoryModel that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+            that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 31, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_String,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateDomainTodoCategoryTodoCategoryModelGetTitleConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta
+      get kCrateDomainTodoCategoryTodoCategoryModelGetTitleConstMeta =>
+          const TaskConstMeta(
+            debugName: "TodoCategoryModel_get_title",
+            argNames: ["that"],
+          );
+
+  @override
+  Future<TodoCategoryModelLock>
+      crateDomainTodoCategoryTodoCategoryModelLockForModel(
+          {required TodoCategoryModel model}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+            model, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 32, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_todo_category_model_lock,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateDomainTodoCategoryTodoCategoryModelLockForModelConstMeta,
+      argValues: [model],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta
+      get kCrateDomainTodoCategoryTodoCategoryModelLockForModelConstMeta =>
+          const TaskConstMeta(
+            debugName: "todo_category_model_lock_for_model",
+            argNames: ["model"],
+          );
+
+  @override
   Future<TodoListModel> crateDomainTodoListTodoListModelDefault() {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 31, port: port_);
+            funcId: 33, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData:
@@ -678,7 +778,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
             that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 32, port: port_);
+            funcId: 34, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_String,
@@ -698,37 +798,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
-  Future<TodoListModel> crateDomainTodoListTodoListModelNew() {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 33, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData:
-            sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel,
-        decodeErrorData: null,
-      ),
-      constMeta: kCrateDomainTodoListTodoListModelNewConstMeta,
-      argValues: [],
-      apiImpl: this,
-    ));
-  }
-
-  TaskConstMeta get kCrateDomainTodoListTodoListModelNewConstMeta =>
-      const TaskConstMeta(
-        debugName: "TodoListModel_new",
-        argNames: [],
-      );
-
-  @override
   Future<TodoListModelLock> crateDomainTodoListTodoListModelLockDefault() {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 34, port: port_);
+            funcId: 35, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_todo_list_model_lock,
@@ -747,27 +822,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<TodoListModelLock> crateDomainTodoListTodoListModelLockNew() {
+  Future<TodoListModelLock> crateDomainTodoListTodoListModelLockForModel(
+      {required TodoListModel model}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
+            model, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 35, port: port_);
+            funcId: 36, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_todo_list_model_lock,
         decodeErrorData: null,
       ),
-      constMeta: kCrateDomainTodoListTodoListModelLockNewConstMeta,
-      argValues: [],
+      constMeta: kCrateDomainTodoListTodoListModelLockForModelConstMeta,
+      argValues: [model],
       apiImpl: this,
     ));
   }
 
-  TaskConstMeta get kCrateDomainTodoListTodoListModelLockNewConstMeta =>
+  TaskConstMeta get kCrateDomainTodoListTodoListModelLockForModelConstMeta =>
       const TaskConstMeta(
-        debugName: "todo_list_model_lock_new",
-        argNames: [],
+        debugName: "todo_list_model_lock_for_model",
+        argNames: ["model"],
       );
 
   RustArcIncrementStrongCountFnType
@@ -811,6 +889,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerProcessingError;
 
   RustArcIncrementStrongCountFnType
+      get rust_arc_increment_strong_count_TodoCategoryModel => wire
+          .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel;
+
+  RustArcDecrementStrongCountFnType
+      get rust_arc_decrement_strong_count_TodoCategoryModel => wire
+          .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel;
+
+  RustArcIncrementStrongCountFnType
       get rust_arc_increment_strong_count_TodoListModel => wire
           .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel;
 
@@ -822,6 +908,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   AnyhowException dco_decode_AnyhowException(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return AnyhowException(raw as String);
+  }
+
+  @protected
+  TodoCategoryModel
+      dco_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+        raw);
   }
 
   @protected
@@ -874,6 +969,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModel
+      dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return TodoCategoryModelImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   TodoListModel
       dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
           dynamic raw) {
@@ -922,6 +1025,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModel
+      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return TodoCategoryModelImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   TodoListModel
       dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
           dynamic raw) {
@@ -967,6 +1078,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return ProcessingErrorImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  TodoCategoryModel
+      dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return TodoCategoryModelImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -1092,6 +1211,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModelLock dco_decode_todo_category_model_lock(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return TodoCategoryModelLock(
+      lock:
+          dco_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+              arr[0]),
+    );
+  }
+
+  @protected
   TodoItem dco_decode_todo_item(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1175,6 +1307,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModel
+      sse_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner =
+        sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+            deserializer);
+    return inner;
+  }
+
+  @protected
   TodoListModel
       sse_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
           SseDeserializer deserializer) {
@@ -1227,6 +1370,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return ProcessingErrorImpl.frbInternalSseDecode(
+        sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
+  }
+
+  @protected
+  TodoCategoryModel
+      sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return TodoCategoryModelImpl.frbInternalSseDecode(
         sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
   }
 
@@ -1285,6 +1437,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModel
+      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return TodoCategoryModelImpl.frbInternalSseDecode(
+        sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
+  }
+
+  @protected
   TodoListModel
       sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
           SseDeserializer deserializer) {
@@ -1335,6 +1496,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return ProcessingErrorImpl.frbInternalSseDecode(
+        sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
+  }
+
+  @protected
+  TodoCategoryModel
+      sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return TodoCategoryModelImpl.frbInternalSseDecode(
         sse_decode_usize(deserializer), sse_decode_i_32(deserializer));
   }
 
@@ -1448,6 +1618,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TodoCategoryModelLock sse_decode_todo_category_model_lock(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_lock =
+        sse_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+            deserializer);
+    return TodoCategoryModelLock(lock: var_lock);
+  }
+
+  @protected
   TodoItem sse_decode_todo_item(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_text = sse_decode_String(deserializer);
@@ -1533,6 +1713,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+      sse_encode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          TodoCategoryModel self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+        self, serializer);
+  }
+
+  @protected
+  void
       sse_encode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
           TodoListModel self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -1586,6 +1775,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
         (self as ProcessingErrorImpl).frbInternalSseEncode(move: true),
+        serializer);
+  }
+
+  @protected
+  void
+      sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          TodoCategoryModel self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+        (self as TodoCategoryModelImpl).frbInternalSseEncode(move: true),
         serializer);
   }
 
@@ -1650,6 +1849,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          TodoCategoryModel self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+        (self as TodoCategoryModelImpl).frbInternalSseEncode(move: false),
+        serializer);
+  }
+
+  @protected
+  void
       sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
           TodoListModel self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -1704,6 +1913,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
         (self as ProcessingErrorImpl).frbInternalSseEncode(move: null),
+        serializer);
+  }
+
+  @protected
+  void
+      sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+          TodoCategoryModel self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+        (self as TodoCategoryModelImpl).frbInternalSseEncode(move: null),
         serializer);
   }
 
@@ -1806,6 +2025,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     if (self != null) {
       sse_encode_String(self, serializer);
     }
+  }
+
+  @protected
+  void sse_encode_todo_category_model_lock(
+      TodoCategoryModelLock self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
+        self.lock, serializer);
   }
 
   @protected
@@ -2026,6 +2253,39 @@ class ProcessingErrorImpl extends RustOpaque implements ProcessingError {
     rustArcDecrementStrongCountPtr:
         RustLib.instance.api.rust_arc_decrement_strong_count_ProcessingErrorPtr,
   );
+}
+
+@sealed
+class TodoCategoryModelImpl extends RustOpaque implements TodoCategoryModel {
+  // Not to be used by end users
+  TodoCategoryModelImpl.frbInternalDcoDecode(List<dynamic> wire)
+      : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  TodoCategoryModelImpl.frbInternalSseDecode(
+      BigInt ptr, int externalSizeOnNative)
+      : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_TodoCategoryModel,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_TodoCategoryModel,
+    rustArcDecrementStrongCountPtr: RustLib
+        .instance.api.rust_arc_decrement_strong_count_TodoCategoryModelPtr,
+  );
+
+  /// This is how to access the fields of a heavy object behind a RustAutoOpaque.
+  /// This is copying parts the content, which Dart needs to show to the user.
+  ///
+  /// If `items` would be `pub` FRB would automatically create a getter. However, this
+  /// getter would `clone()` the `items` as well. As we pretend that a single item
+  /// is heavy to clone, we use a custom function to `clone()` only the lightweight and
+  /// only needed part for presentation.
+  Future<String> getTitle() =>
+      RustLib.instance.api.crateDomainTodoCategoryTodoCategoryModelGetTitle(
+        that: this,
+      );
 }
 
 @sealed

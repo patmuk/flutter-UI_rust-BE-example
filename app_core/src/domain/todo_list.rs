@@ -8,7 +8,33 @@ use crate::application::bridge::frb_generated::RustAutoOpaque;
 pub struct TodoListModelLock {
     pub lock: RustAutoOpaque<TodoListModel>,
 }
-impl CqrsModelLock<TodoListModel> for TodoListModelLock {}
+impl CqrsModelLock<TodoListModel> for TodoListModelLock {
+    fn for_model(model: TodoListModel) -> Self {
+        Self {
+            lock: RustAutoOpaque::new(model),
+        }
+    }
+}
+
+impl Serialize for TodoListModelLock {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        // Serialize the model , the dirty flag is always false after loading
+        self.lock.blocking_read().serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for TodoListModelLock {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let list_model = TodoListModel::deserialize(deserializer)?;
+        Ok(Self::for_model(list_model))
+    }
+}
 
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
 #[frb(opaque)]
@@ -55,20 +81,6 @@ pub enum TodoListEffect {
     // this indicates that the model has changed, so that the app's state should be persisted.
     RenderTodoList(TodoListModelLock),
     RenderTodoItem(TodoItem),
-}
-
-impl From<TodoListModel> for TodoListModelLock {
-    fn from(model: TodoListModel) -> Self {
-        TodoListModelLock {
-            lock: RustAutoOpaque::new(model),
-        }
-    }
-}
-
-impl From<TodoListModelLock> for TodoListModel {
-    fn from(val: TodoListModelLock) -> Self {
-        std::mem::take(&mut *val.lock.blocking_write())
-    }
 }
 
 impl TodoListModelLock {
@@ -183,12 +195,11 @@ mod tests {
 
     #[test]
     fn add_todo() {
-        let expected_model_lock: TodoListModelLock = TodoListModel {
+        let expected_model_lock = TodoListModelLock::for_model(TodoListModel {
             items: vec![TodoItem {
                 text: String::from("test the list"),
             }],
-        }
-        .into();
+        });
         let expected_effects = (
             true,
             vec![TodoListEffect::RenderTodoList(expected_model_lock.clone())],
@@ -205,7 +216,7 @@ mod tests {
 
     #[test]
     fn remove_todo() {
-        let expected_model_lock = TodoListModelLock::from(TodoListModel { items: vec![] });
+        let expected_model_lock = TodoListModelLock::for_model(TodoListModel { items: vec![] });
         let expected_effects = (
             true,
             vec![TodoListEffect::RenderTodoList(expected_model_lock.clone())],
@@ -216,7 +227,7 @@ mod tests {
                 text: "remove me".into(),
             }],
         };
-        let actual_model_lock: TodoListModelLock = actual_model.into();
+        let actual_model_lock: TodoListModelLock = TodoListModelLock::for_model(actual_model);
         let actual_effects = actual_model_lock.command_remove_todo(1).unwrap();
 
         assert_eq!(actual_effects, expected_effects);
@@ -229,7 +240,7 @@ mod tests {
 
     #[test]
     fn clean_list() {
-        let expected_model_lock = TodoListModelLock::from(TodoListModel { items: vec![] });
+        let expected_model_lock = TodoListModelLock::for_model(TodoListModel { items: vec![] });
         let expected_effects = (
             true,
             vec![TodoListEffect::RenderTodoList(expected_model_lock.clone())],
@@ -242,7 +253,7 @@ mod tests {
         actual_model.items.push(TodoItem {
             text: "clean me".into(),
         });
-        let actual_model_lock: TodoListModelLock = actual_model.into();
+        let actual_model_lock = TodoListModelLock::for_model(actual_model);
         let actual_effects = actual_model_lock.command_clean_list().unwrap();
 
         assert_eq!(actual_effects, expected_effects);
