@@ -29,6 +29,7 @@ class MainScreen extends StatelessWidget {
   final String title;
 
   final TextEditingController textController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +40,35 @@ class MainScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Text(
-            "---=== TODO LIST ===---",
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
+          ValueListenableBuilder(
+              valueListenable: StateHandler.singleton.todoListTitle,
+              builder: (context, todoListTitle, _) {
+                return Center(
+                    child: TextField(
+                  decoration: InputDecoration(
+                    border:
+                        const UnderlineInputBorder(borderSide: BorderSide.none),
+                    label: Center(
+                      child: Text(
+                        '---=== $todoListTitle ===---',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                    hintText: 'Enter a new title',
+                    hintStyle: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  keyboardType: TextInputType.text,
+                  controller: titleController,
+                  maxLines: null,
+                  onSubmitted: (value) {
+                    // Add your action here
+                    StateHandler.singleton.handleEffects(
+                      TodoCategoryModelCommand.updateTitle(value).process(),
+                    );
+                    titleController.clear();
+                  },
+                ));
+              }),
           Row(
             children: [
               Expanded(
