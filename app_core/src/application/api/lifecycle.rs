@@ -1,6 +1,6 @@
 use generate_cqrs_api_macro::generate_api;
-use log::trace;
 
+use crate::application::app_config::AppConfigImpl;
 use crate::application::app_state::AppStateImpl;
 use std::io;
 use std::sync::OnceLock;
@@ -58,42 +58,5 @@ impl Lifecycle for LifecycleImpl {
         // TODO implent timeout and throw an error?
         self.app_state
             .persist_to_path(AppConfig::get_app_state_file_path(&self.app_config))
-    }
-}
-// app state storage location
-#[derive(Debug)]
-pub struct AppConfigImpl {
-    pub app_state_file_path: PathBuf,
-}
-
-impl AppConfig for AppConfigImpl {
-    /// call to overwrite default values.
-    /// Doesn't trigger initialization.
-    fn new(path: Option<String>) -> Self {
-        match path {
-            Some(path) => {
-                trace!(
-                "Overwriting default setup:\n  - setting the app_state_storage_path to {path:?}"
-            );
-                AppConfigImpl {
-                    app_state_file_path: PathBuf::from(path),
-                }
-            }
-            None => {
-                debug!("Using default path in setup");
-                AppConfigImpl::default()
-            }
-        }
-    }
-    fn get_app_state_file_path(&self) -> &PathBuf {
-        &self.app_state_file_path
-    }
-}
-
-impl Default for AppConfigImpl {
-    fn default() -> Self {
-        AppConfigImpl {
-            app_state_file_path: PathBuf::from("./app_state_model.bin"),
-        }
     }
 }
