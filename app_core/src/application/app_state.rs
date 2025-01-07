@@ -1,4 +1,5 @@
 use std::{
+    any::Any,
     fmt::Debug,
     fs::{create_dir_all, File},
     io::{self, ErrorKind as IoErrorKind, Write},
@@ -17,6 +18,8 @@ use crate::{
     },
 };
 
+use super::{api::lifecycle::AppStatePersister, app_config::AppConfigImpl};
+
 /// holds the complete state of the app, as a global static variable
 /// use `RustAutoOpaque<T>`, which is `Arc<RwLock<T>>`, on the fields,
 /// which are written to concurrently, and which are exchanged with Dart,
@@ -26,89 +29,17 @@ use crate::{
 /// Just remember that you can not wrap children, if the parent is already wrapped.
 #[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct AppStateImpl {
+    // flag, if persisting is needed
+    dirty: AtomicBool,
     // We pretend that (parts of) the model are too hugh to performantly copy from Rust to Dart.
     // Thus we implement getters for the parts which need to be shown in the UI only.
     pub(crate) todo_list_model_lock: TodoListModelLock,
     pub(crate) todo_category_model_lock: TodoCategoryModelLock,
-    // flag, if writing to disc is needed
-    dirty: AtomicBool,
 }
 
-impl AppState for AppStateImpl {
-    // called by the lifecycle initialization. Get the app state over the lifecycle singleton.
-    fn load_or_new<A: AppConfig>(app_config: &A) -> Self {
-        debug!("creating the app state from persisted or default values");
-        let app_state = match AppStateImpl::load(app_config.get_app_state_file_path()) {
-            Err(AppStateLoadError::ReadFile(err, path)) if err.kind() == IoErrorKind::NotFound => {
-                info!(
-                    "No app state file found in {:?}, creating new state there.",
-                    &path
-                );
-                AppStateImpl::new(app_config.get_app_state_file_path())
-            }
-            Err(err) => {
-                panic!(
-                    "Error loading app state from file {:?}: {}",
-                    &app_config.get_app_state_file_path(),
-                    err
-                );
-                // TODO better handling
-                // error!("Error reading file, creating a new state: {}", err);
-                // AppState::new(None)
-            }
-            Ok(loaded_app_state) => loaded_app_state,
-        };
-        info!(
-            "Initialization finished, log level is {:?}",
-            log::max_level()
-        );
-        app_state
-    }
-
-    fn mark_dirty(&self) {
-        self.dirty.store(true, Ordering::SeqCst);
-    }
-
-    /// Stores the app's state in a file.
-    fn persist_to_path(&self, path: &PathBuf) -> Result<(), io::Error> {
-        if !self.dirty.load(Ordering::SeqCst) {
-            trace!("app state os not dirty:\n  {self:?}");
-        } else {
-            trace!("persisting app state:\n  {self:?}\n to {:?}", path);
-            trace!("App state is dirty, writing to file");
-            let serialized_app_state: Vec<u8> = bincode::serialize(self).expect(
-                "bincode.serialzation itself should not result in an error, \
-            unless the contract with serde is not respected!",
-            );
-            if let Some(parent) = path.parent() {
-                create_dir_all(parent)?;
-            }
-            File::create(path)?.write_all(&serialized_app_state)?;
-            debug!("Persisted app state to file: {path:?}");
-            self.dirty.store(false, Ordering::SeqCst);
-        }
-        Ok(())
-    }
-    fn dirty_flag_value(&self) -> bool {
-        self.dirty.load(Ordering::SeqCst)
-    }
-}
-
-impl AppStateImpl {
-    fn new(path: &Path) -> Self {
+impl<AC: AppConfig> AppState<AC> for AppStateImpl {
+    fn new(_app_config: &AC) -> Self {
         trace!("creating new app state");
-        // create the directories, but no need to write the file, as there is only the default content
-        // remove the last part, as this is the file
-        let directories = path
-            .components()
-            .take(path.components().count() - 1)
-            .collect::<PathBuf>();
-        create_dir_all(directories).unwrap_or_else(|_| {
-            panic!(
-                "failed to create directories for the app's state persistance in {:?}",
-                &path
-            )
-        });
         Self {
             todo_list_model_lock: TodoListModelLock::for_model(TodoListModel::default()),
             todo_category_model_lock: TodoCategoryModelLock::for_model(TodoCategoryModel::default()),
@@ -116,27 +47,48 @@ impl AppStateImpl {
         }
     }
 
-    // get the last persisted app state from a file, if any exists, otherwise creates a new app state
-    // this function is only called once, in the initialization/app state constructor
-    fn load(path: &Path) -> Result<AppStateImpl, AppStateLoadError> {
-        trace!("loading the app state from {path:?}");
-        let loaded = std::fs::read(path)
-            .map_err(|error| AppStateLoadError::ReadFile(error, path.to_owned()))?;
-        let app_state: AppStateImpl = bincode::deserialize(&loaded)
-            .map_err(|e| AppStateLoadError::DeserializationError(e, path.to_path_buf()))?;
-        app_state.dirty.store(false, Ordering::SeqCst);
-        Ok(app_state)
+    fn mark_dirty(&self) {
+        self.dirty.store(true, Ordering::SeqCst);
+    }
+
+    // /// Stores the app's state in a file.
+    // fn persist_to_path(&self, path: &PathBuf) -> Result<(), io::Error> {
+    //     if !self.dirty.load(Ordering::SeqCst) {
+    //         trace!("app state os not dirty:\n  {self:?}");
+    //     } else {
+    //         trace!("persisting app state:\n  {self:?}\n to {:?}", path);
+    //         trace!("App state is dirty, writing to file");
+    //         let serialized_app_state: Vec<u8> = bincode::serialize(self).expect(
+    //             "bincode.serialzation itself should not result in an error, \
+    //         unless the contract with serde is not respected!",
+    //         );
+    //         if let Some(parent) = path.parent() {
+    //             create_dir_all(parent)?;
+    //         }
+    //         File::create(path)?.write_all(&serialized_app_state)?;
+    //         debug!("Persisted app state to file: {path:?}");
+    //         self.dirty.store(false, Ordering::SeqCst);
+    //     }
+    //     Ok(())
+    // }
+    fn dirty_flag_value(&self) -> bool {
+        self.dirty.load(Ordering::SeqCst)
     }
 }
 
-// handle errors as suggested by https://kazlauskas.me/entries/errors
-#[derive(thiserror::Error, Debug)]
-pub enum AppStateLoadError {
-    #[error("Cannot read file from path: {1}")]
-    ReadFile(#[source] io::Error, PathBuf),
-    #[error("could not understand (=deserialize) the file {1}. Maybe it's content got corrupted?")]
-    DeserializationError(#[source] bincode::Error, PathBuf),
-}
+// impl AppStateImpl {
+//     // get the last persisted app state from a file, if any exists, otherwise creates a new app state
+//     // this function is only called once, in the initialization/app state constructor
+//     fn load(path: &Path) -> Result<AppStateImpl, AppStateLoadError> {
+//         trace!("loading the app state from {path:?}");
+//         let loaded = std::fs::read(path)
+//             .map_err(|error| AppStateLoadError::ReadFile(error, path.to_owned()))?;
+//         let app_state: AppStateImpl = bincode::deserialize(&loaded)
+//             .map_err(|e| AppStateLoadError::DeserializationError(e, path.to_path_buf()))?;
+//         app_state.dirty.store(false, Ordering::SeqCst);
+//         Ok(app_state)
+//     }
+// }
 
 #[cfg(test)]
 mod tests {

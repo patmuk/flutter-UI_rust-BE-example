@@ -10,6 +10,14 @@ pub struct AppConfigImpl {
     pub app_state_file_path: PathBuf,
 }
 
+impl Default for AppConfigImpl {
+    fn default() -> Self {
+        AppConfigImpl {
+            app_state_file_path: PathBuf::from("./app_state_model.bin"),
+        }
+    }
+}
+
 impl AppConfig for AppConfigImpl {
     /// call to overwrite default values.
     /// Doesn't trigger initialization.
@@ -29,15 +37,7 @@ impl AppConfig for AppConfigImpl {
             }
         }
     }
-    fn get_app_state_file_path(&self) -> &PathBuf {
+    fn get_app_state_url(&self) -> &PathBuf {
         &self.app_state_file_path
-    }
-}
-
-impl Default for AppConfigImpl {
-    fn default() -> Self {
-        AppConfigImpl {
-            app_state_file_path: PathBuf::from("./app_state_model.bin"),
-        }
     }
 }
