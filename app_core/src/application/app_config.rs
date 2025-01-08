@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use log::{debug, trace};
 
 use super::api::lifecycle::AppConfig;
@@ -7,13 +5,13 @@ use super::api::lifecycle::AppConfig;
 #[derive(Debug)]
 pub struct AppConfigImpl {
     /// app state storage location
-    pub app_state_file_path: PathBuf,
+    pub app_state_url: String,
 }
 
 impl Default for AppConfigImpl {
     fn default() -> Self {
         AppConfigImpl {
-            app_state_file_path: PathBuf::from("./app_state_model.bin"),
+            app_state_url: "./app_state_model.bin".to_string(),
         }
     }
 }
@@ -21,15 +19,13 @@ impl Default for AppConfigImpl {
 impl AppConfig for AppConfigImpl {
     /// call to overwrite default values.
     /// Doesn't trigger initialization.
-    fn new(path: Option<String>) -> Self {
-        match path {
-            Some(path) => {
+    fn new(url: Option<String>) -> Self {
+        match url {
+            Some(url) => {
                 trace!(
-                "Overwriting default setup:\n  - setting the app_state_storage_path to {path:?}"
-            );
-                AppConfigImpl {
-                    app_state_file_path: PathBuf::from(path),
-                }
+                    "Overwriting default setup:\n  - setting the app_state_storage_url to {url:?}"
+                );
+                AppConfigImpl { app_state_url: url }
             }
             None => {
                 debug!("Using default path in setup");
@@ -37,7 +33,7 @@ impl AppConfig for AppConfigImpl {
             }
         }
     }
-    fn get_app_state_url(&self) -> &PathBuf {
-        &self.app_state_file_path
+    fn get_app_state_url(&self) -> &str {
+        &self.app_state_url
     }
 }

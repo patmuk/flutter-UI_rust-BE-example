@@ -3,7 +3,8 @@ use std::io;
 use std::path::PathBuf;
 
 use crate::application::{
-    api::lifecycle::{AppConfig, AppStatePersister, UnititializedAppStatePersister},
+    api::lifecycle::{AppStatePersister, UnititializedAppStatePersister},
+    app_config::AppConfigImpl,
     app_state::AppStateImpl,
 };
 
@@ -27,10 +28,14 @@ pub(crate) enum AppStateDBPersisterError {
     EntryNotFound(PathBuf),
 }
 
-impl<AC: AppConfig> UnititializedAppStatePersister<AC> for UnititializedAppStateDBPersister {
+impl UnititializedAppStatePersister for UnititializedAppStateDBPersister {
+    type AppConfig = AppConfigImpl;
     type AppStatePersisterImplementation = AppStateDBPersister;
     /// prepares loading and persisting the app's state
-    fn init(&self, _app_config: AC) -> Result<AppStateDBPersister, AppStatePersistError> {
+    fn init(
+        &self,
+        _app_config: Self::AppConfig,
+    ) -> Result<AppStateDBPersister, AppStatePersistError> {
         unimplemented!()
     }
 }

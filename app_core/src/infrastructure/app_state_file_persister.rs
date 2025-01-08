@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use crate::application::api::lifecycle::{
     AppConfig, AppStatePersister, UnititializedAppStatePersister,
 };
+use crate::application::app_config::AppConfigImpl;
 use crate::application::app_state::AppStateImpl;
 
 use super::app_state_persistance_error::AppStatePersistError;
@@ -30,23 +31,17 @@ pub(crate) enum AppStateFilePersisterError {
     FileNotFound(PathBuf),
 }
 
-// TODO: map the appst file persist error to the more general infra error
-
-/// Stores the app's state in a file.
-///
-/// # Errors
-///
-/// This function will return an error if anything goes wrong
-
-// impl<AC: AppConfig, AS: AppState<AC> + std::fmt::Debug>
-//     UnititializedAppStatePersister<AC, AS, AppStateFilePersister>
-impl<AC: AppConfig> UnititializedAppStatePersister<AC> for UnititializedAppStateFilePersister {
+impl UnititializedAppStatePersister for UnititializedAppStateFilePersister {
+    type AppConfig = AppConfigImpl;
     type AppStatePersisterImplementation = AppStateFilePersister;
     // fn init(&self, app_config: AC) -> Result<ASP, AppStatePersistError> {
-    fn init(&self, app_config: AC) -> Result<AppStateFilePersister, AppStatePersistError> {
+    fn init(
+        &self,
+        app_config: Self::AppConfig,
+    ) -> Result<AppStateFilePersister, AppStatePersistError> {
         // create the directories, but no need to write the file, as there is only the default content
         // remove the last part, as this is the file
-        let path = app_config.get_app_state_url();
+        let path = PathBuf::from(app_config.get_app_state_url());
         let directories = path
             .components()
             .take(path.components().count() - 1)
@@ -59,7 +54,7 @@ impl<AC: AppConfig> UnititializedAppStatePersister<AC> for UnititializedAppState
     }
 }
 
-/// Persists the application state to storage.
+/// Persists the application state to storage (a file).
 /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
 impl AppStatePersister for AppStateFilePersister {
     type AppState = AppStateImpl;

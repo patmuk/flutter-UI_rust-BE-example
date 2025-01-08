@@ -37,8 +37,9 @@ pub(crate) struct AppStateImpl {
     pub(crate) todo_category_model_lock: TodoCategoryModelLock,
 }
 
-impl<AC: AppConfig> AppState<AC> for AppStateImpl {
-    fn new(_app_config: &AC) -> Self {
+impl AppState for AppStateImpl {
+    type AppConfig = AppConfigImpl;
+    fn new(_app_config: &Self::AppConfig) -> Self {
         trace!("creating new app state");
         Self {
             todo_list_model_lock: TodoListModelLock::for_model(TodoListModel::default()),
