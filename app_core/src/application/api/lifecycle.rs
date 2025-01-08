@@ -14,19 +14,27 @@ use std::io;
 use std::io::ErrorKind as IoErrorKind;
 use std::sync::OnceLock;
 
-pub trait Lifecycle<AC: AppConfig, AS: AppState<AC>> {
+pub trait Lifecycle {
+    type AppConfig;
+    type AppState;
+    type AppStatePersister;
+    type LifecycleSingleton;
     //     /// loads the app's state, which can be io-heavy
     //     /// get the instance with get_singleton(). Create the initial singleton with UnInitilizedLifecycle::init()
-    fn new<P: AppStatePersister<AC, AS>>(
-        app_config: AC,
-        persister: P,
-    ) -> Result<&'static Self, AppStatePersistError>;
+    fn new(
+        app_config: Self::AppConfig,
+        persister: Self::AppStatePersister,
+    ) -> Result<&'static Self::LifecycleSingleton, AppStatePersistError>;
+    // fn new<P: AppStatePersister<AC, AS>>(
+    //     app_config: AC,
+    //     persister: P,
+    // ) -> Result<&'static Self::LifecycleSingleton, AppStatePersistError>;
     /// get the instance with get_singleton(). Create the initial singleton with Lifecycle::new()
     fn get_singleton() -> &'static Self
     where
         Self: Sized;
-    fn app_config(&self) -> &AC;
-    fn app_state(&self) -> &AS;
+    fn app_config(&self) -> &Self::AppConfig;
+    fn app_state(&self) -> &Self::AppState;
     /// persist the app state to the previously stored location
     fn persist(&self) -> Result<(), AppStatePersistError>;
     fn shutdown(&self) -> Result<(), AppStatePersistError>;
@@ -55,49 +63,59 @@ pub trait UnititializedAppStatePersister<AC: AppConfig> {
     ) -> Result<Self::AppStatePersisterImplementation, AppStatePersistError>;
 }
 
-pub trait AppStatePersister<AC: AppConfig, AS: AppState<AC>> {
+pub trait AppStatePersister {
+    type AppState;
     /// Loads the application state.
     /// Returns a result with the `AppState` if successful or an `InfrastructureError` otherwise.
-    fn load_app_state(&self) -> Result<AS, AppStatePersistError>;
+    fn load_app_state(&self) -> Result<Self::AppState, AppStatePersistError>;
 
     /// Persists the application state to storage.
     /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
-    fn persist_app_state(&self, state: &AS) -> Result<(), AppStatePersistError>;
+    fn persist_app_state(&self, state: &Self::AppState) -> Result<(), AppStatePersistError>;
 }
 
-static SINGLETON: OnceLock<LifecycleImpl<AppConfigImpl, AppStateImpl, AppStateFilePersister>> =
-    OnceLock::new();
+static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
 
 struct UnInitializedLifeCycleImpl<AC: AppConfig> {
     app_config: AC,
 }
 
-struct LifecycleImpl<AC: AppConfig, AS: AppState<AC>, P: AppStatePersister<AC, AS>> {
+struct LifecycleImpl {
     // the app config is to be set only once, and read afterwards. If mutation is needed wrapp it into a lock for concurrent write access
-    pub(crate) app_config: AC,
+    pub(crate) app_config: AppConfigImpl,
     // the app state itself doesn't change, only the fields, which are behind a Mutex to be thread save.
-    pub(crate) app_state: AS,
-    persister: P,
+    pub(crate) app_state: AppStateImpl,
+    persister: AppStateFilePersister,
 }
+// struct LifecycleImpl<AC: AppConfig, AS: AppState<AC>, P: AppStatePersister> {
+//     // the app config is to be set only once, and read afterwards. If mutation is needed wrapp it into a lock for concurrent write access
+//     pub(crate) app_config: AC,
+//     // the app state itself doesn't change, only the fields, which are behind a Mutex to be thread save.
+//     pub(crate) app_state: AS,
+//     persister: P,
+// }
+
+// struct LifecycleSingleton {
+//     instance: LifecycleImpl<AppConfigImpl, AppStateImpl, AppStateFilePersister>,
+// }
 
 #[generate_api(
     "app_core/src/domain/todo_list.rs",
     "app_core/src/domain/todo_category.rs"
 )]
-impl<AC: AppConfig, AS: AppState<AC>, ASP: AppStatePersister<AC, AS>> Lifecycle<AC, AS>
-    for LifecycleImpl<AC, AS, ASP>
-{
-    fn new<P: AppStatePersister<AC, AS>>(
-        app_config: AC,
-        persister: P,
-    ) -> Result<&'static Self, AppStatePersistError> {
+impl Lifecycle for LifecycleImpl {
+    type AppConfig = AppConfigImpl;
+    type AppState = AppStateImpl;
+    type AppStatePersister = AppStateFilePersister;
+    type LifecycleSingleton = LifecycleImpl;
+
+    fn new(
+        app_config: Self::AppConfig,
+        persister: Self::AppStatePersister,
+    ) -> Result<&'static Self::LifecycleSingleton, AppStatePersistError> {
         // as this is static, it is executed one time only! So there is only one OnceLock instance.
-        static SINGLETON: OnceLock<
-            LifecycleImpl<AppConfigImpl, AppStateImpl, AppStateFilePersister>,
-        > = OnceLock::new();
-        // static SINGLETON: OnceLock<
-        //     LifecycleImpl<AppConfigImpl, AppStateImpl, AppStateFilePersister>,
-        // > = OnceLock::new();
+        // static SINGLETON: OnceLock<Self::LifecycleSingleton> = OnceLock::new();
+        static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
 
         info!("Initializing app with config: {:?}", &app_config);
         // calling init() the first time creates the singleton. (Although self is consumed, there migth be multiple instances of self.)
@@ -118,8 +136,7 @@ impl<AC: AppConfig, AS: AppState<AC>, ASP: AppStatePersister<AC, AS>> Lifecycle<
                                 "No app state file found in {:?}, creating new state there.",
                                 &file_path
                             );
-                            // let app_state = AppStateImpl::new(&self.app_config);
-                            let app_state = AS::new(&app_config);
+                            let app_state = Self::AppState::new(&app_config);
                             persister.persist_app_state(&app_state)?;
                             app_state
                         }
@@ -127,15 +144,22 @@ impl<AC: AppConfig, AS: AppState<AC>, ASP: AppStatePersister<AC, AS>> Lifecycle<
                     },
                     Err(e) => return Err(e),
                 };
-                let lifecycle = LifecycleImpl {
+                // let lifecycle_singleton = LifecycleSingleton {
+                //     instance: LifecycleImpl {
+                //         app_config,
+                //         app_state,
+                //         persister,
+                //     },
+                // };
+                let lifecycle_singleton = LifecycleImpl {
                     app_config,
                     app_state,
                     persister,
                 };
-                SINGLETON
-                    .set(lifecycle)
-                    .expect("Lifecycle has already been initialized!");
-                Ok(&lifecycle)
+                SINGLETON.set(lifecycle_singleton);
+                Ok(SINGLETON
+                    .get()
+                    .expect("Impossible error - content has just been set!"))
             }
         };
         info!(
@@ -145,17 +169,17 @@ impl<AC: AppConfig, AS: AppState<AC>, ASP: AppStatePersister<AC, AS>> Lifecycle<
         result
     }
 
-    fn get_singleton() -> &'static Self {
+    fn get_singleton() -> &'static Self::LifecycleSingleton {
         SINGLETON
             .get()
             .expect("Lifecycle: should been initialized with UnInitializedLifecycle::init()!")
     }
 
-    fn app_state(&self) -> &AS {
+    fn app_state(&self) -> &Self::AppState {
         &self.app_state
     }
 
-    fn app_config(&self) -> &AC {
+    fn app_config(&self) -> &Self::AppConfig {
         &self.app_config
     }
 

@@ -4,8 +4,9 @@ use std::io::{self, Write};
 use std::path::PathBuf;
 
 use crate::application::api::lifecycle::{
-    AppConfig, AppState, AppStatePersister, UnititializedAppStatePersister,
+    AppConfig, AppStatePersister, UnititializedAppStatePersister,
 };
+use crate::application::app_state::AppStateImpl;
 
 use super::app_state_persistance_error::AppStatePersistError;
 
@@ -60,10 +61,10 @@ impl<AC: AppConfig> UnititializedAppStatePersister<AC> for UnititializedAppState
 
 /// Persists the application state to storage.
 /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
-impl<AC: AppConfig, AS: AppState<AC> + std::fmt::Debug> AppStatePersister<AC, AS>
-    for AppStateFilePersister
-{
-    fn persist_app_state(&self, app_state: &AS) -> Result<(), AppStatePersistError> {
+impl AppStatePersister for AppStateFilePersister {
+    type AppState = AppStateImpl;
+
+    fn persist_app_state(&self, app_state: &Self::AppState) -> Result<(), AppStatePersistError> {
         //    fn save_app_state(app_state: &AppState, path: &Path) -> Result<(), io::Error> {
         trace!(
             "persisting app state:\n  {app_state:?}\n to {:?}",
@@ -87,7 +88,7 @@ impl<AC: AppConfig, AS: AppState<AC> + std::fmt::Debug> AppStatePersister<AC, AS
 
     // get the last persisted app state from a file, if any exists, otherwise creates a new app state
     // this function is only called once, in the initialization/app state constructor
-    fn load_app_state(&self) -> Result<AS, AppStatePersistError> {
+    fn load_app_state(&self) -> Result<Self::AppState, AppStatePersistError> {
         trace!("loading the app state from {:?}", self.path);
         let loaded = std::fs::read(&self.path).map_err(|error| {
             if error.kind() == io::ErrorKind::NotFound {
@@ -96,7 +97,7 @@ impl<AC: AppConfig, AS: AppState<AC> + std::fmt::Debug> AppStatePersister<AC, AS
                 AppStateFilePersisterError::IOError(error, self.path.to_owned())
             }
         })?;
-        let app_state: AS = bincode::deserialize(&loaded).map_err(|e| {
+        let app_state: Self::AppState = bincode::deserialize(&loaded).map_err(|e| {
             AppStateFilePersisterError::DeserializationError(e, self.path.to_path_buf())
         })?;
         Ok(app_state)
