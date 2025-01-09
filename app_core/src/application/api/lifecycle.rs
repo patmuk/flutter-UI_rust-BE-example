@@ -48,18 +48,14 @@ pub trait AppState: Serialize + for<'a> Deserialize<'a> {
     fn dirty_flag_value(&self) -> bool;
     fn mark_dirty(&self);
 }
-pub trait UnititializedAppStatePersister {
-    type AppConfig;
-    type AppStatePersisterImplementation;
-    /// prepares for persisting a new AppState. Not needed if the AppState is loaded!
-    fn init(
-        &self,
-        app_config: Self::AppConfig,
-    ) -> Result<Self::AppStatePersisterImplementation, AppStatePersistError>;
-}
 
 pub trait AppStatePersister {
+    type AppConfig;
     type AppState;
+    /// prepares for persisting a new AppState. Not needed if the AppState is loaded!
+    fn new(app_config: &Self::AppConfig) -> Result<Self, AppStatePersistError>
+    where
+        Self: Sized;
     /// Loads the application state.
     /// Returns a result with the `AppState` if successful or an `InfrastructureError` otherwise.
     fn load_app_state(&self) -> Result<Self::AppState, AppStatePersistError>;
@@ -69,7 +65,7 @@ pub trait AppStatePersister {
     fn persist_app_state(&self, state: &Self::AppState) -> Result<(), AppStatePersistError>;
 }
 
-struct LifecycleImpl {
+pub(crate) struct LifecycleImpl {
     // the app config is to be set only once, and read afterwards. If mutation is needed wrapp it into a lock for concurrent write access
     pub(crate) app_config: AppConfigImpl,
     // the app state itself doesn't change, only the fields, which are behind a Mutex to be thread save.

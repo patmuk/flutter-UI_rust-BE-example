@@ -3,9 +3,7 @@ use std::io;
 use std::path::PathBuf;
 
 use crate::application::{
-    api::lifecycle::{AppStatePersister, UnititializedAppStatePersister},
-    app_config::AppConfigImpl,
-    app_state::AppStateImpl,
+    api::lifecycle::AppStatePersister, app_config::AppConfigImpl, app_state::AppStateImpl,
 };
 
 use super::app_state_persistance_error::AppStatePersistError;
@@ -28,25 +26,18 @@ pub(crate) enum AppStateDBPersisterError {
     EntryNotFound(PathBuf),
 }
 
-impl UnititializedAppStatePersister for UnititializedAppStateDBPersister {
-    type AppConfig = AppConfigImpl;
-    type AppStatePersisterImplementation = AppStateDBPersister;
-    /// prepares loading and persisting the app's state
-    fn init(
-        &self,
-        _app_config: Self::AppConfig,
-    ) -> Result<AppStateDBPersister, AppStatePersistError> {
-        unimplemented!()
-    }
-}
-
 /// Stores the app's state in a database.
 ///
 /// # Errors
 ///
 /// This function will return an error if anything goes wrong
 impl AppStatePersister for AppStateDBPersister {
+    type AppConfig = AppConfigImpl;
     type AppState = AppStateImpl;
+    /// prepares loading and persisting the app's state
+    fn new(_app_config: &Self::AppConfig) -> Result<AppStateDBPersister, AppStatePersistError> {
+        unimplemented!()
+    }
     /// Persists the application state to storage.
     /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
     fn persist_app_state(&self, app_state: &Self::AppState) -> Result<(), AppStatePersistError> {
