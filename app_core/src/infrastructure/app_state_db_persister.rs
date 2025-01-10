@@ -3,13 +3,11 @@ use serde::{Deserialize, Serialize};
 use std::io;
 use std::path::PathBuf;
 
-use crate::application::{
-    api::lifecycle::{AppConfig, AppState, AppStatePersister},
-    app_config::AppConfigImpl,
-    app_state::AppStateImpl,
+use crate::application::api::lifecycle::{
+    AppConfig, AppState, AppStatePersistError, AppStatePersister, ProcessingError,
 };
 
-use super::app_state_persistance_error::AppStatePersistError;
+// use super::app_state_persistance_error::AppStatePersistError;
 
 pub(crate) struct UnititializedAppStateDBPersister {}
 
@@ -25,8 +23,46 @@ pub(crate) enum AppStateDBPersisterError {
     IOError(#[source] io::Error, PathBuf),
     #[error("could not understand (=deserialize) the file {1}. Maybe it's content got corrupted?")]
     DeserializationError(#[source] bincode::Error, PathBuf),
+    #[error("could not write (=serialize) the file {1}. Maybe it's content got corrupted?")]
+    SerializationError(#[source] bincode::Error, PathBuf),
     #[error("No Entry not found in db: {0}")]
     EntryNotFound(PathBuf),
+}
+
+impl AppStatePersistError for AppStateDBPersisterError {
+    fn from_io_error(err: std::io::Error, path: PathBuf) -> Self {
+        if err.kind() == io::ErrorKind::NotFound {
+            AppStateDBPersisterError::EntryNotFound(path)
+        } else {
+            AppStateDBPersisterError::IOError(err, path)
+        }
+    }
+
+    fn from_deserialization_error(err: bincode::Error, path: PathBuf) -> Self {
+        AppStateDBPersisterError::DeserializationError(err, path)
+    }
+
+    fn from_serialization_error(err: bincode::Error, path: PathBuf) -> Self {
+        AppStateDBPersisterError::DeserializationError(err, path)
+    }
+    fn to_processing_error(&self) -> crate::application::api::lifecycle::ProcessingError {
+        match self {
+            Self::IOError(_err, path) => ProcessingError::NotPersisted {
+                error: self.to_string(),
+                url: path.to_string_lossy().to_string(),
+            },
+            Self::DeserializationError(_err, path) | Self::SerializationError(_err, path) => {
+                ProcessingError::NotPersisted {
+                    error: self.to_string(),
+                    url: path.to_string_lossy().to_string(),
+                }
+            }
+            Self::EntryNotFound(path) => ProcessingError::NotPersisted {
+                error: self.to_string(),
+                url: path.to_string_lossy().to_string(),
+            },
+        }
+    }
 }
 
 /// Stores the app's state in a database.
@@ -36,17 +72,17 @@ pub(crate) enum AppStateDBPersisterError {
 /// This function will return an error if anything goes wrong
 impl AppStatePersister for AppStateDBPersister {
     /// prepares loading and persisting the app's state
-    fn new<AppConfigImpl: AppConfig>(
+    fn new<AppConfigImpl: AppConfig, PersisterError>(
         _app_config: &AppConfigImpl,
-    ) -> Result<AppStateDBPersister, AppStatePersistError> {
+    ) -> Result<AppStateDBPersister, PersisterError> {
         unimplemented!()
     }
     /// Persists the application state to storage.
     /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
-    fn persist_app_state<AS: AppState + Serialize + std::fmt::Debug>(
+    fn persist_app_state<AS: AppState + Serialize + std::fmt::Debug, PersisterError>(
         &self,
         app_state: &AS,
-    ) -> Result<(), AppStatePersistError> {
+    ) -> Result<(), PersisterError> {
         trace!(
             "persisting app state:\n  {app_state:?}\n to db {:?}",
             self.url
@@ -63,9 +99,13 @@ impl AppStatePersister for AppStateDBPersister {
 
     // get the last persisted app state from a file, if any exists, otherwise creates a new app state
     // this function is only called once, in the initialization/app state constructor
-    fn load_app_state<AC: AppConfig, AS: AppState + for<'a> Deserialize<'a>>(
+    fn load_app_state<
+        AC: AppConfig,
+        AS: AppState + for<'a> Deserialize<'a>,
+        ASPE: AppStatePersistError,
+    >(
         &self,
-    ) -> std::result::Result<AS, AppStatePersistError> {
+    ) -> std::result::Result<AS, ASPE> {
         trace!("loading the app state from {:?}", self.url);
         unimplemented!("load the file from a db");
         // let app_state: Sefl::AppState = bincode::deserialize(&loaded)
