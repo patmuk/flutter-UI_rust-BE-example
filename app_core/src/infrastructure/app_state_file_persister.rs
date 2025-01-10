@@ -1,12 +1,11 @@
 use log::trace;
+use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::fs::{create_dir_all, File};
 use std::io::{self, Write};
 use std::path::PathBuf;
 
-use crate::application::api::lifecycle::{AppConfig, AppStatePersister};
-use crate::application::app_config::AppConfigImpl;
-use crate::application::app_state::AppStateImpl;
+use crate::application::api::lifecycle::{AppConfig, AppState, AppStatePersister};
 
 use super::app_state_persistance_error::AppStatePersistError;
 
@@ -33,10 +32,8 @@ pub(crate) enum AppStateFilePersisterError {
 /// Persists the application state to storage (a file).
 /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
 impl AppStatePersister for AppStateFilePersister {
-    type AppConfig = AppConfigImpl;
-    type AppState = AppStateImpl;
-
-    fn new(app_config: &Self::AppConfig) -> Result<Self, AppStatePersistError> {
+    fn new<AC: AppConfig>(app_config: &AC) -> Result<Self, AppStatePersistError> {
+        // fn new(app_config: &AppConfigImpl) -> Result<Self, AppStatePersistError> {
         // create the directories, but no need to write the file, as there is only the default content
         // remove the last part, as this is the file
         let path = PathBuf::from(app_config.get_app_state_url());
@@ -51,11 +48,14 @@ impl AppStatePersister for AppStateFilePersister {
         })
     }
 
-    fn persist_app_state(&self, app_state: &Self::AppState) -> Result<(), AppStatePersistError> {
-        trace!(
-            "persisting app state:\n  {app_state:?}\n to {:?}",
-            self.path
-        );
+    fn persist_app_state<AS: AppState + Serialize>(
+        &self,
+        app_state: &AS,
+    ) -> Result<(), AppStatePersistError> {
+        // trace!(
+        //     "persisting app state:\n  {app_state:?}\n to {:?}",
+        //     self.path
+        // );
         let serialized_app_state: Vec<u8> = bincode::serialize(app_state).expect(
             "bincode.serialzation itself should not result in an error, \
     unless the contract with serde is not respected!",
@@ -74,7 +74,9 @@ impl AppStatePersister for AppStateFilePersister {
 
     // get the last persisted app state from a file, if any exists, otherwise creates a new app state
     // this function is only called once, in the initialization/app state constructor
-    fn load_app_state(&self) -> Result<Self::AppState, AppStatePersistError> {
+    fn load_app_state<AC: AppConfig, AS: AppState + for<'a> Deserialize<'a>>(
+        &self,
+    ) -> Result<AS, AppStatePersistError> {
         trace!("loading the app state from {:?}", self.path);
         let loaded = std::fs::read(&self.path).map_err(|error| {
             if error.kind() == io::ErrorKind::NotFound {
@@ -169,7 +171,9 @@ mod tests {
         let original = create_test_app_state();
         let persister = create_test_persister();
         persister.persist_app_state(&original);
-        let loaded = persister.load_app_state().expect("App state not loaded");
+        let loaded = persister
+            .load_app_state::<AppConfigImpl, AppStateImpl>()
+            .expect("App state not loaded");
 
         assert_eq_app_states(&original, &loaded);
         cleanup_test_file();
@@ -191,7 +195,7 @@ mod tests {
         persister.persist_app_state(&changed_app_state);
 
         let loaded = persister
-            .load_app_state()
+            .load_app_state::<AppConfigImpl, AppStateImpl>()
             .expect("AppState should have been loaded.");
         assert_eq_app_states(&changed_app_state, &loaded);
         cleanup_test_file();
@@ -216,7 +220,7 @@ mod tests {
         persister.persist_app_state(&changed_app_state);
 
         let loaded = persister
-            .load_app_state()
+            .load_app_state::<AppConfigImpl, AppStateImpl>()
             .expect("AppState should have been loaded.");
 
         assert_eq_app_states(&changed_app_state, &loaded);
@@ -232,7 +236,7 @@ mod tests {
         }
         std::fs::write(&*TEST_FILE, "corrupted").unwrap();
         let persister = create_test_persister();
-        let result = persister.load_app_state();
+        let result = persister.load_app_state::<AppConfigImpl, AppStateImpl>();
         assert!(&result.is_err());
         use bincode::ErrorKind;
         assert!(matches!(
@@ -267,7 +271,7 @@ mod tests {
         cleanup_test_file();
         assert!(!TEST_FILE.exists());
         let persister = create_test_persister();
-        let result = persister.load_app_state();
+        let result = persister.load_app_state::<AppConfigImpl, AppStateImpl>();
 
         assert!(result.is_err());
         assert!(matches!(

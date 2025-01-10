@@ -1,10 +1,12 @@
 use bincode::ErrorKind;
+use flutter_rust_bridge::frb;
 use generate_cqrs_api_macro::generate_api;
 use log::info;
 use serde::{Deserialize, Serialize};
 
 use crate::application::app_config::{self, AppConfigImpl};
 use crate::application::app_state::{self, AppStateImpl};
+use crate::infrastructure::app_state_db_persister::AppStateDBPersister;
 use crate::infrastructure::app_state_file_persister::{
     AppStateFilePersister, AppStateFilePersisterError,
 };
@@ -15,23 +17,35 @@ use std::io::ErrorKind as IoErrorKind;
 use std::sync::OnceLock;
 
 pub trait Lifecycle {
-    type AppConfig;
-    type AppState;
-    type AppStatePersister;
     /// loads the app's state, which can be io-heavy
     /// get the instance with get_singleton(). Create the initial singleton with UnInitilizedLifecycle::init()
-    fn new(
-        app_config: Self::AppConfig,
-        persister: Self::AppStatePersister,
+    fn new<AC: AppConfig + std::fmt::Debug, ASP: AppStatePersister>(
+        app_config: AC,
+        // persister: ASP,
     ) -> Result<&'static Self, AppStatePersistError>;
     /// get the instance with get_singleton(). Create the initial singleton with Lifecycle::new()
     fn get_singleton() -> &'static Self;
-    fn borrow_app_config(&self) -> &Self::AppConfig;
-    fn borrow_app_state(&self) -> &Self::AppState;
+    fn borrow_app_config<AC: AppConfig>(&self) -> &AC;
+    fn borrow_app_state<AS: AppState>(&self) -> &AS;
+    // fn borrow_app_state(&self) -> &AS;
     /// persist the app state to the previously stored location
     fn persist(&self) -> Result<(), AppStatePersistError>;
     fn shutdown(&self) -> Result<(), AppStatePersistError>;
 }
+// pub trait Lifecycle<AppConfig, AppState, AppStatePersister> {
+//     /// loads the app's state, which can be io-heavy
+//     /// get the instance with get_singleton(). Create the initial singleton with UnInitilizedLifecycle::init()
+//     fn new(app_config: AC, persister: ASP) -> Result<&'static Self, AppStatePersistError>;
+//     /// get the instance with get_singleton(). Create the initial singleton with Lifecycle::new()
+//     fn get_singleton() -> &'static Self;
+//     // fn borrow_app_config<AC: AppConfig>(&self) -> &AC;
+//     fn borrow_app_config(&self) -> &AC;
+//     // fn borrow_app_state<AS: AppState>(&self) -> &AS;
+//     fn borrow_app_state(&self) -> &AS;
+//     /// persist the app state to the previously stored location
+//     fn persist(&self) -> Result<(), AppStatePersistError>;
+//     fn shutdown(&self) -> Result<(), AppStatePersistError>;
+// }
 
 pub trait AppConfig: Default {
     /// call to overwrite default values.
@@ -40,9 +54,9 @@ pub trait AppConfig: Default {
     // app state storage location
     fn get_app_state_url(&self) -> &str;
 }
-pub trait AppState: Serialize + for<'a> Deserialize<'a> {
-    type AppConfig;
-    fn new(app_config: &Self::AppConfig) -> Self;
+
+pub trait AppState {
+    fn new<AC: AppConfig>(app_config: &AC) -> Self;
     // where
     //     Self: Sized;
     fn dirty_flag_value(&self) -> bool;
@@ -50,21 +64,31 @@ pub trait AppState: Serialize + for<'a> Deserialize<'a> {
 }
 
 pub trait AppStatePersister {
-    type AppConfig;
-    type AppState;
     /// prepares for persisting a new AppState. Not needed if the AppState is loaded!
-    fn new(app_config: &Self::AppConfig) -> Result<Self, AppStatePersistError>
+    fn new<AC: AppConfig>(app_config: &AC) -> Result<Self, AppStatePersistError>
     where
         Self: Sized;
     /// Loads the application state.
     /// Returns a result with the `AppState` if successful or an `InfrastructureError` otherwise.
-    fn load_app_state(&self) -> Result<Self::AppState, AppStatePersistError>;
+    fn load_app_state<AC: AppConfig, AS: AppState + Serialize + for<'a> Deserialize<'a>>(
+        &self,
+    ) -> Result<AS, AppStatePersistError>;
 
     /// Persists the application state to storage.
     /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
-    fn persist_app_state(&self, state: &Self::AppState) -> Result<(), AppStatePersistError>;
+    fn persist_app_state<AS: AppState + Serialize + for<'a> Deserialize<'a> + std::fmt::Debug>(
+        &self,
+        state: &AS,
+    ) -> Result<(), AppStatePersistError>;
 }
 
+// pub(crate) struct LifecycleImpl {
+//     // the app config is to be set only once, and read afterwards. If mutation is needed wrapp it into a lock for concurrent write access
+//     pub(crate) app_config: AppConfig,
+//     // the app state itself doesn't change, only the fields, which are behind a Mutex to be thread save.
+//     pub(crate) app_state: AppState,
+//     persister: AppStatePersister,
+// }
 pub(crate) struct LifecycleImpl {
     // the app config is to be set only once, and read afterwards. If mutation is needed wrapp it into a lock for concurrent write access
     pub(crate) app_config: AppConfigImpl,
@@ -265,21 +289,21 @@ impl Cqrs for TodoCategoryModelCommand {
 //     "app_core/src/domain/todo_category.rs"
 // )]
 impl Lifecycle for LifecycleImpl {
-    type AppConfig = AppConfigImpl;
-    type AppState = AppStateImpl;
-    type AppStatePersister = AppStateFilePersister;
-
-    fn new(
-        app_config: Self::AppConfig,
-        persister: Self::AppStatePersister,
+    // impl Lifecycle<AppConfigImpl, AppStateImpl, AppStateFilePersister> for LifecycleImpl {
+    fn new<AC: AppConfig + std::fmt::Debug, ASP: AppStatePersister>(
+        // fn new<AC: AppConfig + std::fmt::Debug, AppStateFilePersister>(
+        app_config: AC,
+        // persister: ASP,
+        // persister: AppStateFilePersister,
     ) -> Result<&'static Self, AppStatePersistError> {
         info!("Initializing app with config: {:?}", &app_config);
+        let persister = AppStateFilePersister::new(&app_config)?;
         // calling init() the first time creates the singleton. (Although self is consumed, there migth be multiple instances of self.)
         // not using SINGLETON.get_or_init() so we can propergate the AppStatePersistError
         let result = match SINGLETON.get() {
             Some(instance) => Ok(instance),
             None => {
-                let app_state = match persister.load_app_state() {
+                let app_state = match persister.load_app_state::<AppConfigImpl, AppStateImpl>() {
                     Ok(app_state) => app_state,
                     Err(AppStatePersistError::DiskError(disk_err)) => match disk_err {
                         AppStateFilePersisterError::FileNotFound(file_path)
@@ -292,7 +316,7 @@ impl Lifecycle for LifecycleImpl {
                                 "No app state file found in {:?}, creating new state there.",
                                 &file_path
                             );
-                            let app_state = Self::AppState::new(&app_config);
+                            let app_state = AppState::new(&app_config);
                             persister.persist_app_state(&app_state)?;
                             app_state
                         }
@@ -300,8 +324,10 @@ impl Lifecycle for LifecycleImpl {
                     },
                     Err(e) => return Err(e),
                 };
-                SINGLETON.set(LifecycleImpl {
-                    app_config,
+                let app_config_impl =
+                    AppConfigImpl::new(Some(app_config.get_app_state_url().to_string()));
+                let _ = SINGLETON.set(LifecycleImpl {
+                    app_config: app_config_impl,
                     app_state,
                     persister,
                 });
@@ -323,12 +349,18 @@ impl Lifecycle for LifecycleImpl {
         )
     }
 
-    fn borrow_app_state(&self) -> &Self::AppState {
-        &self.app_state
+    // fn borrow_app_state(&self) -> &AppStateImpl {
+    //     &self.app_state
+    // }
+    fn borrow_app_state<AS: AppState>(&self) -> &AS {
+        unsafe { std::mem::transmute(&self.app_state) }
+        // &self.app_state
     }
 
-    fn borrow_app_config(&self) -> &Self::AppConfig {
-        &self.app_config
+    fn borrow_app_config<AC: AppConfig>(&self) -> &AC {
+        // fn borrow_app_config(&self) -> &AppConfigImpl {
+        unsafe { std::mem::transmute(&self.app_config) }
+        // &self.app_config
     }
 
     /// persist the app state to the previously stored location

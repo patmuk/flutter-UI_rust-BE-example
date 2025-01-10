@@ -14,7 +14,7 @@ use crate::{
     },
 };
 
-use super::app_config::AppConfigImpl;
+use super::api::lifecycle::AppConfig;
 
 /// holds the complete state of the app, as a global static variable
 /// use `RustAutoOpaque<T>`, which is `Arc<RwLock<T>>`, on the fields,
@@ -34,8 +34,7 @@ pub(crate) struct AppStateImpl {
 }
 
 impl AppState for AppStateImpl {
-    type AppConfig = AppConfigImpl;
-    fn new(_app_config: &Self::AppConfig) -> Self {
+    fn new<AppConfigImpl: AppConfig>(_app_config: &AppConfigImpl) -> Self {
         trace!("creating new app state");
         Self {
             todo_list_model_lock: TodoListModelLock::for_model(TodoListModel::default()),
