@@ -25,15 +25,6 @@ static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
 
 // pub trait AppStatePersistError: std::error::Error + Sized {
 pub trait AppStatePersistError: std::error::Error {
-    fn from_io_error(err: std::io::Error, path: PathBuf) -> Self
-    where
-        Self: Sized;
-    fn from_deserialization_error(err: bincode::Error, path: PathBuf) -> Self
-    where
-        Self: Sized;
-    fn from_serialization_error(err: bincode::Error, path: PathBuf) -> Self
-    where
-        Self: Sized;
     /// convert to ProcessingError::NotPersisted
     fn to_processing_error(&self) -> ProcessingError;
 }
@@ -43,7 +34,14 @@ pub trait AppStatePersistError: std::error::Error {
 pub trait Lifecycle {
     /// loads the app's state, which can be io-heavy
     /// get the instance with get_singleton(). Create the initial singleton with UnInitilizedLifecycle::init()
-    fn new<AC: AppConfig + std::fmt::Debug, ASP: AppStatePersister, ASPE: AppStatePersistError>(
+    fn new<
+        AC: AppConfig + std::fmt::Debug,
+        ASP: AppStatePersister,
+        // ASPE: AppStatePersistError + std::convert::From<(std::io::Error, std::path::PathBuf)>,
+        ASPE: AppStatePersistError
+            + From<(std::io::Error, std::path::PathBuf)>
+            + From<(bincode::Error, std::path::PathBuf)>,
+    >(
         app_config: AC,
     ) -> Result<&'static Self, ASPE>;
     /// get the instance with get_singleton(). Create the initial singleton with Lifecycle::new()
@@ -71,7 +69,9 @@ pub trait AppState {
 
 pub trait AppStatePersister {
     /// prepares for persisting a new AppState. Not needed if the AppState is loaded!
-    fn new<AC: AppConfig, ASPE: AppStatePersistError>(app_config: &AC) -> Result<Self, ASPE>
+    fn new<AC: AppConfig, ASPE: AppStatePersistError + From<(std::io::Error, PathBuf)>>(
+        app_config: &AC,
+    ) -> Result<Self, ASPE>
     where
         Self: Sized;
     /// Loads the application state.
@@ -79,7 +79,10 @@ pub trait AppStatePersister {
     fn load_app_state<
         AC: AppConfig,
         AS: AppState + Serialize + for<'a> Deserialize<'a>,
-        ASPE: AppStatePersistError,
+        // ASPE: AppStatePersistError + From<(std::io::Error, std::path::PathBuf)>,
+        ASPE: AppStatePersistError
+            + From<(std::io::Error, std::path::PathBuf)>
+            + From<(bincode::Error, std::path::PathBuf)>,
     >(
         &self,
     ) -> Result<AS, ASPE>;
@@ -88,7 +91,7 @@ pub trait AppStatePersister {
     /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
     fn persist_app_state<
         AS: AppState + Serialize + for<'a> Deserialize<'a> + std::fmt::Debug,
-        ASPE: AppStatePersistError,
+        ASPE: AppStatePersistError + From<(std::io::Error, std::path::PathBuf)>,
     >(
         &self,
         state: &AS,
@@ -287,11 +290,19 @@ impl Cqrs for TodoCategoryModelCommand {
 //     "app_core/src/domain/todo_category.rs"
 // )]
 impl Lifecycle for LifecycleImpl {
-    fn new<AC: AppConfig + std::fmt::Debug, ASP: AppStatePersister, ASPE: AppStatePersistError>(
+    fn new<
+        AC: AppConfig + std::fmt::Debug,
+        ASP: AppStatePersister,
+        ASPE: AppStatePersistError
+            + From<(std::io::Error, std::path::PathBuf)>
+            + From<(bincode::Error, std::path::PathBuf)>,
+        // ASPE: AppStatePersistError + std::convert::From<(std::io::Error, std::path::PathBuf)>,
+    >(
         app_config: AC,
     ) -> Result<&'static Self, ASPE> {
         info!("Initializing app with config: {:?}", &app_config);
-        let persister = AppStateFilePersister::new(&app_config)?;
+        // let persister = AppStateFilePersister::new(&app_config)?;
+        let persister = AppStateFilePersister::new::<AC, ASPE>(&app_config)?;
         // not using SINGLETON.get_or_init() so we can propergate the AppStatePersistError
         let result = match SINGLETON.get() {
             Some(instance) => Ok(instance),
@@ -300,7 +311,6 @@ impl Lifecycle for LifecycleImpl {
                     .load_app_state::<AppConfigImpl, AppStateImpl, AppStateFilePersisterError>()
                 {
                     Ok(app_state) => app_state,
-                    // Err(AppStatePersistError::DiskError(disk_err)) => match disk_err {
                     Err(AppStateFilePersisterError::FileNotFound(file_path)) => {
                         // todo match on IO-FileNotFound or avoid this error type duplication
                         // | AppStateFilePersisterError::IOError(io_Error, file_path)
@@ -310,20 +320,14 @@ impl Lifecycle for LifecycleImpl {
                             &file_path
                         );
                         let app_state = AppState::new(&app_config);
-                        persister.persist_app_state(&app_state)?;
+                        persister.persist_app_state::<AppStateImpl, ASPE>(&app_state)?;
                         app_state
                     }
                     Err(AppStateFilePersisterError::IOError(io_err, path)) => {
-                        return Err(ASPE::from_io_error(io_err, path))
-                    }
-                    Err(AppStateFilePersisterError::IODirError(io_err, path)) => {
-                        return Err(ASPE::from_io_error(io_err, path))
+                        return Err(ASPE::from((io_err, path)));
                     }
                     Err(AppStateFilePersisterError::DeserializationError(err, path)) => {
-                        return Err(ASPE::from_deserialization_error(err, path))
-                    }
-                    Err(AppStateFilePersisterError::SerializationError(err, path)) => {
-                        return Err(ASPE::from_serialization_error(err, path))
+                        return Err(ASPE::from((err, path)));
                     }
                 };
 

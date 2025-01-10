@@ -9,10 +9,6 @@ use crate::application::api::lifecycle::{
     AppConfig, AppState, AppStatePersistError, AppStatePersister, ProcessingError,
 };
 
-// use super::app_state_persistance_error::AppStatePersistError;
-
-pub(crate) struct UnititializedAppStateFilePersister {}
-
 #[derive(Debug)]
 pub(crate) struct AppStateFilePersister {
     pub(crate) path: PathBuf,
@@ -23,42 +19,20 @@ pub(crate) struct AppStateFilePersister {
 pub(crate) enum AppStateFilePersisterError {
     #[error("Cannot read the file from path: {1}")]
     IOError(#[source] io::Error, PathBuf),
-    #[error("Cannot create directory to store persistance file in {1}")]
-    IODirError(#[source] io::Error, PathBuf),
     #[error("could not understand (=deserialize) the file {1}. Maybe it's content got corrupted? Bincode-Error: {0}")]
     DeserializationError(#[source] bincode::Error, PathBuf),
-    #[error("could not write (=serialize) the file {1}. Maybe it's content got corrupted? Bincode-Error: {0}")]
-    SerializationError(#[source] bincode::Error, PathBuf),
     #[error("No File found in: {0}")]
     FileNotFound(PathBuf),
 }
 
 impl AppStatePersistError for AppStateFilePersisterError {
-    fn from_io_error(err: std::io::Error, path: PathBuf) -> Self {
-        if err.kind() == io::ErrorKind::NotFound {
-            AppStateFilePersisterError::FileNotFound(path)
-        } else {
-            AppStateFilePersisterError::IOError(err, path)
-        }
-    }
-
-    fn from_deserialization_error(err: bincode::Error, path: PathBuf) -> Self {
-        AppStateFilePersisterError::DeserializationError(err, path)
-    }
-
-    fn from_serialization_error(err: bincode::Error, path: PathBuf) -> Self {
-        AppStateFilePersisterError::SerializationError(err, path)
-    }
-
     fn to_processing_error(&self) -> crate::application::api::lifecycle::ProcessingError {
         match self {
-            AppStateFilePersisterError::IOError(_err, path)
-            | AppStateFilePersisterError::IODirError(_err, path) => ProcessingError::NotPersisted {
+            AppStateFilePersisterError::IOError(_err, path) => ProcessingError::NotPersisted {
                 error: self.to_string(),
                 url: path.to_string_lossy().to_string(),
             },
-            AppStateFilePersisterError::DeserializationError(_err, path)
-            | AppStateFilePersisterError::SerializationError(_err, path) => {
+            AppStateFilePersisterError::DeserializationError(_err, path) => {
                 ProcessingError::NotPersisted {
                     error: self.to_string(),
                     url: path.to_string_lossy().to_string(),
@@ -72,11 +46,28 @@ impl AppStatePersistError for AppStateFilePersisterError {
     }
 }
 
+impl From<(io::Error, PathBuf)> for AppStateFilePersisterError {
+    fn from((err, path): (io::Error, PathBuf)) -> Self {
+        if err.kind() == io::ErrorKind::NotFound {
+            AppStateFilePersisterError::FileNotFound(path)
+        } else {
+            AppStateFilePersisterError::IOError(err, path)
+        }
+    }
+}
+
+impl From<(bincode::Error, PathBuf)> for AppStateFilePersisterError {
+    fn from((err, path): (bincode::Error, PathBuf)) -> Self {
+        AppStateFilePersisterError::DeserializationError(err, path)
+    }
+}
+
 /// Persists the application state to storage (a file).
 /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
 impl AppStatePersister for AppStateFilePersister {
-    fn new<AC: AppConfig, ASPE: AppStatePersistError>(app_config: &AC) -> Result<Self, ASPE> {
-        // fn new(app_config: &AppConfigImpl) -> Result<Self, AppStatePersistError> {
+    fn new<AC: AppConfig, ASPE: AppStatePersistError + From<(std::io::Error, PathBuf)>>(
+        app_config: &AC,
+    ) -> Result<Self, ASPE> {
         // create the directories, but no need to write the file, as there is only the default content
         // remove the last part, as this is the file
         let path = PathBuf::from(app_config.get_app_state_url());
@@ -84,36 +75,33 @@ impl AppStatePersister for AppStateFilePersister {
             .components()
             .take(path.components().count() - 1)
             .collect::<PathBuf>();
-        create_dir_all(directories)
-            // .map_err(|io_err| PersisterError::IODirError(io_err, path.clone()))?;
-            .map_err(|io_err| ASPE::from_io_error(io_err, path.clone()))?;
+        create_dir_all(directories).map_err(|io_err| (io_err, path.clone()))?;
         Ok(AppStateFilePersister {
             path: path.to_owned(),
         })
     }
 
-    fn persist_app_state<AS: AppState + Serialize, ASPE: AppStatePersistError>(
+    fn persist_app_state<
+        AS: AppState + Serialize + std::fmt::Debug,
+        ASPE: AppStatePersistError + From<(std::io::Error, std::path::PathBuf)>,
+    >(
         &self,
         app_state: &AS,
     ) -> Result<(), ASPE> {
-        // trace!(
-        //     "persisting app state:\n  {app_state:?}\n to {:?}",
-        //     self.path
-        // );
+        trace!(
+            "persisting app state:\n  {app_state:?}\n to {:?}",
+            self.path
+        );
         let serialized_app_state: Vec<u8> = bincode::serialize(app_state).expect(
             "bincode.serialzation itself should not result in an error, \
     unless the contract with serde is not respected!",
         );
         if let Some(parent) = self.path.parent() {
-            create_dir_all(parent).map_err(|error| {
-                // AppStateFilePersisterError::IOError(error, self.path.to_owned())
-                ASPE::from_io_error(error, self.path.to_owned())
-            })?;
+            create_dir_all(parent).map_err(|error| (error, self.path.to_owned()))?;
         }
         File::create(&self.path)
             .and_then(|mut file| file.write_all(&serialized_app_state))
-            // .map_err(|ioerr| AppStateFilePersisterError::IOError(ioerr, self.path.to_owned()))?;
-            .map_err(|ioerr| ASPE::from_io_error(ioerr, self.path.to_owned()))?;
+            .map_err(|ioerr| (ioerr, self.path.to_owned()))?;
         trace!("Persisted app state to file: {:?}", self.path);
         Ok(())
     }
@@ -123,16 +111,24 @@ impl AppStatePersister for AppStateFilePersister {
     fn load_app_state<
         AC: AppConfig,
         AS: AppState + for<'a> Deserialize<'a>,
-        ASPE: AppStatePersistError,
+        ASPE: AppStatePersistError
+            + From<(std::io::Error, std::path::PathBuf)>
+            + From<(bincode::Error, std::path::PathBuf)>,
     >(
         &self,
     ) -> Result<AS, ASPE> {
         trace!("loading the app state from {:?}", self.path);
-        let loaded = std::fs::read(&self.path)
-            .map_err(|error| ASPE::from_io_error(error, self.path.to_owned()))?;
+        let loaded = std::fs::read(&self.path).map_err(|error| {
+            <(std::io::Error, std::path::PathBuf) as std::convert::Into<ASPE>>::into((
+                error,
+                self.path.to_owned(),
+            ))
+        })?;
         let app_state = bincode::deserialize(&loaded).map_err(|e| {
-            ASPE::from_deserialization_error(e, self.path.to_path_buf())
-            // AppStateFilePersisterError::DeserializationError(e, self.path.to_path_buf())
+            <(bincode::Error, std::path::PathBuf) as std::convert::Into<ASPE>>::into((
+                e,
+                self.path.to_path_buf(),
+            ))
         })?;
         Ok(app_state)
     }
@@ -155,7 +151,6 @@ mod tests {
     use crate::application::app_config::AppConfigImpl;
     use crate::application::app_state::AppStateImpl;
     use crate::infrastructure::app_state_file_persister::AppStateFilePersisterError;
-    // use crate::infrastructure::app_state_persistance_error::AppStatePersistError;
 
     use super::AppStateFilePersister;
 
