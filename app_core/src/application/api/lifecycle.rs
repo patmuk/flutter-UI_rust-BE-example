@@ -37,7 +37,6 @@ pub trait Lifecycle {
     fn new<
         AC: AppConfig + std::fmt::Debug,
         ASP: AppStatePersister,
-        // ASPE: AppStatePersistError + std::convert::From<(std::io::Error, std::path::PathBuf)>,
         ASPE: AppStatePersistError
             + From<(std::io::Error, std::path::PathBuf)>
             + From<(bincode::Error, std::path::PathBuf)>,

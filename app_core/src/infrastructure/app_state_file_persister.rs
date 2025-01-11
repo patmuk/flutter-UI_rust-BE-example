@@ -174,7 +174,9 @@ mod tests {
     fn create_test_app_state() -> AppStateImpl {
         let app_state = AppStateImpl::new(&create_test_app_config());
         let command = TodoListModelCommand::AddTodo("Test TODO".to_string());
-        command.process();
+        command
+            .process()
+            .expect("Test setup adding a todo should have worked!");
         app_state
     }
     fn create_test_persister() -> AppStateFilePersister {
@@ -214,7 +216,9 @@ mod tests {
     fn read_existing_file() {
         let original = create_test_app_state();
         let persister = create_test_persister();
-        persister.persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&original);
+        let persisted =
+            persister.persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&original);
+        assert!(persisted.is_ok());
         let loaded = persister
             .load_app_state::<AppConfigImpl, AppStateImpl, AppStateFilePersisterError>()
             .expect("App state not loaded");
@@ -235,9 +239,12 @@ mod tests {
 
         let changed_app_state = create_test_app_state();
         let change_command = TodoListModelCommand::AddTodo("added todo".to_string());
-        change_command.process();
-        persister.persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&changed_app_state);
-
+        change_command
+            .process()
+            .expect("Adding a todo should have worked.");
+        let persisted = persister
+            .persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&changed_app_state);
+        assert!(persisted.is_ok());
         let loaded = persister
             .load_app_state::<AppConfigImpl, AppStateImpl, AppStateFilePersisterError>()
             .expect("AppState should have been loaded.");
@@ -260,9 +267,12 @@ mod tests {
         let persister = create_test_persister();
         let changed_app_state = create_test_app_state();
         let change_command = TodoListModelCommand::AddTodo("added todo".to_string());
-        change_command.process();
-        persister.persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&changed_app_state);
-
+        change_command
+            .process()
+            .expect("Adding a todo should have worked!");
+        let persisted = persister
+            .persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&changed_app_state);
+        assert!(persisted.is_ok());
         let loaded = persister
             .load_app_state::<AppConfigImpl, AppStateImpl, AppStateFilePersisterError>()
             .expect("AppState should have been loaded.");
