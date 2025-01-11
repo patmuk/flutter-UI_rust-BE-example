@@ -1,23 +1,48 @@
+use app_core::application::app_config::AppConfigImpl;
+use app_core::infrastructure::app_state_file_persister::{
+    AppStateFilePersister, AppStateFilePersisterError,
+};
 use app_core::{
     application::api::lifecycle::*,
     domain::{todo_category, todo_list},
 };
 
 fn main() {
+    // condigure the app
+    let app_config: AppConfigImpl = AppConfig::new(Some("./test_app_state.bin".to_string()));
+
+    // let persister = AppStateFilePersister::new(
+    //     // let persister = AppStateFilePersister::new::<AppConfigImpl, AppStatePersistError>(
+    //     AppConfig::new(Some(("./test_app_state.bin".to_string()))),
+    // );
+
+    // this loads or created the state
+    // let app_state = persister.load_app_state();
+    // AppStateFilePersister::load_app_state(persister);
     // initiializes the app and loads the app state
-    let lifecycle: &LifecycleImpl = Lifecycle::new(Some("./test_app_state.bin".to_string()));
+    // let lifecycle =
+    //     Lifecycle::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
+    //         app_config,
+    //     )?;
+    // let lifecycle: &LifecycleImpl = Lifecycle::new(app_config)?;
+    let lifecycle: &LifecycleImpl =
+        Lifecycle::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
+            app_config,
+        )
+        .expect("App state should have loaded.");
 
     // following CQRS, this is how to query for the state
     // following the crux-style, one should not call view() directly, but evaluate the Effect, which tells
     // the caller ('shell') what to do (in this case render the viewModel):
-    process_and_handle_effects(TodoCategoryModelQuery::GetTodoCategoryModel)
+    let _ = process_and_handle_effects(TodoCategoryModelQuery::GetTodoCategoryModel)
         .expect("Could not read all todo's!");
 
-    process_and_handle_effects(TodoCategoryModelCommand::UpdateTitle(
+    let _ = process_and_handle_effects(TodoCategoryModelCommand::UpdateTitle(
         "Test Todo List".to_string(),
     ));
-    process_and_handle_effects(TodoListModelCommand::AddTodo("Test todo entry".to_string()))
-        .expect("Couldn't add a todo!");
+    let _ =
+        process_and_handle_effects(TodoListModelCommand::AddTodo("Test todo entry".to_string()))
+            .expect("Couldn't add a todo!");
     let effect = TodoListModelQuery::GetAllTodos
         .process()
         .expect("Couldn't get todo list handle!");
@@ -27,7 +52,7 @@ fn main() {
         _ => panic!("Unexpected effect when getting the todo list's handle!"),
     };
 
-    process_and_handle_effects(TodoCategoryModelCommand::SetTodoList(
+    let _ = process_and_handle_effects(TodoCategoryModelCommand::SetTodoList(
         todo_list_handle.clone(),
     ));
 

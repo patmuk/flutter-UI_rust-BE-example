@@ -2,7 +2,8 @@ use generate_cqrs_api_macro::generate_api;
 use log::info;
 use serde::{Deserialize, Serialize};
 
-use crate::application::app_config::AppConfigImpl;
+pub use crate::application::app_config::AppConfigImpl;
+
 use crate::application::app_state::AppStateImpl;
 use crate::infrastructure::app_state_file_persister::{
     AppStateFilePersister, AppStateFilePersisterError,
@@ -11,7 +12,7 @@ use crate::infrastructure::app_state_file_persister::{
 
 use std::sync::OnceLock;
 
-pub(crate) struct LifecycleImpl {
+pub struct LifecycleImpl {
     // the app config is to be set only once, and read afterwards. If mutation is needed wrapp it into a lock for concurrent write access
     pub(crate) app_config: AppConfigImpl,
     // the app state itself doesn't change, only the fields, which are behind a Mutex to be thread save.

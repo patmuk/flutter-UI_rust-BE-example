@@ -8,13 +8,13 @@ use crate::application::api::lifecycle::{
 };
 
 #[derive(Debug)]
-pub(crate) struct AppStateDBPersister {
+pub struct AppStateDBPersister {
     pub(crate) url: String,
 }
 
 // handle errors as suggested by https://kazlauskas.me/entries/errors
 #[derive(thiserror::Error, Debug)]
-pub(crate) enum AppStateDBPersisterError {
+pub enum AppStateDBPersisterError {
     #[error("Cannot access the db with url: {1}")]
     IOError(#[source] io::Error, PathBuf),
     #[error("could not understand (=deserialize) the file {1}. Maybe it's content got corrupted?")]

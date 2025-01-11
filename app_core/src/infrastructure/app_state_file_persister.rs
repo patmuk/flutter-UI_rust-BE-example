@@ -10,13 +10,13 @@ use crate::application::api::lifecycle::{
 };
 
 #[derive(Debug)]
-pub(crate) struct AppStateFilePersister {
+pub struct AppStateFilePersister {
     pub(crate) path: PathBuf,
 }
 
 // handle errors as suggested by https://kazlauskas.me/entries/errors
 #[derive(thiserror::Error, Debug)]
-pub(crate) enum AppStateFilePersisterError {
+pub enum AppStateFilePersisterError {
     #[error("Cannot read the file from path: {1}")]
     IOError(#[source] io::Error, PathBuf),
     #[error("could not understand (=deserialize) the file {1}. Maybe it's content got corrupted? Bincode-Error: {0}")]
