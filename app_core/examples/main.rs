@@ -1,35 +1,22 @@
 use app_core::application::app_config::AppConfigImpl;
-use app_core::infrastructure::app_state_file_persister::{
-    AppStateFilePersister, AppStateFilePersisterError,
-};
 use app_core::{
     application::api::lifecycle::*,
-    domain::{todo_category, todo_list},
+    // domain::{todo_category, todo_list},
 };
 
 fn main() {
     // condigure the app
     let app_config: AppConfigImpl = AppConfig::new(Some("./test_app_state.bin".to_string()));
-
-    // let persister = AppStateFilePersister::new(
-    //     // let persister = AppStateFilePersister::new::<AppConfigImpl, AppStatePersistError>(
-    //     AppConfig::new(Some(("./test_app_state.bin".to_string()))),
-    // );
-
     // this loads or created the state
-    // let app_state = persister.load_app_state();
-    // AppStateFilePersister::load_app_state(persister);
-    // initiializes the app and loads the app state
-    // let lifecycle =
+
+    // instead of the full annotated new() call the factory
+    // let lifecycle: &LifecycleImpl =
     //     Lifecycle::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
     //         app_config,
-    //     )?;
-    // let lifecycle: &LifecycleImpl = Lifecycle::new(app_config)?;
-    let lifecycle: &LifecycleImpl =
-        Lifecycle::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
-            app_config,
-        )
-        .expect("App state should have loaded.");
+    //     )
+    //     .expect("App state should have loaded.");
+    let lifecycle =
+        LifecycleImpl::new_with_file_persister(app_config).expect("App state should have loaded.");
 
     // following CQRS, this is how to query for the state
     // following the crux-style, one should not call view() directly, but evaluate the Effect, which tells

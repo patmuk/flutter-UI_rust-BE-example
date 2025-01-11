@@ -296,7 +296,6 @@ impl Lifecycle for LifecycleImpl {
         ASPE: AppStatePersistError
             + From<(std::io::Error, std::path::PathBuf)>
             + From<(bincode::Error, std::path::PathBuf)>,
-        // ASPE: AppStatePersistError + std::convert::From<(std::io::Error, std::path::PathBuf)>,
     >(
         app_config: AC,
     ) -> Result<&'static Self, ASPE> {
@@ -380,5 +379,15 @@ impl Lifecycle for LifecycleImpl {
         // blocks on the Locks of inner fields
         // TODO implent timeout and throw an error?
         self.persist()
+    }
+}
+
+impl LifecycleImpl {
+    pub fn new_with_file_persister(
+        app_config: AppConfigImpl,
+    ) -> Result<&'static Self, AppStateFilePersisterError> {
+        LifecycleImpl::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
+            app_config,
+        )
     }
 }
