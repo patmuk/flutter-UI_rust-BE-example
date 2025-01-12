@@ -4,7 +4,7 @@ use app_core::{
     // domain::{todo_category, todo_list},
 };
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // condigure the app
     let app_config: AppConfigImpl = AppConfig::new(Some("./test_app_state.bin".to_string()));
     // this loads or created the state
@@ -21,15 +21,18 @@ fn main() {
     // following CQRS, this is how to query for the state
     // following the crux-style, one should not call view() directly, but evaluate the Effect, which tells
     // the caller ('shell') what to do (in this case render the viewModel):
-    let _ = process_and_handle_effects(TodoCategoryModelQuery::GetTodoCategoryModel)
+    // process_and_handle_effects cares about reacting to the returned effects. It is recommended to do this in a
+    // central location like this function
+    process_and_handle_effects(TodoCategoryModelQuery::GetTodoCategoryModel)
         .expect("Could not read all todo's!");
 
-    let _ = process_and_handle_effects(TodoCategoryModelCommand::UpdateTitle(
+    process_and_handle_effects(TodoCategoryModelCommand::UpdateTitle(
         "Test Todo List".to_string(),
-    ));
-    let _ =
-        process_and_handle_effects(TodoListModelCommand::AddTodo("Test todo entry".to_string()))
-            .expect("Couldn't add a todo!");
+    ))?;
+    process_and_handle_effects(TodoListModelCommand::AddTodo("Test todo entry".to_string()))
+        .expect("Couldn't add a todo!");
+
+    // this is how one calls a CQRS-function and handles the returned effects directly
     let effect = TodoListModelQuery::GetAllTodos
         .process()
         .expect("Couldn't get todo list handle!");
@@ -39,12 +42,12 @@ fn main() {
         _ => panic!("Unexpected effect when getting the todo list's handle!"),
     };
 
-    let _ = process_and_handle_effects(TodoCategoryModelCommand::SetTodoList(
+    process_and_handle_effects(TodoCategoryModelCommand::SetTodoList(
         todo_list_handle.clone(),
-    ));
+    ))?;
 
     // if possible call this function to clean up, like wrting the app's state to disk
-    lifecycle.shutdown().expect("Could not persist the state!");
+    Ok(lifecycle.shutdown()?)
 }
 
 fn process_and_handle_effects(cqrs: impl Cqrs) -> Result<(), ProcessingError> {

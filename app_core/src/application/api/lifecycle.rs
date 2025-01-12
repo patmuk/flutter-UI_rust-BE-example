@@ -24,7 +24,6 @@ static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
 
 /////////// to be integrated in codegen
 
-// pub trait AppStatePersistError: std::error::Error + Sized {
 pub trait AppStatePersistError: std::error::Error {
     /// convert to ProcessingError::NotPersisted
     fn to_processing_error(&self) -> ProcessingError;
@@ -49,7 +48,6 @@ pub trait Lifecycle {
     fn borrow_app_config<AC: AppConfig>(&self) -> &AC;
     fn borrow_app_state<AS: AppState>(&self) -> &AS;
     /// persist the app state to the previously stored location
-    // fn persist<ASPE: AppStatePersistError>(&self) -> Result<(), ASPE>;
     fn persist(&self) -> Result<(), ProcessingError>;
     fn shutdown(&self) -> Result<(), ProcessingError>;
 }
@@ -79,7 +77,6 @@ pub trait AppStatePersister {
     fn load_app_state<
         AC: AppConfig,
         AS: AppState + Serialize + for<'a> Deserialize<'a>,
-        // ASPE: AppStatePersistError + From<(std::io::Error, std::path::PathBuf)>,
         ASPE: AppStatePersistError
             + From<(std::io::Error, std::path::PathBuf)>
             + From<(bincode::Error, std::path::PathBuf)>,
@@ -260,10 +257,7 @@ impl Cqrs for TodoCategoryModelCommand {
         .map_err(ProcessingError::TodoCategoryProcessingError)?;
         if state_changed {
             app_state.mark_dirty();
-            lifecycle
-                // .persister
-                // .persist_app_state::<AppStatePersistError>(app_state)?;
-                .persist()?;
+            lifecycle.persist()?;
         }
         Ok(result
             .into_iter()
@@ -366,8 +360,6 @@ impl Lifecycle for LifecycleImpl {
     }
 
     /// persist the app state to the previously stored location
-    // fn persist<ASPE: AppStatePersistError + Sized>(&self) -> Result<(), ASPE> {
-    // fn persist<ASPE: AppStatePersistError>(&self) -> Result<(), ASPE> {
     fn persist(&self) -> Result<(), ProcessingError> {
         self.persister
             .persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&self.app_state)
