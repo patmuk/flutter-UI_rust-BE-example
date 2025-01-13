@@ -149,7 +149,7 @@ mod tests {
         AppConfig, AppState, AppStatePersister, TodoListModelCommand,
     };
     use crate::application::app_config::AppConfigImpl;
-    use crate::application::app_state::AppStateImpl;
+    use crate::application::app_state::{self, AppStateImpl};
     use crate::infrastructure::app_state_file_persister::AppStateFilePersisterError;
 
     use super::AppStateFilePersister;
@@ -173,14 +173,13 @@ mod tests {
     }
     fn create_test_app_state() -> AppStateImpl {
         let app_state = AppStateImpl::new(&create_test_app_config());
-        let command = TodoListModelCommand::AddTodo("Test TODO".to_string());
-        command
-            .process()
-            .expect("Test setup adding a todo should have worked!");
+        app_state
+            .todo_list_model_lock
+            .command_add_todo("Test TODO".to_string())
+            .expect("creating app state for test worked");
         app_state
     }
     fn create_test_persister() -> AppStateFilePersister {
-        // AppStateFilePersister::new(&create_test_app_config())
         AppStateFilePersister::new::<AppConfigImpl, AppStateFilePersisterError>(
             &create_test_app_config(),
         )
@@ -238,9 +237,9 @@ mod tests {
         assert!(&TEST_FILE.exists());
 
         let changed_app_state = create_test_app_state();
-        let change_command = TodoListModelCommand::AddTodo("added todo".to_string());
-        change_command
-            .process()
+        changed_app_state
+            .todo_list_model_lock
+            .command_add_todo("added todo".to_string())
             .expect("Adding a todo should have worked.");
         let persisted = persister
             .persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&changed_app_state);
@@ -266,9 +265,9 @@ mod tests {
 
         let persister = create_test_persister();
         let changed_app_state = create_test_app_state();
-        let change_command = TodoListModelCommand::AddTodo("added todo".to_string());
-        change_command
-            .process()
+        changed_app_state
+            .todo_list_model_lock
+            .command_add_todo("added todo".to_string())
             .expect("Adding a todo should have worked!");
         let persisted = persister
             .persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&changed_app_state);
@@ -299,8 +298,8 @@ mod tests {
             Err(AppStateFilePersisterError::DeserializationError(ref err, _))
                 if {
                    match &**err {
-                       ErrorKind::Io(ref inner_io_err) => {
-                           inner_io_err.kind() == IoErrorKind::UnexpectedEof
+                       ErrorKind::InvalidBoolEncoding(err_message) => {
+                        *err_message == 99
                        },
                        _ => false,
                    }
@@ -314,8 +313,11 @@ mod tests {
     fn write_new_file() {
         cleanup_test_file();
         assert!(!TEST_FILE.exists());
-        let _ = create_test_app_state();
-
+        let app_state = create_test_app_state();
+        let persister = create_test_persister();
+        let result =
+            persister.persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&app_state);
+        assert!(result.is_ok());
         assert!(TEST_FILE.exists());
         cleanup_test_file();
     }
