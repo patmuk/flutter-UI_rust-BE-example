@@ -345,7 +345,7 @@ impl Lifecycle for LifecycleImpl {
 
     fn get_singleton() -> &'static Self {
         SINGLETON.get().expect(
-            "Lifecycle: should been initialized with Lifecycle::new(AppConfig, AppStatePersister)!",
+            "Lifecycle: should been initialized with Lifecycle::new(AppConfig, AppStatePersister, AppStatePersisterError)!",
         )
     }
 
