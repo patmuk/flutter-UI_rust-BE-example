@@ -8,7 +8,6 @@ use crate::application::app_state::AppStateImpl;
 use crate::infrastructure::app_state_file_persister::{
     AppStateFilePersister, AppStateFilePersisterError,
 };
-// use crate::infrastructure::app_state_persistance_error::AppStatePersistError;
 
 use std::sync::OnceLock;
 
@@ -17,19 +16,12 @@ pub struct LifecycleImpl {
     pub(crate) app_config: AppConfigImpl,
     // the app state itself doesn't change, only the fields, which are behind a Mutex to be thread save.
     pub(crate) app_state: AppStateImpl,
-    persister: AppStateFilePersister,
+    pub(crate) persister: AppStateFilePersister,
 }
 
 static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
 
-/////////// to be integrated in codegen
-
-pub trait AppStatePersistError: std::error::Error {
-    /// convert to ProcessingError::NotPersisted
-    fn to_processing_error(&self) -> ProcessingError;
-}
-
-/////////// tmp copy pasta from gened codeuse crate::domain::todo_category::*;
+/////////// tmp copy pasta from gened code
 // /*
 pub trait Lifecycle {
     /// loads the app's state, which can be io-heavy
@@ -37,9 +29,7 @@ pub trait Lifecycle {
     fn new<
         AC: AppConfig + std::fmt::Debug,
         ASP: AppStatePersister,
-        ASPE: AppStatePersistError
-            + From<(std::io::Error, std::path::PathBuf)>
-            + From<(bincode::Error, std::path::PathBuf)>,
+        ASPE: AppStatePersistError + From<(std::io::Error, String)> + From<(bincode::Error, String)>,
     >(
         app_config: AC,
     ) -> Result<&'static Self, ASPE>;
@@ -65,9 +55,14 @@ pub trait AppState {
     fn mark_dirty(&self);
 }
 
+pub trait AppStatePersistError: std::error::Error {
+    /// convert to ProcessingError::NotPersisted
+    fn to_processing_error(&self) -> ProcessingError;
+}
+
 pub trait AppStatePersister {
     /// prepares for persisting a new AppState. Not needed if the AppState is loaded!
-    fn new<AC: AppConfig, ASPE: AppStatePersistError + From<(std::io::Error, PathBuf)>>(
+    fn new<AC: AppConfig, ASPE: AppStatePersistError + From<(std::io::Error, String)>>(
         app_config: &AC,
     ) -> Result<Self, ASPE>
     where
@@ -77,9 +72,7 @@ pub trait AppStatePersister {
     fn load_app_state<
         AC: AppConfig,
         AS: AppState + Serialize + for<'a> Deserialize<'a>,
-        ASPE: AppStatePersistError
-            + From<(std::io::Error, std::path::PathBuf)>
-            + From<(bincode::Error, std::path::PathBuf)>,
+        ASPE: AppStatePersistError + From<(std::io::Error, String)> + From<(bincode::Error, String)>,
     >(
         &self,
     ) -> Result<AS, ASPE>;
@@ -88,7 +81,7 @@ pub trait AppStatePersister {
     /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
     fn persist_app_state<
         AS: AppState + Serialize + for<'a> Deserialize<'a> + std::fmt::Debug,
-        ASPE: AppStatePersistError + From<(std::io::Error, std::path::PathBuf)>,
+        ASPE: AppStatePersistError + From<(std::io::Error, String)>,
     >(
         &self,
         state: &AS,
@@ -98,7 +91,7 @@ pub trait AppStatePersister {
 use crate::domain::todo_category::*;
 use crate::domain::todo_list::*;
 use log::debug;
-use std::path::PathBuf;
+// use std::path::PathBuf;
 pub(crate) trait CqrsModel:
     std::marker::Sized + Default + serde::Serialize + for<'de> serde::Deserialize<'de>
 {
@@ -287,14 +280,11 @@ impl Lifecycle for LifecycleImpl {
     fn new<
         AC: AppConfig + std::fmt::Debug,
         ASP: AppStatePersister,
-        ASPE: AppStatePersistError
-            + From<(std::io::Error, std::path::PathBuf)>
-            + From<(bincode::Error, std::path::PathBuf)>,
+        ASPE: AppStatePersistError + From<(std::io::Error, String)> + From<(bincode::Error, String)>,
     >(
         app_config: AC,
     ) -> Result<&'static Self, ASPE> {
         info!("Initializing app with config: {:?}", &app_config);
-        // let persister = AppStateFilePersister::new(&app_config)?;
         let persister = AppStateFilePersister::new::<AC, ASPE>(&app_config)?;
         // not using SINGLETON.get_or_init() so we can propergate the AppStatePersistError
         let result = match SINGLETON.get() {
@@ -374,12 +364,12 @@ impl Lifecycle for LifecycleImpl {
     }
 }
 
-impl LifecycleImpl {
-    pub fn new_with_file_persister(
-        app_config: AppConfigImpl,
-    ) -> Result<&'static Self, AppStateFilePersisterError> {
-        LifecycleImpl::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
-            app_config,
-        )
-    }
-}
+// impl LifecycleImpl {
+//     pub fn new_with_file_persister(
+//         app_config: AppConfigImpl,
+//     ) -> Result<&'static Self, AppStateFilePersisterError> {
+//         LifecycleImpl::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
+//             app_config,
+//         )
+//     }
+// }

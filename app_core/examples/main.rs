@@ -10,13 +10,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // this loads or created the state
 
     // instead of the full annotated new() call the factory
-    // let lifecycle: &LifecycleImpl =
-    //     Lifecycle::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
-    //         app_config,
-    //     )
-    //     .expect("App state should have loaded.");
-    let lifecycle =
-        LifecycleImpl::new_with_file_persister(app_config).expect("App state should have loaded.");
+    use app_core::infrastructure::app_state_file_persister::AppStateFilePersister;
+    use app_core::infrastructure::app_state_file_persister::AppStateFilePersisterError;
+    let lifecycle: &LifecycleImpl =
+        Lifecycle::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
+            app_config,
+        )
+        .expect("App state should have loaded.");
+    // LifecycleImpl::new_with_file_persister(app_config).expect("App state should have loaded.");
 
     // following CQRS, this is how to query for the state
     // following the crux-style, one should not call view() directly, but evaluate the Effect, which tells

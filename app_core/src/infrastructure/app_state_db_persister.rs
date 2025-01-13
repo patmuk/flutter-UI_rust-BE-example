@@ -1,7 +1,6 @@
 use log::trace;
 use serde::{Deserialize, Serialize};
 use std::io;
-use std::path::PathBuf;
 
 use crate::application::api::lifecycle::{
     AppConfig, AppState, AppStatePersistError, AppStatePersister, ProcessingError,
@@ -16,11 +15,11 @@ pub struct AppStateDBPersister {
 #[derive(thiserror::Error, Debug)]
 pub enum AppStateDBPersisterError {
     #[error("Cannot access the db with url: {1}")]
-    IOError(#[source] io::Error, PathBuf),
+    IOError(#[source] io::Error, String),
     #[error("could not understand (=deserialize) the file {1}. Maybe it's content got corrupted?")]
-    DeserializationError(#[source] bincode::Error, PathBuf),
+    DeserializationError(#[source] bincode::Error, String),
     #[error("No Entry not found in db: {0}")]
-    EntryNotFound(PathBuf),
+    EntryNotFound(String),
 }
 
 impl AppStatePersistError for AppStateDBPersisterError {
@@ -28,22 +27,22 @@ impl AppStatePersistError for AppStateDBPersisterError {
         match self {
             Self::IOError(_err, path) => ProcessingError::NotPersisted {
                 error: self.to_string(),
-                url: path.to_string_lossy().to_string(),
+                url: path.to_owned(),
             },
             Self::DeserializationError(_err, path) => ProcessingError::NotPersisted {
                 error: self.to_string(),
-                url: path.to_string_lossy().to_string(),
+                url: path.to_owned(),
             },
             Self::EntryNotFound(path) => ProcessingError::NotPersisted {
                 error: self.to_string(),
-                url: path.to_string_lossy().to_string(),
+                url: path.to_owned(),
             },
         }
     }
 }
 
-impl From<(io::Error, PathBuf)> for AppStateDBPersisterError {
-    fn from((err, path): (io::Error, PathBuf)) -> Self {
+impl From<(io::Error, String)> for AppStateDBPersisterError {
+    fn from((err, path): (io::Error, String)) -> Self {
         if err.kind() == io::ErrorKind::NotFound {
             AppStateDBPersisterError::EntryNotFound(path)
         } else {
@@ -52,8 +51,8 @@ impl From<(io::Error, PathBuf)> for AppStateDBPersisterError {
     }
 }
 
-impl From<(bincode::Error, PathBuf)> for AppStateDBPersisterError {
-    fn from((err, path): (bincode::Error, PathBuf)) -> Self {
+impl From<(bincode::Error, String)> for AppStateDBPersisterError {
+    fn from((err, path): (bincode::Error, String)) -> Self {
         AppStateDBPersisterError::DeserializationError(err, path)
     }
 }
