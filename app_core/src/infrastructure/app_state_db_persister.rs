@@ -63,18 +63,19 @@ impl From<(bincode::Error, String)> for AppStateDBPersisterError {
 ///
 /// This function will return an error if anything goes wrong
 impl AppStatePersister for AppStateDBPersister {
+    type Error = AppStateDBPersisterError;
     /// prepares loading and persisting the app's state
-    fn new<AppConfigImpl: AppConfig, PersisterError>(
+    fn new<AppConfigImpl: AppConfig>(
         _app_config: &AppConfigImpl,
-    ) -> Result<AppStateDBPersister, PersisterError> {
+    ) -> Result<AppStateDBPersister, Self::Error> {
         unimplemented!()
     }
     /// Persists the application state to storage.
     /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
-    fn persist_app_state<AS: AppState + Serialize + std::fmt::Debug, PersisterError>(
+    fn persist_app_state<AS: AppState + Serialize + std::fmt::Debug>(
         &self,
         app_state: &AS,
-    ) -> Result<(), PersisterError> {
+    ) -> Result<(), Self::Error> {
         trace!(
             "persisting app state:\n  {app_state:?}\n to db {:?}",
             self.url
@@ -91,13 +92,9 @@ impl AppStatePersister for AppStateDBPersister {
 
     // get the last persisted app state from a file, if any exists, otherwise creates a new app state
     // this function is only called once, in the initialization/app state constructor
-    fn load_app_state<
-        AC: AppConfig,
-        AS: AppState + for<'a> Deserialize<'a>,
-        ASPE: AppStatePersistError,
-    >(
+    fn load_app_state<AC: AppConfig, AS: AppState + for<'a> Deserialize<'a>>(
         &self,
-    ) -> std::result::Result<AS, ASPE> {
+    ) -> std::result::Result<AS, Self::Error> {
         trace!("loading the app state from {:?}", self.url);
         unimplemented!("load the file from a db");
         // let app_state: Sefl::AppState = bincode::deserialize(&loaded)

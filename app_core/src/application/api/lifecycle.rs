@@ -27,7 +27,7 @@ static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
 pub trait Lifecycle {
     // due to frb's current capabilities we cannot define function arguments as types.
     // for return types it works. Thus, Error is defined this way, while AppConfig is a generic parameter.
-    type Error;
+    type Error: AppStatePersistError;
     /// loads the app's state, which can be io-heavy
     /// get the instance with get_singleton(). Create the initial singleton with this function
     fn initialise<AC: AppConfig + std::fmt::Debug>(
@@ -54,43 +54,35 @@ pub trait AppConfig: Default {
 }
 
 /// the app's state is not exposed external - it is guarded behind CQRS functions
-pub(crate) trait AppState {
+pub(crate) trait AppState: Serialize + for<'a> Deserialize<'a> {
     fn new<AC: AppConfig>(app_config: &AC) -> Self;
     fn dirty_flag_value(&self) -> bool;
     fn mark_dirty(&self);
 }
 
-pub(crate) trait AppStatePersistError: std::error::Error {
+pub trait AppStatePersistError:
+    std::error::Error + From<(std::io::Error, String)> + From<(bincode::Error, String)>
+{
     /// convert to ProcessingError::NotPersisted
     fn to_processing_error(&self) -> ProcessingError;
 }
 
 pub(crate) trait AppStatePersister {
     /// prepares for persisting a new AppState. Not needed if the AppState is loaded!
-    fn new<AC: AppConfig, ASPE: AppStatePersistError + From<(std::io::Error, String)>>(
-        app_config: &AC,
-    ) -> Result<Self, ASPE>
+    type Error: AppStatePersistError;
+    fn new<AC: AppConfig>(app_config: &AC) -> Result<Self, Self::Error>
     where
         Self: Sized;
-    /// Loads the application state.
-    /// Returns a result with the `AppState` if successful or an `InfrastructureError` otherwise.
-    fn load_app_state<
-        AC: AppConfig,
-        AS: AppState + Serialize + for<'a> Deserialize<'a>,
-        ASPE: AppStatePersistError + From<(std::io::Error, String)> + From<(bincode::Error, String)>,
-    >(
-        &self,
-    ) -> Result<AS, ASPE>;
-
     /// Persists the application state to storage.
     /// Ensures that the `AppState` is stored in a durable way, regardless of the underlying mechanism.
-    fn persist_app_state<
-        AS: AppState + Serialize + for<'a> Deserialize<'a> + std::fmt::Debug,
-        ASPE: AppStatePersistError + From<(std::io::Error, String)>,
-    >(
+    fn persist_app_state<AS: AppState + std::fmt::Debug>(
         &self,
         state: &AS,
-    ) -> Result<(), ASPE>;
+    ) -> Result<(), Self::Error>;
+
+    /// Loads the application state.
+    /// Returns a result with the `AppState` if successful or an `InfrastructureError` otherwise.
+    fn load_app_state<AC: AppConfig, AS: AppState>(&self) -> Result<AS, Self::Error>;
 }
 
 use crate::domain::todo_category::*;
@@ -289,14 +281,12 @@ impl Lifecycle for LifecycleImpl {
         app_config: AC,
     ) -> Result<&'static Self, Self::Error> {
         info!("Initializing app with config: {:?}", &app_config);
-        let persister = AppStateFilePersister::new::<AC, Self::Error>(&app_config)?;
+        let persister = AppStateFilePersister::new(&app_config)?;
         // not using SINGLETON.get_or_init() so we can propergate the AppStatePersistError
         let result = match SINGLETON.get() {
             Some(instance) => Ok(instance),
             None => {
-                let app_state = match persister
-                    .load_app_state::<AppConfigImpl, AppStateImpl, AppStateFilePersisterError>()
-                {
+                let app_state = match persister.load_app_state::<AppConfigImpl, AppStateImpl>() {
                     Ok(app_state) => app_state,
                     Err(AppStateFilePersisterError::FileNotFound(file_path)) => {
                         // todo match on IO-FileNotFound or avoid this error type duplication
@@ -307,7 +297,7 @@ impl Lifecycle for LifecycleImpl {
                             &file_path
                         );
                         let app_state = AppState::new(&app_config);
-                        persister.persist_app_state::<AppStateImpl, Self::Error>(&app_state)?;
+                        persister.persist_app_state::<AppStateImpl>(&app_state)?;
                         app_state
                     }
                     Err(AppStateFilePersisterError::IOError(io_err, path)) => {
@@ -356,7 +346,7 @@ impl Lifecycle for LifecycleImpl {
         let lifecycle = Self::get_singleton();
         lifecycle
             .persister
-            .persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&lifecycle.app_state)
+            .persist_app_state(&lifecycle.app_state)
             .map_err(|err| err.to_processing_error())
     }
 
