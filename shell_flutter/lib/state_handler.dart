@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shell_flutter/bridge/frb_generated/application/api/lifecycle.dart';
+import 'package:shell_flutter/bridge/frb_generated/application/app_config.dart';
 import 'package:shell_flutter/bridge/frb_generated/domain/todo_list.dart';
 import 'package:shell_flutter/bridge/frb_generated/frb_generated.dart';
 
@@ -36,7 +37,9 @@ class StateHandler {
     WidgetsFlutterBinding.ensureInitialized();
     final Directory appSupportDir = await getApplicationSupportDirectory();
     final stateFile = File('${appSupportDir.path}/app_state.bin');
-    await LifecycleImpl.newInstance(path: stateFile.path);
+
+    await LifecycleImpl.initialiseWithFilePersister(
+        appConfig: AppConfigImpl(appStateUrl: stateFile.path));
     singleton = StateHandler._singletonConstructor();
     // initialise all Listeners with the loaded model
     // by calling the respective querries

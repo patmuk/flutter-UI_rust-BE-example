@@ -10,7 +10,7 @@ use crate::application::api::lifecycle::{
 };
 
 #[derive(Debug)]
-pub struct AppStateFilePersister {
+pub(crate) struct AppStateFilePersister {
     pub(crate) path: PathBuf,
 }
 
@@ -70,7 +70,7 @@ impl AppStatePersister for AppStateFilePersister {
     ) -> Result<Self, ASPE> {
         // create the directories, but no need to write the file, as there is only the default content
         // remove the last part, as this is the file
-        let path = PathBuf::from(app_config.get_app_state_url());
+        let path = PathBuf::from(app_config.borrow_app_state_url());
         let directories = path
             .components()
             .take(path.components().count() - 1)

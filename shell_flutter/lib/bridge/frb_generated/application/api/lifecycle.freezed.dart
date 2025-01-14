@@ -1341,6 +1341,625 @@ abstract class Effect_TodoCategoryModelUpdateTitel extends Effect {
 }
 
 /// @nodoc
+mixin _$ProcessingError {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListProcessingError field0)
+        todoListProcessingError,
+    required TResult Function(TodoCategoryProcessingError field0)
+        todoCategoryProcessingError,
+    required TResult Function(String error, String url) notPersisted,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListProcessingError field0)? todoListProcessingError,
+    TResult? Function(TodoCategoryProcessingError field0)?
+        todoCategoryProcessingError,
+    TResult? Function(String error, String url)? notPersisted,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListProcessingError field0)? todoListProcessingError,
+    TResult Function(TodoCategoryProcessingError field0)?
+        todoCategoryProcessingError,
+    TResult Function(String error, String url)? notPersisted,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ProcessingError_TodoListProcessingError value)
+        todoListProcessingError,
+    required TResult Function(ProcessingError_TodoCategoryProcessingError value)
+        todoCategoryProcessingError,
+    required TResult Function(ProcessingError_NotPersisted value) notPersisted,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ProcessingError_TodoListProcessingError value)?
+        todoListProcessingError,
+    TResult? Function(ProcessingError_TodoCategoryProcessingError value)?
+        todoCategoryProcessingError,
+    TResult? Function(ProcessingError_NotPersisted value)? notPersisted,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ProcessingError_TodoListProcessingError value)?
+        todoListProcessingError,
+    TResult Function(ProcessingError_TodoCategoryProcessingError value)?
+        todoCategoryProcessingError,
+    TResult Function(ProcessingError_NotPersisted value)? notPersisted,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ProcessingErrorCopyWith<$Res> {
+  factory $ProcessingErrorCopyWith(
+          ProcessingError value, $Res Function(ProcessingError) then) =
+      _$ProcessingErrorCopyWithImpl<$Res, ProcessingError>;
+}
+
+/// @nodoc
+class _$ProcessingErrorCopyWithImpl<$Res, $Val extends ProcessingError>
+    implements $ProcessingErrorCopyWith<$Res> {
+  _$ProcessingErrorCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+abstract class _$$ProcessingError_TodoListProcessingErrorImplCopyWith<$Res> {
+  factory _$$ProcessingError_TodoListProcessingErrorImplCopyWith(
+          _$ProcessingError_TodoListProcessingErrorImpl value,
+          $Res Function(_$ProcessingError_TodoListProcessingErrorImpl) then) =
+      __$$ProcessingError_TodoListProcessingErrorImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({TodoListProcessingError field0});
+
+  $TodoListProcessingErrorCopyWith<$Res> get field0;
+}
+
+/// @nodoc
+class __$$ProcessingError_TodoListProcessingErrorImplCopyWithImpl<$Res>
+    extends _$ProcessingErrorCopyWithImpl<$Res,
+        _$ProcessingError_TodoListProcessingErrorImpl>
+    implements _$$ProcessingError_TodoListProcessingErrorImplCopyWith<$Res> {
+  __$$ProcessingError_TodoListProcessingErrorImplCopyWithImpl(
+      _$ProcessingError_TodoListProcessingErrorImpl _value,
+      $Res Function(_$ProcessingError_TodoListProcessingErrorImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$ProcessingError_TodoListProcessingErrorImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as TodoListProcessingError,
+    ));
+  }
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $TodoListProcessingErrorCopyWith<$Res> get field0 {
+    return $TodoListProcessingErrorCopyWith<$Res>(_value.field0, (value) {
+      return _then(_value.copyWith(field0: value));
+    });
+  }
+}
+
+/// @nodoc
+
+class _$ProcessingError_TodoListProcessingErrorImpl
+    extends ProcessingError_TodoListProcessingError {
+  const _$ProcessingError_TodoListProcessingErrorImpl(this.field0) : super._();
+
+  @override
+  final TodoListProcessingError field0;
+
+  @override
+  String toString() {
+    return 'ProcessingError.todoListProcessingError(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProcessingError_TodoListProcessingErrorImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProcessingError_TodoListProcessingErrorImplCopyWith<
+          _$ProcessingError_TodoListProcessingErrorImpl>
+      get copyWith =>
+          __$$ProcessingError_TodoListProcessingErrorImplCopyWithImpl<
+              _$ProcessingError_TodoListProcessingErrorImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListProcessingError field0)
+        todoListProcessingError,
+    required TResult Function(TodoCategoryProcessingError field0)
+        todoCategoryProcessingError,
+    required TResult Function(String error, String url) notPersisted,
+  }) {
+    return todoListProcessingError(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListProcessingError field0)? todoListProcessingError,
+    TResult? Function(TodoCategoryProcessingError field0)?
+        todoCategoryProcessingError,
+    TResult? Function(String error, String url)? notPersisted,
+  }) {
+    return todoListProcessingError?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListProcessingError field0)? todoListProcessingError,
+    TResult Function(TodoCategoryProcessingError field0)?
+        todoCategoryProcessingError,
+    TResult Function(String error, String url)? notPersisted,
+    required TResult orElse(),
+  }) {
+    if (todoListProcessingError != null) {
+      return todoListProcessingError(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ProcessingError_TodoListProcessingError value)
+        todoListProcessingError,
+    required TResult Function(ProcessingError_TodoCategoryProcessingError value)
+        todoCategoryProcessingError,
+    required TResult Function(ProcessingError_NotPersisted value) notPersisted,
+  }) {
+    return todoListProcessingError(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ProcessingError_TodoListProcessingError value)?
+        todoListProcessingError,
+    TResult? Function(ProcessingError_TodoCategoryProcessingError value)?
+        todoCategoryProcessingError,
+    TResult? Function(ProcessingError_NotPersisted value)? notPersisted,
+  }) {
+    return todoListProcessingError?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ProcessingError_TodoListProcessingError value)?
+        todoListProcessingError,
+    TResult Function(ProcessingError_TodoCategoryProcessingError value)?
+        todoCategoryProcessingError,
+    TResult Function(ProcessingError_NotPersisted value)? notPersisted,
+    required TResult orElse(),
+  }) {
+    if (todoListProcessingError != null) {
+      return todoListProcessingError(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ProcessingError_TodoListProcessingError extends ProcessingError {
+  const factory ProcessingError_TodoListProcessingError(
+          final TodoListProcessingError field0) =
+      _$ProcessingError_TodoListProcessingErrorImpl;
+  const ProcessingError_TodoListProcessingError._() : super._();
+
+  TodoListProcessingError get field0;
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ProcessingError_TodoListProcessingErrorImplCopyWith<
+          _$ProcessingError_TodoListProcessingErrorImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ProcessingError_TodoCategoryProcessingErrorImplCopyWith<
+    $Res> {
+  factory _$$ProcessingError_TodoCategoryProcessingErrorImplCopyWith(
+          _$ProcessingError_TodoCategoryProcessingErrorImpl value,
+          $Res Function(_$ProcessingError_TodoCategoryProcessingErrorImpl)
+              then) =
+      __$$ProcessingError_TodoCategoryProcessingErrorImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({TodoCategoryProcessingError field0});
+
+  $TodoCategoryProcessingErrorCopyWith<$Res> get field0;
+}
+
+/// @nodoc
+class __$$ProcessingError_TodoCategoryProcessingErrorImplCopyWithImpl<$Res>
+    extends _$ProcessingErrorCopyWithImpl<$Res,
+        _$ProcessingError_TodoCategoryProcessingErrorImpl>
+    implements
+        _$$ProcessingError_TodoCategoryProcessingErrorImplCopyWith<$Res> {
+  __$$ProcessingError_TodoCategoryProcessingErrorImplCopyWithImpl(
+      _$ProcessingError_TodoCategoryProcessingErrorImpl _value,
+      $Res Function(_$ProcessingError_TodoCategoryProcessingErrorImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$ProcessingError_TodoCategoryProcessingErrorImpl(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as TodoCategoryProcessingError,
+    ));
+  }
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $TodoCategoryProcessingErrorCopyWith<$Res> get field0 {
+    return $TodoCategoryProcessingErrorCopyWith<$Res>(_value.field0, (value) {
+      return _then(_value.copyWith(field0: value));
+    });
+  }
+}
+
+/// @nodoc
+
+class _$ProcessingError_TodoCategoryProcessingErrorImpl
+    extends ProcessingError_TodoCategoryProcessingError {
+  const _$ProcessingError_TodoCategoryProcessingErrorImpl(this.field0)
+      : super._();
+
+  @override
+  final TodoCategoryProcessingError field0;
+
+  @override
+  String toString() {
+    return 'ProcessingError.todoCategoryProcessingError(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProcessingError_TodoCategoryProcessingErrorImpl &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProcessingError_TodoCategoryProcessingErrorImplCopyWith<
+          _$ProcessingError_TodoCategoryProcessingErrorImpl>
+      get copyWith =>
+          __$$ProcessingError_TodoCategoryProcessingErrorImplCopyWithImpl<
+                  _$ProcessingError_TodoCategoryProcessingErrorImpl>(
+              this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListProcessingError field0)
+        todoListProcessingError,
+    required TResult Function(TodoCategoryProcessingError field0)
+        todoCategoryProcessingError,
+    required TResult Function(String error, String url) notPersisted,
+  }) {
+    return todoCategoryProcessingError(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListProcessingError field0)? todoListProcessingError,
+    TResult? Function(TodoCategoryProcessingError field0)?
+        todoCategoryProcessingError,
+    TResult? Function(String error, String url)? notPersisted,
+  }) {
+    return todoCategoryProcessingError?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListProcessingError field0)? todoListProcessingError,
+    TResult Function(TodoCategoryProcessingError field0)?
+        todoCategoryProcessingError,
+    TResult Function(String error, String url)? notPersisted,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryProcessingError != null) {
+      return todoCategoryProcessingError(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ProcessingError_TodoListProcessingError value)
+        todoListProcessingError,
+    required TResult Function(ProcessingError_TodoCategoryProcessingError value)
+        todoCategoryProcessingError,
+    required TResult Function(ProcessingError_NotPersisted value) notPersisted,
+  }) {
+    return todoCategoryProcessingError(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ProcessingError_TodoListProcessingError value)?
+        todoListProcessingError,
+    TResult? Function(ProcessingError_TodoCategoryProcessingError value)?
+        todoCategoryProcessingError,
+    TResult? Function(ProcessingError_NotPersisted value)? notPersisted,
+  }) {
+    return todoCategoryProcessingError?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ProcessingError_TodoListProcessingError value)?
+        todoListProcessingError,
+    TResult Function(ProcessingError_TodoCategoryProcessingError value)?
+        todoCategoryProcessingError,
+    TResult Function(ProcessingError_NotPersisted value)? notPersisted,
+    required TResult orElse(),
+  }) {
+    if (todoCategoryProcessingError != null) {
+      return todoCategoryProcessingError(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ProcessingError_TodoCategoryProcessingError
+    extends ProcessingError {
+  const factory ProcessingError_TodoCategoryProcessingError(
+          final TodoCategoryProcessingError field0) =
+      _$ProcessingError_TodoCategoryProcessingErrorImpl;
+  const ProcessingError_TodoCategoryProcessingError._() : super._();
+
+  TodoCategoryProcessingError get field0;
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ProcessingError_TodoCategoryProcessingErrorImplCopyWith<
+          _$ProcessingError_TodoCategoryProcessingErrorImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ProcessingError_NotPersistedImplCopyWith<$Res> {
+  factory _$$ProcessingError_NotPersistedImplCopyWith(
+          _$ProcessingError_NotPersistedImpl value,
+          $Res Function(_$ProcessingError_NotPersistedImpl) then) =
+      __$$ProcessingError_NotPersistedImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String error, String url});
+}
+
+/// @nodoc
+class __$$ProcessingError_NotPersistedImplCopyWithImpl<$Res>
+    extends _$ProcessingErrorCopyWithImpl<$Res,
+        _$ProcessingError_NotPersistedImpl>
+    implements _$$ProcessingError_NotPersistedImplCopyWith<$Res> {
+  __$$ProcessingError_NotPersistedImplCopyWithImpl(
+      _$ProcessingError_NotPersistedImpl _value,
+      $Res Function(_$ProcessingError_NotPersistedImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? error = null,
+    Object? url = null,
+  }) {
+    return _then(_$ProcessingError_NotPersistedImpl(
+      error: null == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String,
+      url: null == url
+          ? _value.url
+          : url // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$ProcessingError_NotPersistedImpl extends ProcessingError_NotPersisted {
+  const _$ProcessingError_NotPersistedImpl(
+      {required this.error, required this.url})
+      : super._();
+
+  @override
+  final String error;
+  @override
+  final String url;
+
+  @override
+  String toString() {
+    return 'ProcessingError.notPersisted(error: $error, url: $url)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProcessingError_NotPersistedImpl &&
+            (identical(other.error, error) || other.error == error) &&
+            (identical(other.url, url) || other.url == url));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, error, url);
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProcessingError_NotPersistedImplCopyWith<
+          _$ProcessingError_NotPersistedImpl>
+      get copyWith => __$$ProcessingError_NotPersistedImplCopyWithImpl<
+          _$ProcessingError_NotPersistedImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(TodoListProcessingError field0)
+        todoListProcessingError,
+    required TResult Function(TodoCategoryProcessingError field0)
+        todoCategoryProcessingError,
+    required TResult Function(String error, String url) notPersisted,
+  }) {
+    return notPersisted(error, url);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(TodoListProcessingError field0)? todoListProcessingError,
+    TResult? Function(TodoCategoryProcessingError field0)?
+        todoCategoryProcessingError,
+    TResult? Function(String error, String url)? notPersisted,
+  }) {
+    return notPersisted?.call(error, url);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(TodoListProcessingError field0)? todoListProcessingError,
+    TResult Function(TodoCategoryProcessingError field0)?
+        todoCategoryProcessingError,
+    TResult Function(String error, String url)? notPersisted,
+    required TResult orElse(),
+  }) {
+    if (notPersisted != null) {
+      return notPersisted(error, url);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ProcessingError_TodoListProcessingError value)
+        todoListProcessingError,
+    required TResult Function(ProcessingError_TodoCategoryProcessingError value)
+        todoCategoryProcessingError,
+    required TResult Function(ProcessingError_NotPersisted value) notPersisted,
+  }) {
+    return notPersisted(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ProcessingError_TodoListProcessingError value)?
+        todoListProcessingError,
+    TResult? Function(ProcessingError_TodoCategoryProcessingError value)?
+        todoCategoryProcessingError,
+    TResult? Function(ProcessingError_NotPersisted value)? notPersisted,
+  }) {
+    return notPersisted?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ProcessingError_TodoListProcessingError value)?
+        todoListProcessingError,
+    TResult Function(ProcessingError_TodoCategoryProcessingError value)?
+        todoCategoryProcessingError,
+    TResult Function(ProcessingError_NotPersisted value)? notPersisted,
+    required TResult orElse(),
+  }) {
+    if (notPersisted != null) {
+      return notPersisted(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ProcessingError_NotPersisted extends ProcessingError {
+  const factory ProcessingError_NotPersisted(
+      {required final String error,
+      required final String url}) = _$ProcessingError_NotPersistedImpl;
+  const ProcessingError_NotPersisted._() : super._();
+
+  String get error;
+  String get url;
+
+  /// Create a copy of ProcessingError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ProcessingError_NotPersistedImplCopyWith<
+          _$ProcessingError_NotPersistedImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$TodoCategoryModelCommand {
   Object get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs

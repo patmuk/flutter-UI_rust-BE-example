@@ -33,7 +33,7 @@ impl AppConfig for AppConfigImpl {
             }
         }
     }
-    fn get_app_state_url(&self) -> &str {
+    fn borrow_app_state_url(&self) -> &str {
         &self.app_state_url
     }
 }

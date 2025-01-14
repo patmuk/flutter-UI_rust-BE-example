@@ -1,3 +1,4 @@
+use flutter_rust_bridge::frb;
 use generate_cqrs_api_macro::generate_api;
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -24,43 +25,47 @@ static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
 /////////// tmp copy pasta from gened code
 // /*
 pub trait Lifecycle {
+    // due to frb's current capabilities we cannot define function arguments as types.
+    // for return types it works. Thus, Error is defined this way, while AppConfig is a generic parameter.
+    type Error;
     /// loads the app's state, which can be io-heavy
-    /// get the instance with get_singleton(). Create the initial singleton with UnInitilizedLifecycle::init()
-    fn new<
-        AC: AppConfig + std::fmt::Debug,
-        ASP: AppStatePersister,
-        ASPE: AppStatePersistError + From<(std::io::Error, String)> + From<(bincode::Error, String)>,
-    >(
+    /// get the instance with get_singleton(). Create the initial singleton with this function
+    fn initialise<AC: AppConfig + std::fmt::Debug>(
         app_config: AC,
-    ) -> Result<&'static Self, ASPE>;
-    /// get the instance with get_singleton(). Create the initial singleton with Lifecycle::new()
+    ) -> Result<&'static Self, Self::Error>;
+
+    // frb doesn't support generics. Thus, we can call this concrete function.
+    fn initialise_with_file_persister(app_config: AppConfigImpl) -> Result<(), Self::Error>;
+
+    /// get the instance with get_singleton(). Create the initial singleton with Lifecycle::initialise()
+    /// This cannot be called from Flutter, as frb cannot handle references. Thus, it is called internally (by CQRS::process(), Lifecycle::shutdown() and others)
     fn get_singleton() -> &'static Self;
-    fn borrow_app_config<AC: AppConfig>(&self) -> &AC;
-    fn borrow_app_state<AS: AppState>(&self) -> &AS;
     /// persist the app state to the previously stored location
-    fn persist(&self) -> Result<(), ProcessingError>;
-    fn shutdown(&self) -> Result<(), ProcessingError>;
+    /// as we cannot pass references to frb (see 'get_singleton') persist() and shutdown() have to get 'self' by calling get_singleton() on their own.
+    fn persist() -> Result<(), ProcessingError>;
+    fn shutdown() -> Result<(), ProcessingError>;
 }
 pub trait AppConfig: Default {
     /// call to overwrite default values.
     /// Doesn't trigger long initialization operations.
     fn new(url: Option<String>) -> Self;
     // app state storage location
-    fn get_app_state_url(&self) -> &str;
+    fn borrow_app_state_url(&self) -> &str;
 }
 
-pub trait AppState {
+/// the app's state is not exposed external - it is guarded behind CQRS functions
+pub(crate) trait AppState {
     fn new<AC: AppConfig>(app_config: &AC) -> Self;
     fn dirty_flag_value(&self) -> bool;
     fn mark_dirty(&self);
 }
 
-pub trait AppStatePersistError: std::error::Error {
+pub(crate) trait AppStatePersistError: std::error::Error {
     /// convert to ProcessingError::NotPersisted
     fn to_processing_error(&self) -> ProcessingError;
 }
 
-pub trait AppStatePersister {
+pub(crate) trait AppStatePersister {
     /// prepares for persisting a new AppState. Not needed if the AppState is loaded!
     fn new<AC: AppConfig, ASPE: AppStatePersistError + From<(std::io::Error, String)>>(
         app_config: &AC,
@@ -91,7 +96,7 @@ pub trait AppStatePersister {
 use crate::domain::todo_category::*;
 use crate::domain::todo_list::*;
 use log::debug;
-// use std::path::PathBuf;
+
 pub(crate) trait CqrsModel:
     std::marker::Sized + Default + serde::Serialize + for<'de> serde::Deserialize<'de>
 {
@@ -174,7 +179,7 @@ impl Cqrs for TodoListModelCommand {
         .map_err(ProcessingError::TodoListProcessingError)?;
         if state_changed {
             app_state.mark_dirty();
-            lifecycle.persist()?;
+            LifecycleImpl::persist()?;
         }
         Ok(result
             .into_iter()
@@ -250,7 +255,7 @@ impl Cqrs for TodoCategoryModelCommand {
         .map_err(ProcessingError::TodoCategoryProcessingError)?;
         if state_changed {
             app_state.mark_dirty();
-            lifecycle.persist()?;
+            LifecycleImpl::persist()?;
         }
         Ok(result
             .into_iter()
@@ -276,16 +281,15 @@ impl Cqrs for TodoCategoryModelCommand {
 //     "app_core/src/domain/todo_list.rs",
 //     "app_core/src/domain/todo_category.rs"
 // )]
+
+/// frb doesn't support generics. If needed implement them using enums or the enum_dispatch crate.
 impl Lifecycle for LifecycleImpl {
-    fn new<
-        AC: AppConfig + std::fmt::Debug,
-        ASP: AppStatePersister,
-        ASPE: AppStatePersistError + From<(std::io::Error, String)> + From<(bincode::Error, String)>,
-    >(
+    type Error = AppStateFilePersisterError;
+    fn initialise<AC: AppConfig + std::fmt::Debug>(
         app_config: AC,
-    ) -> Result<&'static Self, ASPE> {
+    ) -> Result<&'static Self, Self::Error> {
         info!("Initializing app with config: {:?}", &app_config);
-        let persister = AppStateFilePersister::new::<AC, ASPE>(&app_config)?;
+        let persister = AppStateFilePersister::new::<AC, Self::Error>(&app_config)?;
         // not using SINGLETON.get_or_init() so we can propergate the AppStatePersistError
         let result = match SINGLETON.get() {
             Some(instance) => Ok(instance),
@@ -303,19 +307,19 @@ impl Lifecycle for LifecycleImpl {
                             &file_path
                         );
                         let app_state = AppState::new(&app_config);
-                        persister.persist_app_state::<AppStateImpl, ASPE>(&app_state)?;
+                        persister.persist_app_state::<AppStateImpl, Self::Error>(&app_state)?;
                         app_state
                     }
                     Err(AppStateFilePersisterError::IOError(io_err, path)) => {
-                        return Err(ASPE::from((io_err, path)));
+                        return Err(Self::Error::from((io_err, path)));
                     }
                     Err(AppStateFilePersisterError::DeserializationError(err, path)) => {
-                        return Err(ASPE::from((err, path)));
+                        return Err(Self::Error::from((err, path)));
                     }
                 };
 
                 let app_config_impl =
-                    AppConfigImpl::new(Some(app_config.get_app_state_url().to_string()));
+                    AppConfigImpl::new(Some(app_config.borrow_app_state_url().to_string()));
                 let _ = SINGLETON.set(LifecycleImpl {
                     app_config: app_config_impl,
                     app_state,
@@ -333,43 +337,33 @@ impl Lifecycle for LifecycleImpl {
         result
     }
 
+    // frb doesn't support generics. Thus, we can call this concrete function.
+    fn initialise_with_file_persister(
+        app_config: AppConfigImpl,
+    ) -> Result<(), AppStateFilePersisterError> {
+        LifecycleImpl::initialise(app_config)?;
+        Ok(())
+    }
+
     fn get_singleton() -> &'static Self {
         SINGLETON.get().expect(
             "Lifecycle: should been initialized with Lifecycle::new(AppConfig, AppStatePersister, AppStatePersisterError)!",
         )
     }
 
-    fn borrow_app_state<AS: AppState>(&self) -> &AS {
-        // downcast the concrete type to the trait
-        unsafe { std::mem::transmute(&self.app_state) }
-    }
-
-    fn borrow_app_config<AC: AppConfig>(&self) -> &AC {
-        // downcast the concrete type to the trait
-        unsafe { std::mem::transmute(&self.app_config) }
-    }
-
     /// persist the app state to the previously stored location
-    fn persist(&self) -> Result<(), ProcessingError> {
-        self.persister
-            .persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&self.app_state)
+    fn persist() -> Result<(), ProcessingError> {
+        let lifecycle = Self::get_singleton();
+        lifecycle
+            .persister
+            .persist_app_state::<AppStateImpl, AppStateFilePersisterError>(&lifecycle.app_state)
             .map_err(|err| err.to_processing_error())
     }
 
-    fn shutdown(&self) -> Result<(), ProcessingError> {
+    fn shutdown() -> Result<(), ProcessingError> {
         info!("shutting down the app");
         // blocks on the Locks of inner fields
         // TODO implent timeout and throw an error?
-        self.persist()
+        Self::persist()
     }
 }
-
-// impl LifecycleImpl {
-//     pub fn new_with_file_persister(
-//         app_config: AppConfigImpl,
-//     ) -> Result<&'static Self, AppStateFilePersisterError> {
-//         LifecycleImpl::new::<AppConfigImpl, AppStateFilePersister, AppStateFilePersisterError>(
-//             app_config,
-//         )
-//     }
-// }
