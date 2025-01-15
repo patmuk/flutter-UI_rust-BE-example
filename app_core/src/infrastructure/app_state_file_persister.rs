@@ -1,4 +1,4 @@
-use log::trace;
+use log::debug;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::fs::{create_dir_all, File};
@@ -85,7 +85,7 @@ impl AppStatePersister for AppStateFilePersister {
         &self,
         app_state: &AS,
     ) -> Result<(), Self::Error> {
-        trace!(
+        debug!(
             "persisting app state:\n  {app_state:?}\n to {:?}",
             self.path
         );
@@ -100,7 +100,7 @@ impl AppStatePersister for AppStateFilePersister {
         File::create(&self.path)
             .and_then(|mut file| file.write_all(&serialized_app_state))
             .map_err(|ioerr| (ioerr, self.path.to_string_lossy().to_string()))?;
-        trace!("Persisted app state to file: {:?}", self.path);
+        debug!("Persisted app state to file: {:?}", self.path);
         Ok(())
     }
 
@@ -109,7 +109,7 @@ impl AppStatePersister for AppStateFilePersister {
     fn load_app_state<AC: AppConfig, AS: AppState + for<'a> Deserialize<'a>>(
         &self,
     ) -> Result<AS, Self::Error> {
-        trace!("loading the app state from {:?}", self.path);
+        debug!("loading the app state from {:?}", self.path);
         let loaded = std::fs::read(&self.path).map_err(|error| {
             <(std::io::Error, String) as std::convert::Into<Self::Error>>::into((
                 error,

@@ -1,4 +1,4 @@
-use log::{debug, trace};
+use log::debug;
 
 use super::api::lifecycle::AppConfig;
 
@@ -22,7 +22,7 @@ impl AppConfig for AppConfigImpl {
     fn new(url: Option<String>) -> Self {
         match url {
             Some(url) => {
-                trace!(
+                debug!(
                     "Overwriting default setup:\n  - setting the app_state_storage_url to {url:?}"
                 );
                 AppConfigImpl { app_state_url: url }

@@ -1,4 +1,4 @@
-use log::trace;
+use log::debug;
 use serde::{Deserialize, Serialize};
 use std::io;
 
@@ -76,7 +76,7 @@ impl AppStatePersister for AppStateDBPersister {
         &self,
         app_state: &AS,
     ) -> Result<(), Self::Error> {
-        trace!(
+        debug!(
             "persisting app state:\n  {app_state:?}\n to db {:?}",
             self.url
         );
@@ -95,7 +95,7 @@ impl AppStatePersister for AppStateDBPersister {
     fn load_app_state<AC: AppConfig, AS: AppState + for<'a> Deserialize<'a>>(
         &self,
     ) -> std::result::Result<AS, Self::Error> {
-        trace!("loading the app state from {:?}", self.url);
+        debug!("loading the app state from {:?}", self.url);
         unimplemented!("load the file from a db");
         // let app_state: Sefl::AppState = bincode::deserialize(&loaded)
         //     .map_err(|e| AppStateLoadError::DeserializationError(e, self.url))?;

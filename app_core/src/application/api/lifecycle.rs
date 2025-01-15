@@ -1,4 +1,3 @@
-use flutter_rust_bridge::frb;
 use generate_cqrs_api_macro::generate_api;
 use log::info;
 use serde::{Deserialize, Serialize};
