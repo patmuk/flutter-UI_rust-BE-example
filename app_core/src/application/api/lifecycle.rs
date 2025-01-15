@@ -83,7 +83,7 @@ impl Lifecycle for LifecycleImpl {
     fn initialise_with_file_persister(
         app_config: AppConfigImpl,
     ) -> Result<(), AppStateFilePersisterError> {
-        LifecycleImpl::initialise(app_config)?;
+        Self::initialise(app_config)?;
         Ok(())
     }
 
