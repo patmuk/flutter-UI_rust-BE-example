@@ -840,6 +840,7 @@ dependencies = [
  "generate_cqrs_api_macro_impl",
  "log",
  "proc-macro2",
+ "serde",
  "simple_logger",
 ]
 

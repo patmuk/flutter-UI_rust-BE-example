@@ -1,9 +1,7 @@
 use generate_cqrs_api_macro::generate_api;
 use log::info;
-use serde::{Deserialize, Serialize};
 
 pub use crate::application::app_config::AppConfigImpl;
-
 use crate::application::app_state::AppStateImpl;
 use crate::infrastructure::app_state_file_persister::{
     AppStateFilePersister, AppStateFilePersisterError,
