@@ -2,7 +2,7 @@ use log::debug;
 
 use super::api::lifecycle::AppConfig;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AppConfigImpl {
     /// app state storage location
     pub app_state_url: String,

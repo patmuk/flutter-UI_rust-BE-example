@@ -2,7 +2,7 @@ use app_core::application::api::lifecycle::*;
 use std::error::Error;
 use std::process;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut user_input = String::new();
     let stdin = std::io::stdin();
 
@@ -20,7 +20,7 @@ fn main() {
                           q  ................. to quit\n\
                           =====================\n";
     println!("{}", USAGE);
-    let lifecycle: &LifecycleImpl = Lifecycle::new(None);
+    let lifecycle: &LifecycleImpl = Lifecycle::initialise(AppConfigImpl::default())?;
     let _ = process_and_handle_effects(TodoListModelQuery::GetAllTodos);
 
     loop {
@@ -60,7 +60,7 @@ fn main() {
                 user_input.clear();
             }
             Ok(_) if user_input.starts_with('q') => {
-                let _ = lifecycle.shutdown();
+                LifecycleImpl::shutdown()?;
                 process::exit(0);
             }
             Ok(_) => {
@@ -97,7 +97,8 @@ fn process_and_handle_effects(cqrs: impl Cqrs) -> Result<(), ProcessingError> {
 fn handle_effects(effects: Vec<Effect>) {
     for effect in effects {
         match effect {
-            Effect::TodoListModelRenderTodoList(todo_list_model_lock) => {
+            Effect::TodoListModelRenderTodoList(todo_list_model_lock)
+            | Effect::TodoCategoryModelRenderTodoList(todo_list_model_lock) => {
                 println!("Rendering view:\n");
                 todo_list_model_lock
                     .lock
@@ -109,6 +110,11 @@ fn handle_effects(effects: Vec<Effect>) {
             }
             Effect::TodoListModelRenderTodoItem(todo_item) => {
                 println!("\tGot todo item: {}", todo_item.text)
+            }
+            Effect::TodoCategoryModelRenderTodoCategoryModel(_todo_category_model_lock) => todo!(),
+            Effect::TodoCategoryModelRenderTodoCategory(new_title)
+            | Effect::TodoCategoryModelUpdateTitel(new_title) => {
+                println!("\tTitle changed to: {}", new_title)
             }
         }
     }

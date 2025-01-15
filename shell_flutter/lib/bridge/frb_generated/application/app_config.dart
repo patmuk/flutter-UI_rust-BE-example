@@ -14,6 +14,7 @@ class AppConfigImpl {
     required this.appStateUrl,
   });
 
+  /// app state storage location
   Future<void> borrowAppStateUrl() => RustLib.instance.api
           .crateApplicationAppConfigAppConfigImplBorrowAppStateUrl(
         that: this,

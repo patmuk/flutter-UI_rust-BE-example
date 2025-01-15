@@ -94,6 +94,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           dynamic raw);
 
   @protected
+  LifecycleImpl
+      dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLifecycleImpl(
+          dynamic raw);
+
+  @protected
   AppStateDbPersisterError
       dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateDBPersisterError(
           dynamic raw);
@@ -106,6 +111,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   AppStateImpl
       dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateImpl(
+          dynamic raw);
+
+  @protected
+  LifecycleImpl
+      dco_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLifecycleImpl(
           dynamic raw);
 
   @protected
@@ -313,6 +323,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
           SseDeserializer deserializer);
 
   @protected
+  LifecycleImpl
+      sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLifecycleImpl(
+          SseDeserializer deserializer);
+
+  @protected
   AppStateDbPersisterError
       sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateDBPersisterError(
           SseDeserializer deserializer);
@@ -325,6 +340,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   AppStateImpl
       sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateImpl(
+          SseDeserializer deserializer);
+
+  @protected
+  LifecycleImpl
+      sse_decode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLifecycleImpl(
           SseDeserializer deserializer);
 
   @protected
@@ -527,6 +547,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void
+      sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLifecycleImpl(
+          LifecycleImpl self, SseSerializer serializer);
+
+  @protected
+  void
       sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateDBPersisterError(
           AppStateDbPersisterError self, SseSerializer serializer);
 
@@ -539,6 +564,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void
       sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateImpl(
           AppStateImpl self, SseSerializer serializer);
+
+  @protected
+  void
+      sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLifecycleImpl(
+          LifecycleImpl self, SseSerializer serializer);
 
   @protected
   void

@@ -17,6 +17,10 @@ part 'lifecycle.freezed.dart';
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<LifecycleImpl>>
 abstract class LifecycleImpl implements RustOpaqueInterface, Lifecycle {
+  AppConfigImpl get appConfig;
+
+  set appConfig(AppConfigImpl appConfig);
+
   /// frb doesn't support generics. If needed implement them using enums or the enum_dispatch crate.
   static Future<void> getSingleton() => RustLib.instance.api
       .crateApplicationApiLifecycleLifecycleImplGetSingleton();
@@ -39,6 +43,7 @@ abstract class LifecycleImpl implements RustOpaqueInterface, Lifecycle {
 }
 
 abstract class AppConfig {
+  /// app state storage location
   Future<void> borrowAppStateUrl();
 }
 
