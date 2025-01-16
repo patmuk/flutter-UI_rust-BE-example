@@ -73,6 +73,17 @@ If you want to start a new flutter project, do that with
 flutter_rust_bridge_codegen create --rust-crate-name app_core --rust-crate-dir ../app_core shell_flutter
 '''
 
+## troubleshooting frb_generated.rs
+### the trait `SseEncode` is not implemented for `(...)`
+If you get the Error:
+```
+transform_result_sse::<_, ()>((move || {
+    |                                        ^ the trait `SseEncode` is not implemented for `std::option::Option<&contacts_model::Contact>`
+```
+then you probably have a borrowed (`&`) type as a function parameter or return type. FRB isn't handling borrowed values - you need to clone them.
+### generated code uses trait instead of type, compiler wants to make it a trait object (with `dyn`)
+Most probably you did not configure flutter_rust_bridge.yaml to generate code from your domain types as well (e.g. rust_input: `'crate::application::api, crate::domain'`).
+
 ## build
 
 run
