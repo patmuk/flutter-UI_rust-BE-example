@@ -120,6 +120,9 @@ impl TodoListModelLock {
     ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
         Ok(vec![TodoListEffect::RenderTodoList(self.clone())])
     }
+    // references as arguments are not possible (e.g. todo_pos: &usize)
+    // the arguments are converted to enum variant fields and would thus have lifetime issues
+    // Anyways, the gven arguments should be small, copyable types
     pub(crate) fn query_get_todo(
         &self,
         todo_pos: usize,
