@@ -8,12 +8,12 @@ use super::todo_list::TodoListModelLock;
 
 #[derive(Debug, Clone)]
 pub struct TodoCategoryModelLock {
-    pub lock: RustAutoOpaque<TodoCategoryModel>,
+    pub model: RustAutoOpaque<TodoCategoryModel>,
 }
 impl CqrsModelLock<TodoCategoryModel> for TodoCategoryModelLock {
     fn for_model(model: TodoCategoryModel) -> Self {
         Self {
-            lock: RustAutoOpaque::new(model),
+            model: RustAutoOpaque::new(model),
         }
     }
 }
@@ -23,7 +23,7 @@ impl Serialize for TodoCategoryModelLock {
         S: serde::Serializer,
     {
         // Serialize the model , the dirty flag is always false after loading
-        self.lock.blocking_read().serialize(serializer)
+        self.model.blocking_read().serialize(serializer)
     }
 }
 
@@ -74,7 +74,7 @@ impl TodoCategoryModelLock {
         &self,
         title: String,
     ) -> Result<(bool, Vec<TodoCategoryEffect>), TodoCategoryProcessingError> {
-        self.lock.blocking_write().title = title.clone();
+        self.model.blocking_write().title = title.clone();
         Ok((true, vec![TodoCategoryEffect::UpdateTitel(title)]))
     }
 
@@ -82,14 +82,14 @@ impl TodoCategoryModelLock {
         &self,
     ) -> Result<Vec<TodoCategoryEffect>, TodoCategoryProcessingError> {
         Ok(vec![TodoCategoryEffect::RenderTodoList(
-            self.lock.blocking_read().todo_list_lock.clone(),
+            self.model.blocking_read().todo_list_lock.clone(),
         )])
     }
     pub(crate) fn set_todo_list(
         &self,
         todo_list_lock: TodoListModelLock,
     ) -> Result<(bool, Vec<TodoCategoryEffect>), TodoCategoryProcessingError> {
-        self.lock.blocking_write().todo_list_lock = todo_list_lock.clone();
+        self.model.blocking_write().todo_list_lock = todo_list_lock.clone();
         Ok((
             true,
             vec![TodoCategoryEffect::RenderTodoList(todo_list_lock)],
@@ -110,7 +110,7 @@ impl TodoCategoryModelLock {
             self.get_todo_category_model()
         } else {
             Ok(vec![TodoCategoryEffect::RenderTodoCategory(
-                self.lock.blocking_read().title.clone(),
+                self.model.blocking_read().title.clone(),
             )])
         }
     }
@@ -132,7 +132,7 @@ impl TodoCategoryModel {
     }
     pub fn get_todos(&self) -> Vec<String> {
         self.todo_list_lock
-            .lock
+            .model
             .blocking_read()
             .get_todos_as_string()
     }
@@ -173,7 +173,7 @@ mod tests {
         // check if the title was updated
         assert_eq!(
             String::from("New Title"),
-            model_lock.lock.blocking_read().title
+            model_lock.model.blocking_read().title
         );
     }
 
@@ -197,7 +197,7 @@ mod tests {
         match &effects[0] {
             TodoCategoryEffect::RenderTodoList(todo_list_model_lock) => {
                 let todo_list = todo_list_model_lock
-                    .lock
+                    .model
                     .blocking_read()
                     .get_todos_as_string();
                 assert_eq!(2, todo_list.len());
@@ -209,10 +209,10 @@ mod tests {
 
         // check if the title was updated
         let actual_todos = model_lock
-            .lock
+            .model
             .blocking_read()
             .todo_list_lock
-            .lock
+            .model
             .blocking_read()
             .get_todos_as_string();
         assert_eq!(2, actual_todos.len());
@@ -238,7 +238,7 @@ mod tests {
         match &effects[0] {
             TodoCategoryEffect::RenderTodoList(todo_list_model_lock) => {
                 let todo_list = todo_list_model_lock
-                    .lock
+                    .model
                     .blocking_read()
                     .get_todos_as_string();
                 assert_eq!(2, todo_list.len());
@@ -250,10 +250,10 @@ mod tests {
 
         // check if the title was updated
         let actual_todos = model_lock
-            .lock
+            .model
             .blocking_read()
             .todo_list_lock
-            .lock
+            .model
             .blocking_read()
             .get_todos_as_string();
         assert_eq!(2, actual_todos.len());
@@ -285,7 +285,7 @@ mod tests {
             _ => panic!("unexpected effect"),
         }
         // check if the title was updated
-        let actual_todo_category = &model_lock.lock.blocking_read().title;
+        let actual_todo_category = &model_lock.model.blocking_read().title;
         assert_eq!("Initial Category", actual_todo_category);
     }
 
@@ -308,14 +308,14 @@ mod tests {
 
         match &effects[0] {
             TodoCategoryEffect::RenderTodoCategoryModel(todo_category_model_lock) => {
-                let todo_category = todo_category_model_lock.lock.blocking_read().get_title();
+                let todo_category = todo_category_model_lock.model.blocking_read().get_title();
                 assert_eq!("Initial Category", todo_category);
             }
             _ => panic!("unexpected effect"),
         }
 
         // check if the title was updated
-        let actual_todo_category = model_lock.lock.blocking_read().get_title();
+        let actual_todo_category = model_lock.model.blocking_read().get_title();
         assert_eq!("Initial Category", actual_todo_category);
     }
 }

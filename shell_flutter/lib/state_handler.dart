@@ -62,18 +62,18 @@ class StateHandler {
         // update the value and trigger a UI repaint
         // we don't destinguish between whole list or just one item
         case Effect_TodoCategoryModelRenderTodoList():
-          todoListItems.value = await effect.field0.lock.getTodosAsString();
+          todoListItems.value = await effect.field0.model.getTodosAsString();
           break;
         case Effect_TodoListModelRenderTodoList():
-          todoListItems.value = await effect.field0.lock.getTodosAsString();
+          todoListItems.value = await effect.field0.model.getTodosAsString();
           break;
         case Effect_TodoListModelRenderTodoItem():
           // do nothing with it
           effect.field0;
           break;
         case Effect_TodoCategoryModelRenderTodoCategoryModel():
-          todoListTitle.value = await effect.field0.lock.getTitle();
-          todoListItems.value = await effect.field0.lock.getTodos();
+          todoListTitle.value = await effect.field0.model.getTitle();
+          todoListItems.value = await effect.field0.model.getTodos();
           break;
         case Effect_TodoCategoryModelRenderTodoCategory():
           todoListTitle.value = effect.field0;

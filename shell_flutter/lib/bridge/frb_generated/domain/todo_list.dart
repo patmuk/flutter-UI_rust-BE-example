@@ -47,10 +47,10 @@ class TodoItem {
 }
 
 class TodoListModelLock {
-  final TodoListModel lock;
+  final TodoListModel model;
 
   const TodoListModelLock({
-    required this.lock,
+    required this.model,
   });
 
   static Future<TodoListModelLock> default_() =>
@@ -61,14 +61,14 @@ class TodoListModelLock {
           .crateDomainTodoListTodoListModelLockForModel(model: model);
 
   @override
-  int get hashCode => lock.hashCode;
+  int get hashCode => model.hashCode;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is TodoListModelLock &&
           runtimeType == other.runtimeType &&
-          lock == other.lock;
+          model == other.model;
 }
 
 @freezed

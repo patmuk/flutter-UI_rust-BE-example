@@ -1377,7 +1377,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     if (arr.length != 1)
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
     return TodoCategoryModelLock(
-      lock:
+      model:
           dco_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
               arr[0]),
     );
@@ -1451,7 +1451,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     if (arr.length != 1)
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
     return TodoListModelLock(
-      lock:
+      model:
           dco_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
               arr[0]),
     );
@@ -1913,10 +1913,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TodoCategoryModelLock sse_decode_todo_category_model_lock(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_lock =
+    var var_model =
         sse_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
             deserializer);
-    return TodoCategoryModelLock(lock: var_lock);
+    return TodoCategoryModelLock(model: var_model);
   }
 
   @protected
@@ -1984,10 +1984,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TodoListModelLock sse_decode_todo_list_model_lock(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_lock =
+    var var_model =
         sse_decode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
             deserializer);
-    return TodoListModelLock(lock: var_lock);
+    return TodoListModelLock(model: var_model);
   }
 
   @protected
@@ -2454,7 +2454,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       TodoCategoryModelLock self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoCategoryModel(
-        self.lock, serializer);
+        self.model, serializer);
   }
 
   @protected
@@ -2510,7 +2510,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       TodoListModelLock self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_AutoExplicit_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerTodoListModel(
-        self.lock, serializer);
+        self.model, serializer);
   }
 
   @protected

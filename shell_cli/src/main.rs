@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                           q  ................. to quit\n\
                           =====================\n";
     println!("{}", USAGE);
-    let lifecycle: &LifecycleImpl = Lifecycle::initialise(AppConfigImpl::default())?;
+    let _lifecycle: &LifecycleImpl = Lifecycle::initialise(AppConfigImpl::default())?;
     let _ = process_and_handle_effects(TodoListModelQuery::GetAllTodos);
 
     loop {
@@ -101,7 +101,7 @@ fn handle_effects(effects: Vec<Effect>) {
             | Effect::TodoCategoryModelRenderTodoList(todo_list_model_lock) => {
                 println!("Rendering view:\n");
                 todo_list_model_lock
-                    .lock
+                    .model
                     .blocking_read()
                     .get_todos_as_string()
                     .iter()

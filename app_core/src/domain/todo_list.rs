@@ -6,12 +6,12 @@ use crate::application::bridge::frb_generated::RustAutoOpaque;
 
 #[derive(Debug, Default, Clone)]
 pub struct TodoListModelLock {
-    pub lock: RustAutoOpaque<TodoListModel>,
+    pub model: RustAutoOpaque<TodoListModel>,
 }
 impl CqrsModelLock<TodoListModel> for TodoListModelLock {
     fn for_model(model: TodoListModel) -> Self {
         Self {
-            lock: RustAutoOpaque::new(model),
+            model: RustAutoOpaque::new(model),
         }
     }
 }
@@ -22,7 +22,7 @@ impl Serialize for TodoListModelLock {
         S: serde::Serializer,
     {
         // Serialize the model , the dirty flag is always false after loading
-        self.lock.blocking_read().serialize(serializer)
+        self.model.blocking_read().serialize(serializer)
     }
 }
 
@@ -89,7 +89,7 @@ impl TodoListModelLock {
         &self,
         todo: String,
     ) -> Result<(bool, Vec<TodoListEffect>), TodoListProcessingError> {
-        self.lock
+        self.model
             .blocking_write()
             .items
             .push(TodoItem { text: todo });
@@ -101,7 +101,7 @@ impl TodoListModelLock {
         &self,
         todo_pos: usize,
     ) -> Result<(bool, Vec<TodoListEffect>), TodoListProcessingError> {
-        let items = &mut self.lock.blocking_write().items;
+        let items = &mut self.model.blocking_write().items;
         if todo_pos > items.len() {
             Err(TodoListProcessingError::TodoDoesNotExist(todo_pos))
         } else {
@@ -112,7 +112,7 @@ impl TodoListModelLock {
     pub(crate) fn command_clean_list(
         &self,
     ) -> Result<(bool, Vec<TodoListEffect>), TodoListProcessingError> {
-        self.lock.blocking_write().items.clear();
+        self.model.blocking_write().items.clear();
         Ok((true, vec![TodoListEffect::RenderTodoList(self.clone())]))
     }
     pub(crate) fn query_get_all_todos(
@@ -124,7 +124,7 @@ impl TodoListModelLock {
         &self,
         todo_pos: usize,
     ) -> Result<Vec<TodoListEffect>, TodoListProcessingError> {
-        let items = &self.lock.blocking_read().items;
+        let items = &self.model.blocking_read().items;
         if todo_pos > items.len() {
             Err(TodoListProcessingError::TodoDoesNotExist(todo_pos))
         } else {
@@ -164,9 +164,9 @@ impl PartialEq for TodoListEffect {
             ) => {
                 // be aware of a potential deadlock here!
                 // (lock on own, waiting for other and in another thread vice-versa!)
-                let own_items = &own_model_lock.lock.blocking_read().items;
+                let own_items = &own_model_lock.model.blocking_read().items;
 
-                let other_items = &other_model_lock.lock.blocking_read().items;
+                let other_items = &other_model_lock.model.blocking_read().items;
                 own_items == other_items
             }
             (TodoListEffect::RenderTodoList(_), TodoListEffect::RenderTodoItem(_)) => false,
@@ -188,8 +188,8 @@ mod tests {
         actual_model_lock: &TodoListModelLock,
     ) {
         assert_eq!(
-            expected_model_lock.lock.blocking_read().items,
-            actual_model_lock.lock.blocking_read().items
+            expected_model_lock.model.blocking_read().items,
+            actual_model_lock.model.blocking_read().items
         );
     }
 

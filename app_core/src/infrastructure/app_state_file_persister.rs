@@ -174,23 +174,23 @@ mod tests {
     fn assert_eq_app_states(left: &AppStateImpl, right: &AppStateImpl) {
         assert_eq!(
             left.todo_category_model_lock
-                .lock
+                .model
                 .blocking_read()
                 .get_title(),
             right
                 .todo_category_model_lock
-                .lock
+                .model
                 .blocking_read()
                 .get_title()
         );
         assert_eq!(
             left.todo_list_model_lock
-                .lock
+                .model
                 .blocking_read()
                 .get_todos_as_string(),
             right
                 .todo_list_model_lock
-                .lock
+                .model
                 .blocking_read()
                 .get_todos_as_string()
         );

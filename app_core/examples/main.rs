@@ -57,7 +57,7 @@ fn handle_effects(effects: &Vec<Effect>) {
                 print_todo_list(
                     "Todo list without title".to_string(),
                     todo_list_model_lock
-                        .lock
+                        .model
                         .blocking_read()
                         .get_todos_as_string(),
                 );
@@ -68,8 +68,8 @@ fn handle_effects(effects: &Vec<Effect>) {
             Effect::TodoCategoryModelRenderTodoCategoryModel(todo_category_model_lock) => {
                 println!("Rendering view with category:\n");
                 print_todo_list(
-                    todo_category_model_lock.lock.blocking_read().get_title(),
-                    todo_category_model_lock.lock.blocking_read().get_todos(),
+                    todo_category_model_lock.model.blocking_read().get_title(),
+                    todo_category_model_lock.model.blocking_read().get_todos(),
                 );
             }
             Effect::TodoCategoryModelUpdateTitel(todo_category_title)
