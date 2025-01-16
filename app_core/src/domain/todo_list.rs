@@ -4,6 +4,30 @@ use serde::{Deserialize, Serialize};
 use crate::application::api::lifecycle::{CqrsModel, CqrsModelLock};
 use crate::application::bridge::frb_generated::RustAutoOpaque;
 
+#[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
+#[frb(opaque)]
+pub struct TodoListModel {
+    /// the vector 'items' is the critical resource we want to protect for concurrent access.
+    /// RustAutoOpaque<T> translates (simplified) to Arc<RwLock<T>> and thus can safely be sent between threads.
+    /// Note that you can go more corse-grain (meaning wrapping the whole TodoListModel or even AppState)
+    /// but the finer the better performance you will get (as the lock is hold for a shorter time).
+    /// As a roule of thumb, wrap all fields in a RustAutoOpaque, that should be written to in an atomic action.
+    ///
+    /// You can wrap multiple fields in RustAutoOpaque's, but you cannot wrap sub-fields.
+    /// Besides a compilation error (the trait `application::bridge::frb_generated::MoiArcValue` is not implemented for)
+    /// you could easily run into a deadlock.
+    /// As we cannot implement a function on `Vec` which would give use the content of a TodoItem, we wrapped
+    /// the `TodoListModel` in `RustAutoOpaque`
+    items: Vec<TodoItem>,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct TodoItem {
+    pub text: String,
+}
+
+impl CqrsModel for TodoListModel {}
+
 #[derive(Debug, Default, Clone)]
 pub struct TodoListModelLock {
     pub model: RustAutoOpaque<TodoListModel>,
@@ -35,30 +59,6 @@ impl<'de> Deserialize<'de> for TodoListModelLock {
         Ok(Self::for_model(list_model))
     }
 }
-
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
-#[frb(opaque)]
-pub struct TodoListModel {
-    /// the vector 'items' is the critical resource we want to protect for concurrent access.
-    /// RustAutoOpaque<T> translates (simplified) to Arc<RwLock<T>> and thus can safely be sent between threads.
-    /// Note that you can go more corse-grain (meaning wrapping the whole TodoListModel or even AppState)
-    /// but the finer the better performance you will get (as the lock is hold for a shorter time).
-    /// As a roule of thumb, wrap all fields in a RustAutoOpaque, that should be written to in an atomic action.
-    ///
-    /// You can wrap multiple fields in RustAutoOpaque's, but you cannot wrap sub-fields.
-    /// Besides a compilation error (the trait `application::bridge::frb_generated::MoiArcValue` is not implemented for)
-    /// you could easily run into a deadlock.
-    /// As we cannot implement a function on `Vec` which would give use the content of a TodoItem, we wrapped
-    /// the `TodoListModel` in `RustAutoOpaque`
-    items: Vec<TodoItem>,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct TodoItem {
-    pub text: String,
-}
-
-impl CqrsModel for TodoListModel {}
 
 #[derive(Debug)]
 pub enum TodoListEffect {
