@@ -5,12 +5,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // condigure the app
     let app_config: AppConfigImpl = AppConfig::new(Some("./test_app_state.bin".to_string()));
     // this loads or created the state
-    LifecycleImpl::initialise(app_config).expect("App state should have loaded.");
+    LifecycleImpl::initialise_with_app_config(app_config).expect("App state should have loaded.");
     // we can get the instance like this, if needed. But as all methods are class methods, we don't need it.
     // let lifecycle: &LifecycleImpl = LifecycleImpl::get_singleton();
     // this is an alternative way of initialising the lifecycle instance. For rust shells it looks very similar - as it coerces the type of app_config.
     // as we can't do it on the flutter side (can't use generic arguments there) we have this variant.
-    // LifecycleImpl::initialise_with_file_persister(app_config).expect("App state should have loaded.");
+    // LifecycleImpl::initialise_with_app_config(app_config).expect("App state should have loaded.");
 
     // following CQRS, this is how to query for the state
     // following the crux-style, one should not call view() directly, but evaluate the Effect, which tells

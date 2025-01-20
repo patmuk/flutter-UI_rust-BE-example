@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                           q  ................. to quit\n\
                           =====================\n";
     println!("{}", USAGE);
-    let _lifecycle: &LifecycleImpl = Lifecycle::initialise(AppConfigImpl::default())?;
+    LifecycleImpl::initialise(None)?;
     let _ = process_and_handle_effects(TodoListModelQuery::GetAllTodos);
 
     loop {

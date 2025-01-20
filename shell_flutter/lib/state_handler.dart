@@ -36,10 +36,8 @@ class StateHandler {
     await RustLib.init();
     WidgetsFlutterBinding.ensureInitialized();
     final Directory appSupportDir = await getApplicationSupportDirectory();
-    final stateFile = File('${appSupportDir.path}/app_state.bin');
-
-    await LifecycleImpl.initialiseWithFilePersister(
-        appConfig: AppConfigImpl(appStateUrl: stateFile.path));
+    await LifecycleImpl.initialise(
+        appStateUrl: '${appSupportDir.path}/app_state.bin');
     singleton = StateHandler._singletonConstructor();
     // initialise all Listeners with the loaded model
     // by calling the respective querries

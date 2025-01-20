@@ -12,7 +12,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lifecycle.freezed.dart';
 
-// These functions are ignored because they have generic arguments: `initialise`, `initialise`, `load_app_state`, `load_app_state`, `load_app_state`, `new`, `new`, `new`, `new`, `new`, `persist_app_state`, `persist_app_state`, `persist_app_state`
+// These functions are ignored because they have generic arguments: `initialise_with_app_config`, `initialise_with_app_config`, `load_app_state`, `load_app_state`, `load_app_state`, `new`, `new`, `new`, `new`, `new`, `persist_app_state`, `persist_app_state`, `persist_app_state`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `fmt`, `fmt`, `fmt`, `fmt`, `fmt`, `fmt`
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<LifecycleImpl>>
@@ -26,11 +26,9 @@ abstract class LifecycleImpl implements RustOpaqueInterface, Lifecycle {
       .crateApplicationApiLifecycleLifecycleImplGetSingleton();
 
   /// frb doesn't support generics. If needed implement them using enums or the enum_dispatch crate.
-  static Future<void> initialiseWithFilePersister(
-          {required AppConfigImpl appConfig}) =>
-      RustLib.instance.api
-          .crateApplicationApiLifecycleLifecycleImplInitialiseWithFilePersister(
-              appConfig: appConfig);
+  static Future<void> initialise({String? appStateUrl}) =>
+      RustLib.instance.api.crateApplicationApiLifecycleLifecycleImplInitialise(
+          appStateUrl: appStateUrl);
 
   /// persist the app state to the previously stored location
   /// frb doesn't support generics. If needed implement them using enums or the enum_dispatch crate.

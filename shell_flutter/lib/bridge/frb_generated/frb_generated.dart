@@ -72,7 +72,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.7.0';
 
   @override
-  int get rustContentHash => 593595613;
+  int get rustContentHash => -1164444607;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -106,9 +106,8 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> crateApplicationApiLifecycleLifecycleImplGetSingleton();
 
-  Future<void>
-      crateApplicationApiLifecycleLifecycleImplInitialiseWithFilePersister(
-          {required AppConfigImpl appConfig});
+  Future<void> crateApplicationApiLifecycleLifecycleImplInitialise(
+      {String? appStateUrl});
 
   Future<void> crateApplicationApiLifecycleLifecycleImplPersist();
 
@@ -422,13 +421,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
 
   @override
-  Future<void>
-      crateApplicationApiLifecycleLifecycleImplInitialiseWithFilePersister(
-          {required AppConfigImpl appConfig}) {
+  Future<void> crateApplicationApiLifecycleLifecycleImplInitialise(
+      {String? appStateUrl}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_app_config_impl(appConfig, serializer);
+        sse_encode_opt_String(appStateUrl, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 8, port: port_);
       },
@@ -437,18 +435,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         decodeErrorData:
             sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerAppStateFilePersisterError,
       ),
-      constMeta:
-          kCrateApplicationApiLifecycleLifecycleImplInitialiseWithFilePersisterConstMeta,
-      argValues: [appConfig],
+      constMeta: kCrateApplicationApiLifecycleLifecycleImplInitialiseConstMeta,
+      argValues: [appStateUrl],
       apiImpl: this,
     ));
   }
 
   TaskConstMeta
-      get kCrateApplicationApiLifecycleLifecycleImplInitialiseWithFilePersisterConstMeta =>
+      get kCrateApplicationApiLifecycleLifecycleImplInitialiseConstMeta =>
           const TaskConstMeta(
-            debugName: "LifecycleImpl_initialise_with_file_persister",
-            argNames: ["appConfig"],
+            debugName: "LifecycleImpl_initialise",
+            argNames: ["appStateUrl"],
           );
 
   @override

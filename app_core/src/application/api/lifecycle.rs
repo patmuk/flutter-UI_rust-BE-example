@@ -26,7 +26,7 @@ static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
 /// frb doesn't support generics. If needed implement them using enums or the enum_dispatch crate.
 impl Lifecycle for LifecycleImpl {
     type Error = AppStateFilePersisterError;
-    fn initialise<AC: AppConfig + std::fmt::Debug>(
+    fn initialise_with_app_config<AC: AppConfig + std::fmt::Debug>(
         app_config: AC,
     ) -> Result<&'static Self, Self::Error> {
         info!("Initializing app with config: {:?}", &app_config);
@@ -77,10 +77,8 @@ impl Lifecycle for LifecycleImpl {
     }
 
     // frb doesn't support generics. Thus, we can call this concrete function.
-    fn initialise_with_file_persister(
-        app_config: AppConfigImpl,
-    ) -> Result<(), AppStateFilePersisterError> {
-        Self::initialise(app_config)?;
+    fn initialise(app_state_url: Option<String>) -> Result<(), AppStateFilePersisterError> {
+        Self::initialise_with_app_config(AppConfigImpl::new(app_state_url))?;
         Ok(())
     }
 
