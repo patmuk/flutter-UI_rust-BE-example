@@ -23,7 +23,6 @@ static SINGLETON: OnceLock<LifecycleImpl> = OnceLock::new();
     "app_core/src/domain/todo_list.rs",
     "app_core/src/domain/todo_category.rs"
 )]
-
 /// frb doesn't support generics. If needed implement them using enums or the enum_dispatch crate.
 impl Lifecycle for LifecycleImpl {
     type Error = AppStateFilePersisterError;

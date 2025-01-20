@@ -836,6 +836,7 @@ dependencies = [
 [[package]]
 name = "generate_cqrs_api_macro"
 version = "0.1.0"
+source = "git+https://github.com/patmuk/generate_cqrs_api_macros?branch=master#421d8701f0dcaf56667ac871c4d4c0988a0971d3"
 dependencies = [
  "generate_cqrs_api_macro_impl",
  "log",
@@ -847,6 +848,7 @@ dependencies = [
 [[package]]
 name = "generate_cqrs_api_macro_impl"
 version = "0.1.0"
+source = "git+https://github.com/patmuk/generate_cqrs_api_macros?branch=master#421d8701f0dcaf56667ac871c4d4c0988a0971d3"
 dependencies = [
  "log",
  "proc-macro2",
