@@ -13,8 +13,9 @@
  Since a ViewModel takes care of processing inputs from the UI, we don't need it: Any input from the UI is converted to a Command or a Query by the `StateHandler.dart`, which takes care of processing the Effects and updates values the UI listens to as well (which are kind of ViewModel instances).
 
 # How to
-
 In general: read the [manual](https://cjycode.com/flutter_rust_bridge/)
+
+Additionally this example app uses a macro to generate api code - read [its readme](https://github.com/patmuk/generate_cqrs_api_macros/blob/master/readme.md) as well!
 
 ## about nix
 The needed toolchain is installed via nix (flake). Activate with `direnv allow` or `nix develop`. 
