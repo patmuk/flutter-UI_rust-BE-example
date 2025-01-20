@@ -91,10 +91,13 @@ impl Lifecycle for LifecycleImpl {
     /// persist the app state to the previously stored location
     fn persist() -> Result<(), ProcessingError> {
         let lifecycle = Self::get_singleton();
+        let app_state = &lifecycle.app_state;
         lifecycle
             .persister
-            .persist_app_state(&lifecycle.app_state)
-            .map_err(|err| err.to_processing_error())
+            .persist_app_state(app_state)
+            .map_err(|err| err.to_processing_error())?;
+        app_state.mark_persisted();
+        Ok(())
     }
 
     fn shutdown() -> Result<(), ProcessingError> {

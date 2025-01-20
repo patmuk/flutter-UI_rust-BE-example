@@ -47,6 +47,10 @@ impl AppState for AppStateImpl {
         self.dirty.store(true, Ordering::SeqCst);
     }
 
+    fn mark_persisted(&self) {
+        self.dirty.store(false, Ordering::SeqCst);
+    }
+
     fn dirty_flag_value(&self) -> bool {
         self.dirty.load(Ordering::SeqCst)
     }
