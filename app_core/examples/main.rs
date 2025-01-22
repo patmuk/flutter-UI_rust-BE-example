@@ -1,5 +1,4 @@
 use app_core::application::api::lifecycle::*;
-use app_core::application::app_config::AppConfigImpl;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // condigure the app
