@@ -2,7 +2,9 @@
   "nodes": {
     "android-nixpkgs": {
       "inputs": {
-        "devshell": "devshell",
+        "devshell": [
+          "devshell"
+        ],
         "flake-utils": [
           "flake-utils"
         ],
@@ -25,27 +27,6 @@
       }
     },
     "devshell": {
-      "inputs": {
-        "nixpkgs": [
-          "android-nixpkgs",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1735644329,
-        "narHash": "sha256-tO3HrHriyLvipc4xr+Ewtdlo7wM1OjXNjlWRgmM7peY=",
-        "owner": "numtide",
-        "repo": "devshell",
-        "rev": "f7795ede5b02664b57035b3b757876703e2c3eac",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "devshell",
-        "type": "github"
-      }
-    },
-    "devshell_2": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -102,7 +83,7 @@
     "root": {
       "inputs": {
         "android-nixpkgs": "android-nixpkgs",
-        "devshell": "devshell_2",
+        "devshell": "devshell",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs"
       }

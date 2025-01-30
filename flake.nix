@@ -65,7 +65,7 @@
           ]
         );
         pinnedJDK = pkgs.jdk17;
-        xcode_version = "15.4.0";
+        xcode_version = "16.2.0";
         frb_version = "latest";
         flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
           inherit pkgs frb_version;
@@ -121,4 +121,3 @@
       }
     );
 }
-
