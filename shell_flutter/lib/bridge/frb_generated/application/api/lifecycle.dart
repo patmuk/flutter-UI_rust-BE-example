@@ -49,6 +49,8 @@ abstract class AppState {
   Future<bool> dirtyFlagValue();
 
   Future<void> markDirty();
+
+  Future<void> markPersisted();
 }
 
 abstract class AppStatePersistError {

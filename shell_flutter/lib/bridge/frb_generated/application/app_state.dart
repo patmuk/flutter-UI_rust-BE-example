@@ -14,4 +14,7 @@ abstract class AppStateImpl implements RustOpaqueInterface, AppState {
 
   @override
   Future<void> markDirty();
+
+  @override
+  Future<void> markPersisted();
 }
