@@ -27,22 +27,12 @@
     #     flake-utils.follows = "flake-utils";
     #   };
     # };
-    #
-    # workaround (using the last working version)
-    # until https://github.com/NixOS/nixpkgs/issues/327836 and https://github.com/NixOS/nixpkgs/issues/242779 are fixed
-    # needs PR https://github.com/NixOS/nixpkgs/pull/346043 and https://github.com/NixOS/nixpkgs/pull/346947 to be merged
-    # using last know version where swift wasn't broken
-    swift-nixpkgs.url = "github:nixos/nixpkgs?rev=2e92235aa591abc613504fde2546d6f78b18c0cd";
   };
 
-  # outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, swift-nixpkgs, ... }:
-  outputs = { nixpkgs, flake-utils, android-nixpkgs, swift-nixpkgs, ... }:
-    # outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
+  # outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, ... }:
+  outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        swift-pkgs = import swift-nixpkgs {
-          inherit system;
-        };
         # overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs {
           # inherit system overlays;
@@ -83,11 +73,11 @@
         appleInputs =
           if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
             pkgs.cocoapods
-            swift-pkgs.xcodes
+            pkgs.xcodes
           ] else [ ];
       in
       {
-        devShells. default = pkgs.mkShellNoCC
+        devShells.default = pkgs.mkShell
           {
             name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
@@ -97,7 +87,10 @@
               pinnedJDK
               androidCustomPackage
               flutter_rust_bridge_codegen
-            ] ++ appleInputs;
+            ]
+            # libiconv has to be added on a mac, other machines have it
+            ++ lib.optionals stdenv.isDarwin [ libiconv ]
+            ++ appleInputs;
             JAVA_HOME = pinnedJDK;
             # ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
 
