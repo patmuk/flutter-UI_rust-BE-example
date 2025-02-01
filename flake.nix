@@ -77,7 +77,7 @@
           ] else [ ];
       in
       {
-        devShells.default = pkgs.mkShell
+        devShells.default = pkgs.mkShellNoCC
           {
             name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
