@@ -1,7 +1,5 @@
 {
   description = "Flutter toolchain. Installs all tools needed for flutter, with versions pinned for this project. Rust's own tooling handles the rust toolchain.";
-  # nix flutter doesn't work: https://github.com/NixOS/nixpkgs/issues/243448
-  # thus using a local installation
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
@@ -19,24 +17,19 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-    # share rust configuration with nix ... not really needed!
-    # rust-overlay = {
-    #   url = "github:oxalica/rust-overlay";
-    #   inputs = {
-    #     nixpkgs.follows = "nixpkgs";
-    #     flake-utils.follows = "flake-utils";
-    #   };
-    # };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
   };
 
-  # outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, ... }:
-  outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
+  outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        # overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs {
-          # inherit system overlays;
-          inherit system;
+          inherit system overlays;
           config = {
             allowUnfree = true;
             android_sdk = {
@@ -44,7 +37,8 @@
             };
           };
         };
-        # rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        overlays = [ (import rust-overlay) ];
+        rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
         androidCustomPackage = android-nixpkgs.sdk.${system} (
           sdkPkgs: with sdkPkgs; [
             cmdline-tools-latest
@@ -82,7 +76,7 @@
             name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
               just
-              # rustToolchain
+              rustToolchain
               flutter
               pinnedJDK
               androidCustomPackage

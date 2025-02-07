@@ -85,7 +85,28 @@
         "android-nixpkgs": "android-nixpkgs",
         "devshell": "devshell",
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "rust-overlay": "rust-overlay"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1738895285,
+        "narHash": "sha256-4Ukr4reJfQ67c6QqIxbX47wnPIGxE8BXCAEPu1C3MFM=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "85f3aed5f4b8eb312c6e8fe8c476bac248aed75f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "systems": {
