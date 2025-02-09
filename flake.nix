@@ -68,10 +68,10 @@
         appleInputs =
           if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
             pkgs.cocoapods
-            pkgs.xcodes
+            # pkgs.xcodes
             pkgs.clang
             # pkgs.apple-sdk_15
-            # pkgs.darwin.xcode_16_2
+            pkgs.darwin.xcode_16_2
           ] else [ ];
       in
       {
@@ -105,10 +105,10 @@
               	      #  export RUST_LOG="debug" 
 
                       # installs or checks for the right xcode version
-                      echo "installing xcode ${xcode_version}"
-                      xcodes install ${xcode_version} --experimental-unxip # --directory "$PWD/.xcode"
-                      xcodes select ${xcode_version}
-                      echo
+                      # echo "installing xcode ${xcode_version}"
+                      # xcodes install ${xcode_version} --experimental-unxip # --directory "$PWD/.xcode"
+                      # xcodes select ${xcode_version}
+                      # echo
                       #  GRADLE_USER_HOME=$HOME/gradle-user-home
                       #  GRADLE_HOME=$HOME/gradle-home
             '';
