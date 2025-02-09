@@ -62,7 +62,7 @@ let
   # pkgs.lib.fakeSha256; # set it to 'lib.fakeSha256' and run nix (develop/build). replace the sha from the error message.
   frb_cargoHash =
     if (desired_version == "v2.7.0") then
-      "sha256-GdfPSBTTLsgrvEnJfSaKkMALSjmVcWaNMNvhQoZ0fAY="
+      "sha256-4/Tmj0FFBLhGKbabE+kcoHqBX7rmlg3ps3oZ/hwuir8="
     else if (desired_version == "v2.5.0") then
       "sha256-bigsUJg2n6amwF1LI1ziIWfBx0KaIunkGZeRyXKDt9c="
     else if (desired_version == "v2.4.0") then
@@ -72,7 +72,7 @@ let
     else if (desired_version == "v2.2.0") then
       "sha256-viHZjZ2cItQNbHxKyf9pPZ0jbNfdd3t0KKvqQxvwlSs="
     else if (desired_version == "v2.1.0") then
-      "sha256-/6chfWkiYd8mas3xaK5AsIJJjsSTzW0vXUVSHrgi3HI="
+      "sha256-apKcs+u2wJ9x5l/Rsep96SYeoBzRA94pyrNLkJurarQ="
     else
       "Unknown frb version: ${desired_version}";
 
@@ -83,6 +83,7 @@ pkgs.rustPlatform.buildRustPackage
   version = desired_version;
   src = frb_source;
   cargoHash = frb_cargoHash;
+  useFetchCargoVendor = true;
 
   # Specify the path to the Cargo.toml if it's not in the root of the repository
   cargoToml = "frb_codegen/Cargo.toml";
