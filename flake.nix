@@ -83,7 +83,7 @@
               # rustToolchain
               flutter
               pinnedJDK
-              # androidCustomPackage
+              androidCustomPackage
               flutter_rust_bridge_codegen
             ]
             # libiconv has to be added on a mac, other machines have it
