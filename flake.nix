@@ -17,6 +17,10 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {
@@ -30,7 +34,7 @@
     ];
   };
 
-  outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
+  outputs = { nixpkgs, flake-utils, android-nixpkgs, fenix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -42,6 +46,10 @@
           overlays = [ ];
         };
         # rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        rustToolchain = fenix.packages.${system}.fromToolchainFile {
+          file = ./rust-toolchain.toml;
+          sha256 = "sha256-vMlz0zHduoXtrlu0Kj1jEp71tYFXyymACW8L4jzrzNA=";
+        };
         frb_version = "latest";
         flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
           inherit pkgs frb_version;
@@ -67,11 +75,17 @@
         );
         pinnedJDK = pkgs.jdk17;
         appleInputs =
-          if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
+          # if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then 
+          [
             pkgs.cocoapods
-            pkgs.clang
-            pkgs.darwin.xcode_16_2
-          ] else [ ];
+            # pkgs.clang
+            # pkgs.apple-sdk_15
+            # pkgs.darwin.xcode_16_2
+            # pkgs.darwin.libiconv
+            # pkgs.libiconv
+            # pkgs.iconv
+          ];
+        #  else [ ];
       in
       {
         devShells.default = pkgs.mkShellNoCC
@@ -79,12 +93,15 @@
             name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
               just
-              # rustToolchain
+              rustc
+              cargo
+              rustToolchain
               flutter_rust_bridge_codegen
               flutter
               pinnedJDK
-              androidCustomPackage
+              # androidCustomPackage
             ]
+            # ++ lib.optionals stdenv.isDarwin [ libiconv ]
             ++ appleInputs;
             JAVA_HOME = pinnedJDK;
             # ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
