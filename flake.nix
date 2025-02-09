@@ -60,6 +60,7 @@
         );
         pinnedJDK = pkgs.jdk17;
         xcode_version = "16.2.0";
+        # xcode_version = "15.4.0";
         frb_version = "latest";
         flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
           inherit pkgs frb_version;
@@ -68,6 +69,9 @@
           if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
             pkgs.cocoapods
             pkgs.xcodes
+            pkgs.clang
+            # pkgs.apple-sdk_15
+            # pkgs.darwin.xcode_16_2
           ] else [ ];
       in
       {
@@ -76,15 +80,15 @@
             name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
               just
-              rustToolchain
+              # rustToolchain
               flutter
               pinnedJDK
-              androidCustomPackage
+              # androidCustomPackage
               flutter_rust_bridge_codegen
             ]
             # libiconv has to be added on a mac, other machines have it
-            ++ lib.optionals stdenv.isDarwin [ libiconv ]
             ++ appleInputs;
+            # ++ lib.optionals stdenv.isDarwin [ libiconv ];
             JAVA_HOME = pinnedJDK;
             # ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
 
