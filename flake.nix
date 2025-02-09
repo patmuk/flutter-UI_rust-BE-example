@@ -1,18 +1,34 @@
 {
+  description = "Flutter toolchain. Installs all tools needed for flutter, with versions pinned for this project. Rust's own tooling handles the rust toolchain.";
   inputs = {
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
-
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
+    flake-utils.url = "github:numtide/flake-utils";
+    android-nixpkgs = {
+      url = "github:tadfisher/android-nixpkgs";
+      inputs = {
+        flake-utils.follows = "flake-utils";
+        nixpkgs.follows = "nixpkgs";
+        devshell.follows = "devshell";
+      };
     };
-
-    android-nixpkgs.url = "github:tadfisher/android-nixpkgs";
+    devshell = {
+      url = "github:numtide/devshell";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
+    # rust-overlay = {
+    #   url = "github:oxalica/rust-overlay";
+    #   inputs = {
+    #     nixpkgs.follows = "nixpkgs";
+    #   };
+    # };
   };
 
   nixConfig = {
     substituters = [
       "https://cache.nixos.org"
+      ```
       "https://cache.onyx.ovh"
     ];
     trusted-public-keys = [
@@ -21,96 +37,103 @@
     ];
   };
 
-  outputs =
-    { self
-    , nixpkgs
-    , flake-parts
-    , ...
-    } @ inputs:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
-      perSystem =
-        { pkgs
-        , system
-        , lib
-        , ...
-        }: {
-          devShells.default =
-            let
-              pkgs = import nixpkgs {
-                inherit system;
-                config = {
-                  allowUnfree = true;
-                  android_sdk.accept_license = true;
-                };
-                overlays = [ ];
-              };
-              # flutter_rust_bridge_codegen = pkgs.callPackage nix/flutter_rust_bridge_codegen/package.nix { };
-              frb_version = "latest";
-              # flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
-              # };
-              flutter_rust_bridge_codegen = pkgs.callPackage nix/flutter_rust_bridge_codegen.nix {
-
-                inherit pkgs frb_version;
-
-              };
-              android-nixpkgs = pkgs.callPackage inputs.android-nixpkgs { };
-              androidSdk = android-nixpkgs.sdk (sdkPkgs:
-                with sdkPkgs; [
-                  cmdline-tools-latest
-                  build-tools-34-0-0
-                  build-tools-30-0-3
-                  platform-tools
-                  platforms-android-34
-                  platforms-android-33
-                  platforms-android-31
-                  platforms-android-30
-                  emulator
-                ]);
-              PWD = builtins.getEnv "PWD";
-            in
-            pkgs.mkShellNoCC {
-              ANDROID_SDK_ROOT = "${androidSdk}/libexec/android-sdk";
-              ANDROID_NDK_ROOT = "${androidSdk}/libexec/android-sdk/ndk-bundle";
-              ANDROID_AVD_HOME = "${PWD}/.android/avd";
-              ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
-              FLUTTER_SDK = "${pkgs.flutter}";
-              GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2";
-              LD_LIBRARY_PATH = "${PWD}/apps/onyx/build/linux/x64/debug/bundle/lib/:${PWD}/apps/onyx/build/linux/x64/release/bundle/lib/:${PWD}/apps/onyx/build/linux/x64/profile/bundle/lib/";
-              buildInputs = with pkgs; [
-                flutter_rust_bridge_codegen
-                flutter
-                melos
-                jdk17
-                androidSdk
-                at-spi2-core
-                clang
-                dart
-                dbus
-                util-linux
-                cmake
-                ninja
-                libsecret
-                android-tools
-                pkg-config
-                gtk3
-                glib
-                pcre2
-                pcre
-                libthai
-                libdatrie
-                xorg.libXdmcp
-                libxkbcommon
-                xorg.libXtst
-                libepoxy
-                libgcrypt
-                libgpg-error
-                apksigner
-                zenity
-                lerc
-              ];
-            };
-          formatter = pkgs.alejandra;
+  outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
+    # outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, ... }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs {
+          # inherit system overlays;
+          inherit system;
+          config = {
+            allowUnfree = true;
+            android_sdk.accept_license = true;
+          };
+          overlays = [ ];
+          # overlays = [ (import rust-overlay) ];
         };
-    };
+        # rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        frb_version = "latest";
+        flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
+          inherit pkgs frb_version;
+        };
+        androidCustomPackage = android-nixpkgs.sdk.${system} (
+          sdkPkgs: with sdkPkgs; [
+            cmdline-tools-latest
+            build-tools-30-0-3
+            # build-tools-33-0-2
+            build-tools-34-0-0
+            ndk-23-1-7779620
+            # ndk-26-2-11394342
+            platform-tools
+            emulator
+            #patcher-v4
+            # platforms-android-28
+            platforms-android-33
+            platforms-android-34
+            system-images-android-34-aosp-atd-arm64-v8a #basic image, 40% faster
+            system-images-android-34-google-apis-arm64-v8a #google branded
+            system-images-android-34-google-apis-playstore-arm64-v8a #google branded with playstore installed
+          ]
+        );
+        pinnedJDK = pkgs.jdk17;
+        # xcode_version = "16.2.0";
+        # xcode_version = "15.4.0";
+        appleInputs =
+          if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
+            pkgs.cocoapods
+            # pkgs.xcodes
+            pkgs.clang
+            # pkgs.apple-sdk_15
+            pkgs.darwin.xcode_16_2
+          ] else [ ];
+      in
+      {
+        devShells.default = pkgs.mkShellNoCC
+          {
+            name = "flutter-rust-dev-shell";
+            # LD_LIBRARY_PATH = "${PWD}/apps/onyx/build/linux/x64/debug/bundle/lib/:${PWD}/apps/onyx/build/linux/x64/release/bundle/lib/:${PWD}/apps/onyx/build/linux/x64/profile/bundle/lib/";
+
+            buildInputs = with pkgs; [
+              just
+              # rustToolchain
+              flutter_rust_bridge_codegen
+              flutter
+              pinnedJDK
+              androidCustomPackage
+              clang
+              dart
+            ]
+            # libiconv has to be added on a mac, other machines have it
+            ++ appleInputs;
+            # ++ lib.optionals stdenv.isDarwin [ libiconv ];
+            JAVA_HOME = pinnedJDK;
+            # ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
+
+            # Use this to create an android emulator
+            # however, this is not needed, as VSCode's Flutter Plugin can create emulators as well
+            # AVD_package = "system-images;android-34;aosp_atd;arm64-v8a";
+            # local_toolchain_path = "$PWD/.toolchain";
+            # local_SDK_path = "${local_toolchain_path}/android";
+            # local_AVD_path = "${local_SDK_path}/AVD";
+            # avdmanager create avd --name android-34-pixel_8 --package '${AVD_package}' --device "pixel_8"
+            # shellHook = ''
+            #   	      #  uncomment to enable flutter-rust-bridge-codegen logging
+            #   	      #  export RUST_BACKTRACE=1
+            #   	      #  export RUST_LOG="debug" 
+
+            #           # installs or checks for the right xcode version
+            #           # echo "installing xcode ${xcode_version}"
+            #           # xcodes install ${xcode_version} --experimental-unxip # --directory "$PWD/.xcode"
+            #           # xcodes select ${xcode_version}
+            #           # echo
+            #           #  GRADLE_USER_HOME=$HOME/gradle-user-home
+            #           #  GRADLE_HOME=$HOME/gradle-home
+            # '';
+
+            # GRADLE_USER_HOME = " /home/admin0101/.gradle ";
+            # GRADLE_OPTS = " - Dorg.gradle.project.android.aapt2FromMavenOverride=${androidCustomPackage}/share/android-sdk/build-tools/34.0.0/aapt2";
+          };
+        formatter = pkgs.alejandra;
+      }
+    );
 }
