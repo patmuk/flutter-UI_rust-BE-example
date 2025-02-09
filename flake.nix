@@ -17,18 +17,11 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-    # rust-overlay = {
-    #   url = "github:oxalica/rust-overlay";
-    #   inputs = {
-    #     nixpkgs.follows = "nixpkgs";
-    #   };
-    # };
   };
 
   nixConfig = {
     substituters = [
       "https://cache.nixos.org"
-      ```
       "https://cache.onyx.ovh"
     ];
     trusted-public-keys = [
@@ -38,18 +31,15 @@
   };
 
   outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
-    # outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
-          # inherit system overlays;
           inherit system;
           config = {
             allowUnfree = true;
             android_sdk.accept_license = true;
           };
           overlays = [ ];
-          # overlays = [ (import rust-overlay) ];
         };
         # rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
         frb_version = "latest";
@@ -76,14 +66,10 @@
           ]
         );
         pinnedJDK = pkgs.jdk17;
-        # xcode_version = "16.2.0";
-        # xcode_version = "15.4.0";
         appleInputs =
           if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
             pkgs.cocoapods
-            # pkgs.xcodes
             pkgs.clang
-            # pkgs.apple-sdk_15
             pkgs.darwin.xcode_16_2
           ] else [ ];
       in
@@ -91,8 +77,6 @@
         devShells.default = pkgs.mkShellNoCC
           {
             name = "flutter-rust-dev-shell";
-            # LD_LIBRARY_PATH = "${PWD}/apps/onyx/build/linux/x64/debug/bundle/lib/:${PWD}/apps/onyx/build/linux/x64/release/bundle/lib/:${PWD}/apps/onyx/build/linux/x64/profile/bundle/lib/";
-
             buildInputs = with pkgs; [
               just
               # rustToolchain
@@ -100,15 +84,10 @@
               flutter
               pinnedJDK
               androidCustomPackage
-              clang
-              dart
             ]
-            # libiconv has to be added on a mac, other machines have it
             ++ appleInputs;
-            # ++ lib.optionals stdenv.isDarwin [ libiconv ];
             JAVA_HOME = pinnedJDK;
             # ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
-
             # Use this to create an android emulator
             # however, this is not needed, as VSCode's Flutter Plugin can create emulators as well
             # AVD_package = "system-images;android-34;aosp_atd;arm64-v8a";
@@ -116,22 +95,14 @@
             # local_SDK_path = "${local_toolchain_path}/android";
             # local_AVD_path = "${local_SDK_path}/AVD";
             # avdmanager create avd --name android-34-pixel_8 --package '${AVD_package}' --device "pixel_8"
+            # GRADLE_USER_HOME = " /home/admin0101/.gradle ";
+            # GRADLE_OPTS = " - Dorg.gradle.project.android.aapt2FromMavenOverride=${androidCustomPackage}/share/android-sdk/build-tools/34.0.0/aapt2";
+            #
             # shellHook = ''
             #   	      #  uncomment to enable flutter-rust-bridge-codegen logging
             #   	      #  export RUST_BACKTRACE=1
             #   	      #  export RUST_LOG="debug" 
-
-            #           # installs or checks for the right xcode version
-            #           # echo "installing xcode ${xcode_version}"
-            #           # xcodes install ${xcode_version} --experimental-unxip # --directory "$PWD/.xcode"
-            #           # xcodes select ${xcode_version}
-            #           # echo
-            #           #  GRADLE_USER_HOME=$HOME/gradle-user-home
-            #           #  GRADLE_HOME=$HOME/gradle-home
             # '';
-
-            # GRADLE_USER_HOME = " /home/admin0101/.gradle ";
-            # GRADLE_OPTS = " - Dorg.gradle.project.android.aapt2FromMavenOverride=${androidCustomPackage}/share/android-sdk/build-tools/34.0.0/aapt2";
           };
         formatter = pkgs.alejandra;
       }
