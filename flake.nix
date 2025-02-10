@@ -17,9 +17,11 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-    fenix = {
-      url = "github:nix-community/fenix";
-      inputs.nixpkgs.follows = "nixpkgs";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
     };
   };
 
@@ -34,7 +36,8 @@
     ];
   };
 
-  outputs = { nixpkgs, flake-utils, android-nixpkgs, fenix, ... }:
+  outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, ... }:
+    # outputs = { nixpkgs, flake-utils, android-nixpkgs, fenix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -43,13 +46,14 @@
             allowUnfree = true;
             android_sdk.accept_license = true;
           };
-          overlays = [ ];
+          overlays = [ (import rust-overlay) ];
+          # overlays = [ ];
         };
-        # rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-        rustToolchain = fenix.packages.${system}.fromToolchainFile {
-          file = ./rust-toolchain.toml;
-          sha256 = "sha256-vMlz0zHduoXtrlu0Kj1jEp71tYFXyymACW8L4jzrzNA=";
-        };
+        rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        # rustToolchain = fenix.packages.${system}.fromToolchainFile {
+        #   file = ./rust-toolchain.toml;
+        #   sha256 = "sha256-vMlz0zHduoXtrlu0Kj1jEp71tYFXyymACW8L4jzrzNA=";
+        # };
         frb_version = "latest";
         flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
           inherit pkgs frb_version;
@@ -93,15 +97,17 @@
             name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
               just
-              rustc
-              cargo
+              # rustc
+              # cargo
+              # libiconv
               rustToolchain
               flutter_rust_bridge_codegen
               flutter
               pinnedJDK
               # androidCustomPackage
+              sd
             ]
-            # ++ lib.optionals stdenv.isDarwin [ libiconv ]
+            # ++ lib.optionals stdenv.isDarwin [ libiconv iconv ]
             ++ appleInputs;
             JAVA_HOME = pinnedJDK;
             # ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
@@ -115,11 +121,13 @@
             # GRADLE_USER_HOME = " /home/admin0101/.gradle ";
             # GRADLE_OPTS = " - Dorg.gradle.project.android.aapt2FromMavenOverride=${androidCustomPackage}/share/android-sdk/build-tools/34.0.0/aapt2";
             #
-            # shellHook = ''
-            #   	      #  uncomment to enable flutter-rust-bridge-codegen logging
-            #   	      #  export RUST_BACKTRACE=1
-            #   	      #  export RUST_LOG="debug" 
-            # '';
+            shellHook = ''
+              export PATH=$(echo $PATH | sd "${pkgs.xcbuild.xcrun}/bin" "")
+              unset DEVELOPER_DIR
+              #  uncomment to enable flutter-rust-bridge-codegen logging
+              #  export RUST_BACKTRACE=1
+              #  export RUST_LOG="debug" 
+            '';
           };
         formatter = pkgs.alejandra;
       }
