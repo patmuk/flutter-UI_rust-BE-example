@@ -23,7 +23,8 @@
     };
   };
 
-  outputs = { nixpkgs, flake-utils, android-nixpkgs, fenix, ... }:
+  # outputs = { nixpkgs, flake-utils, android-nixpkgs, fenix, ... }:
+  outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -35,10 +36,10 @@
             };
           };
         };
-        rustToolchain = fenix.packages.${system}.fromToolchainFile {
-          file = ./rust-toolchain.toml;
-          sha256 = "sha256-vMlz0zHduoXtrlu0Kj1jEp71tYFXyymACW8L4jzrzNA=";
-        };
+        # rustToolchain = fenix.packages.${system}.fromToolchainFile {
+        #   file = ./rust-toolchain.toml;
+        #   sha256 = "sha256-vMlz0zHduoXtrlu0Kj1jEp71tYFXyymACW8L4jzrzNA=";
+        # };
         androidCustomPackage = android-nixpkgs.sdk.${system} (
           sdkPkgs: with sdkPkgs; [
             cmdline-tools-latest
@@ -87,7 +88,7 @@
             name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
               just
-              rustToolchain
+              # rustToolchain
               flutter
               pinnedJDK
               androidCustomPackage
@@ -122,6 +123,7 @@
                       # export PATH=$PATH:${androidCustomPackage}/share/android-sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android34-clang
                       export PATH=$PATH:./.direnv/bin/i686-linux-android-clang
                       # echo $PATH
+                      ln -s ${pkgs.clang}/bin/clang ./.direnv/bin/clang
 
                       # installs or checks for the right xcode version
                       echo "installing xcode ${xcode_version}"
