@@ -80,6 +80,7 @@
             pkgs.clang
           ] else [ ];
       in
+      # rec {
       {
         devShells.default = pkgs.mkShellNoCC
           {
@@ -105,14 +106,22 @@
             # local_SDK_path = "${local_toolchain_path}/android";
             # local_AVD_path = "${local_SDK_path}/AVD";
             # avdmanager create avd --name android-34-pixel_8 --package '${AVD_package}' --device "pixel_8"
+            NIX_LD = "${pkgs.stdenv.cc.libc}/lib/ld-linux-x86-64.so.2";
+            ANDROID_HOME = "${androidCustomPackage}/libexec/android-sdk";
+            # NDK_HOME = "${androidCustomPackage}/libexec/android-sdk/ndk/${builtins.head (pkgs.lib.lists.reverseList (builtins.split "-" "${androidCustomPackage.ndk-bundle}"))}";
+            NDK_HOME = "${androidCustomPackage}/libexec/android-sdk/ndk/${builtins.head (pkgs.lib.lists.reverseList (builtins.split "-" "${androidCustomPackage}/libexec/android-sdk/ndk-bundle"))}";
+            # ANDROID_SDK_ROOT = "${androidCustomPackage}/libexec/android-sdk";
+            ANDROID_NDK_ROOT = "${androidCustomPackage}/libexec/android-sdk/ndk-bundle";
+
             shellHook = ''
               	      #  uncomment to enable flutter-rust-bridge-codegen logging
               	      #  export RUST_BACKTRACE=1
               	      #  export RUST_LOG="debug" 
 
-                      echo ${androidCustomPackage}/share/android-sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android34-clang
-                      export PATH=$PATH:${androidCustomPackage}/share/android-sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android34-clang
-                      echo $PATH
+                      ln -s ${androidCustomPackage}/share/android-sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android34-clang ./.direnv/bin/i686-linux-android-clang
+                      # export PATH=$PATH:${androidCustomPackage}/share/android-sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android34-clang
+                      export PATH=$PATH:./.direnv/bin/i686-linux-android-clang
+                      # echo $PATH
 
                       # installs or checks for the right xcode version
                       echo "installing xcode ${xcode_version}"
