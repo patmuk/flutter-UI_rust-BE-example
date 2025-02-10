@@ -1,7 +1,5 @@
 {
   description = "Flutter toolchain. Installs all tools needed for flutter, with versions pinned for this project. Rust's own tooling handles the rust toolchain.";
-  # nix flutter doesn't work: https://github.com/NixOS/nixpkgs/issues/243448
-  # thus using a local installation
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
@@ -19,23 +17,16 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-    # share rust configuration with nix ... not really needed!
-    # rust-overlay = {
-    #   url = "github:oxalica/rust-overlay";
-    #   inputs = {
-    #     nixpkgs.follows = "nixpkgs";
-    #     flake-utils.follows = "flake-utils";
-    #   };
-    # };
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  # outputs = { nixpkgs, flake-utils, android-nixpkgs, rust-overlay, ... }:
-  outputs = { nixpkgs, flake-utils, android-nixpkgs, ... }:
+  outputs = { nixpkgs, flake-utils, android-nixpkgs, fenix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        # overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs {
-          # inherit system overlays;
           inherit system;
           config = {
             allowUnfree = true;
@@ -44,24 +35,36 @@
             };
           };
         };
-        # rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        rustToolchain = fenix.packages.${system}.fromToolchainFile {
+          file = ./rust-toolchain.toml;
+          sha256 = "sha256-vMlz0zHduoXtrlu0Kj1jEp71tYFXyymACW8L4jzrzNA=";
+        };
         androidCustomPackage = android-nixpkgs.sdk.${system} (
           sdkPkgs: with sdkPkgs; [
             cmdline-tools-latest
+            # cmdline-tools-17-0 
             build-tools-30-0-3
+            build-tools-33-0-1
             # build-tools-33-0-2
             build-tools-34-0-0
+            build-tools-35-0-0
             ndk-23-1-7779620
-            # ndk-26-2-11394342
+            ndk-26-1-10909125
+            ndk-26-2-11394342
+            ndk-28-0-13004108
             platform-tools
             emulator
             #patcher-v4
             # platforms-android-28
             platforms-android-33
             platforms-android-34
+            platforms-android-35
             system-images-android-34-aosp-atd-arm64-v8a #basic image, 40% faster
             system-images-android-34-google-apis-arm64-v8a #google branded
             system-images-android-34-google-apis-playstore-arm64-v8a #google branded with playstore installed
+            system-images-android-35-aosp-atd-arm64-v8a #basic image, 40% faster
+            system-images-android-35-google-apis-arm64-v8a #google branded
+            system-images-android-35-google-apis-playstore-arm64-v8a #google branded with playstore installed
           ]
         );
         pinnedJDK = pkgs.jdk17;
@@ -74,6 +77,7 @@
           if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
             pkgs.cocoapods
             pkgs.xcodes
+            pkgs.clang
           ] else [ ];
       in
       {
@@ -82,17 +86,17 @@
             name = "flutter-rust-dev-shell";
             buildInputs = with pkgs; [
               just
-              # rustToolchain
+              rustToolchain
               flutter
               pinnedJDK
               androidCustomPackage
               flutter_rust_bridge_codegen
             ]
             # libiconv has to be added on a mac, other machines have it
-            ++ lib.optionals stdenv.isDarwin [ libiconv ]
+            # ++ lib.optionals stdenv.isDarwin [ libiconv ]
             ++ appleInputs;
             JAVA_HOME = pinnedJDK;
-            # ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
+            ANDROID_SDK_ROOT = "${androidCustomPackage}/share/android-sdk";
 
             # Use this to create an android emulator
             # however, this is not needed, as VSCode's Flutter Plugin can create emulators as well
@@ -105,6 +109,10 @@
               	      #  uncomment to enable flutter-rust-bridge-codegen logging
               	      #  export RUST_BACKTRACE=1
               	      #  export RUST_LOG="debug" 
+
+                      echo ${androidCustomPackage}/share/android-sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android34-clang
+                      export PATH=$PATH:${androidCustomPackage}/share/android-sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/darwin-x86_64/bin/i686-linux-android34-clang
+                      echo $PATH
 
                       # installs or checks for the right xcode version
                       echo "installing xcode ${xcode_version}"
