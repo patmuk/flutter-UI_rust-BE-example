@@ -82,7 +82,10 @@
           # if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then 
           [
             pkgs.cocoapods
+            # enable clang for `cargo build` (otherwise iconv is not found)
+            # disable for `flutter run`
             # pkgs.clang
+
             # pkgs.apple-sdk_15
             # pkgs.darwin.xcode_16_2
             # pkgs.darwin.libiconv
@@ -100,7 +103,7 @@
               # rustc
               # cargo
               # libiconv
-              rustToolchain
+              # rustToolchain
               flutter_rust_bridge_codegen
               flutter
               pinnedJDK
@@ -121,6 +124,10 @@
             # GRADLE_USER_HOME = " /home/admin0101/.gradle ";
             # GRADLE_OPTS = " - Dorg.gradle.project.android.aapt2FromMavenOverride=${androidCustomPackage}/share/android-sdk/build-tools/34.0.0/aapt2";
             #
+            # LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath pkgs}:${pkgs.stdenv.cc.cc.lib}/lib";
+            # LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath pkgs}:${pkgs.libiconv}/lib";
+            # LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:${pkgs.libiconv}/lib/libiconv.dylib";
+            # LD_LIBRARY_PATH = "${pkgs.libiconv}/lib/libiconv.dylib";
             shellHook = ''
               export PATH=$(echo $PATH | sd "${pkgs.xcbuild.xcrun}/bin" "")
               unset DEVELOPER_DIR
