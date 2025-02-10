@@ -13,11 +13,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1739045906,
-        "narHash": "sha256-gKs6BxC/zdo087EyGNVqVWKnN6F5gjdx6fKaRZ/vduk=",
+        "lastModified": 1739132291,
+        "narHash": "sha256-Ps1SM/zhvP5mjnfNmuPuyJxF18tFsAVJjkj78qjRk4Y=",
         "owner": "tadfisher",
         "repo": "android-nixpkgs",
-        "rev": "717a63bb3f121080a70732337fdc714c4366f338",
+        "rev": "49f37b26f6847bd56fbb02bc59742a9d9bf7a5e0",
         "type": "github"
       },
       "original": {
@@ -43,6 +43,27 @@
       "original": {
         "owner": "numtide",
         "repo": "devshell",
+        "type": "github"
+      }
+    },
+    "fenix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-analyzer-src": "rust-analyzer-src"
+      },
+      "locked": {
+        "lastModified": 1739169164,
+        "narHash": "sha256-2+/6/2rHsMjlrulkrjZbwthCQiQpeW2pukRFaaUMLy8=",
+        "owner": "nix-community",
+        "repo": "fenix",
+        "rev": "d7616af878cd0cb7f940b470440347920395be0c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "fenix",
         "type": "github"
       }
     },
@@ -84,6 +105,7 @@
       "inputs": {
         "android-nixpkgs": "android-nixpkgs",
         "devshell": "devshell",
+        "fenix": "fenix",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
         "rust-overlay": "rust-overlay"
@@ -106,6 +128,23 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-analyzer-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1739099919,
+        "narHash": "sha256-YUdM2yZzQIbakgc2LdVmkgJMYTqeTu3YdWGgFfiZiTg=",
+        "owner": "rust-lang",
+        "repo": "rust-analyzer",
+        "rev": "35181e167efb94d5090df588e6af9f93250421f3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rust-lang",
+        "ref": "nightly",
+        "repo": "rust-analyzer",
         "type": "github"
       }
     },
