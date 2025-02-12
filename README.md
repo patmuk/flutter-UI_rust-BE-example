@@ -1,3 +1,8 @@
+# Intro
+This is an example project, showing how one can use Flutter for UI only and Rust for the rest.
+
+I presented this to the [Rust Zürisee Group](https://www.meetup.com/rust-zurich/?eventOrigin=event_home_page) on 02/11/2025. Feel free to read my [slides](docs/talks/2025.02.11._rust_zuerisee_Flutter_UI_Rust_BE.pdf).
+
 # implemented paradigms
 ## basis: Crux and Flutter-Rust-Bridge (FRB)
 ### Flutter-Rust-Bridge (FRB)
