@@ -36,7 +36,7 @@
           [
             pkgs.cocoapods
             # pkgs.clang
-            # pkgs.apple-sdk_15
+            pkgs.apple-sdk_15
             # pkgs.darwin.xcode_16_2
             # pkgs.darwin.libiconv
             # pkgs.libiconv
