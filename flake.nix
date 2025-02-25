@@ -1,40 +1,19 @@
 {
-  description = "Flutter toolchain. Installs all tools needed for flutter, with versions pinned for this project. Rust's own tooling handles the rust toolchain.";
   inputs = {
-    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-    android-nixpkgs = {
-      url = "github:tadfisher/android-nixpkgs";
-      inputs = {
-        flake-utils.follows = "flake-utils";
-        nixpkgs.follows = "nixpkgs";
-        devshell.follows = "devshell";
-      };
-    };
-    devshell = {
-      url = "github:numtide/devshell";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
   };
-
-  outputs = { nixpkgs, flake-utils, android-nixpkgs, fenix, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs
-          {
-            inherit system;
-            config = {
-              allowUnfree = true;
-              android_sdk = {
-                accept_license = true;
+  outputs =
+    { self, nixpkgs }:
+    {
+      devShells = nixpkgs.lib.genAttrs [ "aarch64-darwin" "x86_64-darwin" ]
+        (
+          system:
+          let
+            pkgs = import nixpkgs {
+              inherit system;
+              config = {
+                allowUnfree = true;
+                android_sdk.accept_license = true;
               };
               formatter = pkgs.alejandra;
             };
@@ -82,8 +61,8 @@
                 pkgs.xcodes
                 pkgs.clang
               ] else [ ];
-            in
-            {
+          in
+          {
             devShells.default = pkgs.mkShellNoCC
               {
                 name = "flutter-rust-dev-shell";
@@ -130,5 +109,5 @@
                 # GRADLE_OPTS = " - Dorg.gradle.project.android.aapt2FromMavenOverride=${androidCustomPackage}/share/android-sdk/build-tools/34.0.0/aapt2";
               };
           }
-          );
-        }
+        );
+    }
