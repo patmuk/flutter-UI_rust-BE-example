@@ -1,11 +1,20 @@
 { pkgs ? import <nixpkgs> { }, frb_version }:
 # doc: https://ryantm.github.io/nixpkgs/languages-frameworks/rust/
 let
-  latest_version = "v2.7.0";
+  latest_version = "v2.8.0";
   desired_version = if (frb_version == null || frb_version == "latest") then latest_version else frb_version;
 
   frb_source =
-    if (desired_version == "v2.7.0") then
+    if (desired_version == "v2.8.0") then
+      pkgs.fetchFromGitHub
+        {
+          owner = "fzyzcjy";
+          repo = "flutter_rust_bridge";
+          rev = "5dead4fc73a537e42673242eb47543287a696eeb"; # hash of the commit
+          hash = "sha256-amjfreJq/GC/Xou39i2IIIGI1ukpiWRx3bddxVQB6dk=";
+          fetchSubmodules = true;
+        }
+    else if (desired_version == "v2.7.0") then
       pkgs.fetchFromGitHub
         {
           owner = "fzyzcjy";
@@ -61,7 +70,9 @@ let
 
   # pkgs.lib.fakeSha256; # set it to 'lib.fakeSha256' and run nix (develop/build). replace the sha from the error message.
   frb_cargoHash =
-    if (desired_version == "v2.7.0") then
+    if (desired_version == "v2.8.0") then
+      "sha256-zRiyLFDRqhi6TUt/UfWvgJ2hqWdUz8jxUCvN5RDp1Bk="
+    else if (desired_version == "v2.7.0") then
       "sha256-4/Tmj0FFBLhGKbabE+kcoHqBX7rmlg3ps3oZ/hwuir8="
     else if (desired_version == "v2.5.0") then
       "sha256-bigsUJg2n6amwF1LI1ziIWfBx0KaIunkGZeRyXKDt9c="
