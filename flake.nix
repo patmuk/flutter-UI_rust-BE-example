@@ -37,14 +37,19 @@
         sha256 = "sha256-AJ6LX/Q/Er9kS15bn9iflkUwcgYqRQxiOIL2ToVAXaU=";
       };
       androidCustomPackage = android-nixpkgs.sdk.${system} (
+        # show all potential values with
+        # nix flake show github:tadfisher/android-nixpkgs
         sdkPkgs: with sdkPkgs; [
           cmdline-tools-latest
           # cmdline-tools-17-0 
+          build-tools-33-0-1
           build-tools-34-0-0
           build-tools-35-0-0
+          ndk-26-1-10909125
           ndk-28-0-13004108
           platform-tools
           emulator
+          platforms-android-33
           platforms-android-34
           platforms-android-35
           system-images-android-34-aosp-atd-arm64-v8a #basic image, 40% faster
