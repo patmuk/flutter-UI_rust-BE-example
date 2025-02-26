@@ -1,9 +1,13 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
-    { self, nixpkgs }:
+    { self, nixpkgs, fenix }:
     {
       devShells = nixpkgs.lib.genAttrs [ "aarch64-darwin" "x86_64-darwin" ]
         (
@@ -55,18 +59,21 @@
             flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
               inherit pkgs frb_version;
             };
-            appleInputs =
-              if builtins.elem system [ "aarch64-darwin" "x86_64-darwin" ] then [
-                pkgs.cocoapods
-                pkgs.xcodes
-                pkgs.clang
-              ] else [ ];
+            rustToolchain = fenix.packages.${system}.fromToolchainFile {
+              file = ./rust-toolchain.toml;
+              sha256 = "sha256-AJ6LX/Q/Er9kS15bn9iflkUwcgYqRQxiOIL2ToVAXaU=";
+            };
           in
           {
             devShells.default = pkgs.mkShellNoCC
               {
-                name = "flutter-rust-dev-shell";
-                buildInputs = with pkgs; [
+                strictDeps = true;
+                packages = with pkgs; [
+                  (xcodeenv.composeXcodeWrapper { versions = [ "16.2" ]; })
+                  cocoapods
+                  flutter
+                  flutter_rust_bridge_codegen
+                  rustToolchain
                   just
                   rustToolchain
                   flutter
