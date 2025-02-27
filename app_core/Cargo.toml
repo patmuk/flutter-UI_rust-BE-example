@@ -8,21 +8,16 @@ crate-type = ["lib", "cdylib", "staticlib"]
 
 [dependencies]
 flutter_rust_bridge = "=2.8.0"
-thiserror.workspace = true
+generate_cqrs_api_macro = { git = "https://github.com/patmuk/generate_cqrs_api_macros", branch = "master" }
 
+thiserror.workspace = true
 log.workspace = true
 simple_logger.workspace = true
 serde = { version = "^1.0.38", features = ["derive"] }
 bincode = "^1.3.3"
 
-generate_cqrs_api_macro = { git = "https://github.com/patmuk/generate_cqrs_api_macros", branch = "master" }
-
 [dev-dependencies]
 serial_test = "3.0.0"
-
-[build-dependencies]
-# flutter_rust_bridge_codegen = "=2.8.0"
-flutter_rust_bridge_codegen = {version = "^2.8.0"}
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
