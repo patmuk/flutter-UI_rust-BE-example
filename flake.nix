@@ -62,7 +62,7 @@
           system-images-android-35-google-apis-playstore-arm64-v8a #google branded with playstore installed
         ]
       );
-      pinnedJDK = pkgs.jdk17;
+      pinnedJDK = pkgs.jdk17_headless;
     in
     {
       devShells.default = pkgs.mkShellNoCC
