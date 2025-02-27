@@ -46,6 +46,7 @@
           build-tools-33-0-1
           build-tools-34-0-0
           build-tools-35-0-0
+          ndk-23-1-7779620
           ndk-26-1-10909125
           ndk-28-0-13004108
           platform-tools
