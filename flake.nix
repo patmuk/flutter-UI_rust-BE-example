@@ -1,4 +1,5 @@
 {
+  description = "Flutter-Rust-Bridge Toolchain. Tested on Apple Silicon.";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
     flake-utils.url = "github:numtide/flake-utils";
