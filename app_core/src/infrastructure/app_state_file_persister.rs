@@ -1,7 +1,7 @@
 use log::debug;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
-use std::fs::{create_dir_all, File};
+use std::fs::{File, create_dir_all};
 use std::io::{self, Write};
 use std::path::PathBuf;
 
@@ -19,7 +19,9 @@ pub(crate) struct AppStateFilePersister {
 pub enum AppStateFilePersisterError {
     #[error("Cannot read the file from path: {1}")]
     IOError(#[source] io::Error, String),
-    #[error("could not understand (=deserialize) the file {1}. Maybe it's content got corrupted? Bincode-Error: {0}")]
+    #[error(
+        "could not understand (=deserialize) the file {1}. Maybe it's content got corrupted? Bincode-Error: {0}"
+    )]
     DeserializationError(#[source] bincode::Error, String),
     #[error("No File found in: {0}")]
     FileNotFound(String),
@@ -130,7 +132,7 @@ impl AppStatePersister for AppStateFilePersister {
 mod tests {
     // don't execute the tests in parallel, as file access would lead to race conditions
     use serial_test::serial;
-    use std::fs::{create_dir_all, File};
+    use std::fs::{File, create_dir_all};
     use std::io::Write;
     use std::path::PathBuf;
     use std::sync::LazyLock;
