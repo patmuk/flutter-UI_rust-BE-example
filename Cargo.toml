@@ -1,16 +1,11 @@
 [workspace]
 members = ["app_core", "shell_cli"]
-# frb does not yet know resolver = 3; not setting the resolver falls back to "1"
-# https://github.com/fzyzcjy/flutter_rust_bridge/issues/2576
-resolver = "2"
+resolver = "3"
 
 [workspace.package]
 authors = ["PSTT"]
 version = "0.2.0"
-# frb does not yet know edition = "2024"
-# https://github.com/fzyzcjy/flutter_rust_bridge/issues/2576
-edition = "2021"
-# edition = "2024"
+edition = "2024"
 repository = "https://github.com/patmuk/flutter-UI_rust-BE-example"
 license = "Apache-2.0"
 keywords = ["frb", "flutter_rust_bridge", "backend", "example", "cqrs", "crux"]
