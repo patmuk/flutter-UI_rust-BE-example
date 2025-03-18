@@ -1,6 +1,6 @@
 [toolchain]
 channel = "stable"
-components = ["rustfmt", "rustc-dev"]
+components = []
 targets = [
   "aarch64-apple-darwin",
   "aarch64-apple-ios",
@@ -12,4 +12,4 @@ targets = [
   "i686-linux-android",
   "x86_64-linux-android",
 ]
-profile = "minimal"
+profile = "default"
