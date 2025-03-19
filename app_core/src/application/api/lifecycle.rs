@@ -55,6 +55,9 @@ impl Lifecycle for LifecycleImpl {
                     Err(AppStateFilePersisterError::DeserializationError(err, path)) => {
                         return Err(Self::Error::from((err, path)));
                     }
+                    Err(AppStateFilePersisterError::SerializationError(err, path)) => {
+                        return Err(Self::Error::from((err, path)));
+                    }
                 };
 
                 let app_config_impl =

@@ -2,16 +2,16 @@ use log::debug;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::fs::{File, create_dir_all};
-use std::io::{self, Write};
+use std::io;
 use std::path::PathBuf;
 
 use crate::application::api::lifecycle::{
     AppConfig, AppState, AppStatePersistError, AppStatePersister, ProcessingError,
 };
 
-#[derive(Debug)]
 pub(crate) struct AppStateFilePersister {
     pub(crate) path: PathBuf,
+    bincode_config: bincode::config::Configuration,
 }
 
 // handle errors as suggested by https://kazlauskas.me/entries/errors
@@ -19,10 +19,12 @@ pub(crate) struct AppStateFilePersister {
 pub enum AppStateFilePersisterError {
     #[error("Cannot read the file from path: {1}")]
     IOError(#[source] io::Error, String),
+    #[error("could not persist the state into file {1}. Bincode-Error: {0}")]
+    SerializationError(#[source] bincode::error::EncodeError, String),
     #[error(
         "could not understand (=deserialize) the file {1}. Maybe it's content got corrupted? Bincode-Error: {0}"
     )]
-    DeserializationError(#[source] bincode::Error, String),
+    DeserializationError(#[source] bincode::error::DecodeError, String),
     #[error("No File found in: {0}")]
     FileNotFound(String),
 }
@@ -44,6 +46,12 @@ impl AppStatePersistError for AppStateFilePersisterError {
                 error: self.to_string(),
                 url: path.to_owned(),
             },
+            AppStateFilePersisterError::SerializationError(_, path) => {
+                ProcessingError::NotPersisted {
+                    error: self.to_string(),
+                    url: path.to_owned(),
+                }
+            }
         }
     }
 }
@@ -58,9 +66,15 @@ impl From<(io::Error, String)> for AppStateFilePersisterError {
     }
 }
 
-impl From<(bincode::Error, String)> for AppStateFilePersisterError {
-    fn from((err, path): (bincode::Error, String)) -> Self {
+impl From<(bincode::error::DecodeError, String)> for AppStateFilePersisterError {
+    fn from((err, path): (bincode::error::DecodeError, String)) -> Self {
         AppStateFilePersisterError::DeserializationError(err, path)
+    }
+}
+
+impl From<(bincode::error::EncodeError, String)> for AppStateFilePersisterError {
+    fn from((err, path): (bincode::error::EncodeError, String)) -> Self {
+        AppStateFilePersisterError::SerializationError(err, path)
     }
 }
 
@@ -69,6 +83,8 @@ impl From<(bincode::Error, String)> for AppStateFilePersisterError {
 impl AppStatePersister for AppStateFilePersister {
     type Error = AppStateFilePersisterError;
     fn new<AC: AppConfig>(app_config: &AC) -> Result<Self, Self::Error> {
+        // if this config ever depends on a user's preference we add it to the AppConfig
+        let bincode_config = bincode::config::standard();
         // create the directories, but no need to write the file, as there is only the default content
         // remove the last part, as this is the file
         let path = PathBuf::from(app_config.borrow_app_state_url());
@@ -80,6 +96,7 @@ impl AppStatePersister for AppStateFilePersister {
             .map_err(|io_err| (io_err, path.to_string_lossy().to_string()))?;
         Ok(AppStateFilePersister {
             path: path.to_owned(),
+            bincode_config,
         })
     }
 
@@ -91,17 +108,14 @@ impl AppStatePersister for AppStateFilePersister {
             "persisting app state:\n  {app_state:?}\n to {:?}",
             self.path
         );
-        let serialized_app_state: Vec<u8> = bincode::serialize(app_state).expect(
-            "bincode.serialzation itself should not result in an error, \
-    unless the contract with serde is not respected!",
-        );
         if let Some(parent) = self.path.parent() {
             create_dir_all(parent)
                 .map_err(|error| (error, self.path.to_string_lossy().to_string()))?;
         }
-        File::create(&self.path)
-            .and_then(|mut file| file.write_all(&serialized_app_state))
+        let mut file = File::create(&self.path)
             .map_err(|ioerr| (ioerr, self.path.to_string_lossy().to_string()))?;
+        bincode::serde::encode_into_std_write(app_state, &mut file, self.bincode_config)
+            .map_err(|encode_error| (encode_error, self.path.to_string_lossy().to_string()))?;
         debug!("Persisted app state to file: {:?}", self.path);
         Ok(())
     }
@@ -112,18 +126,19 @@ impl AppStatePersister for AppStateFilePersister {
         &self,
     ) -> Result<AS, Self::Error> {
         debug!("loading the app state from {:?}", self.path);
-        let loaded = std::fs::read(&self.path).map_err(|error| {
+        let mut file = std::fs::File::open(&self.path).map_err(|error| {
             <(std::io::Error, String) as std::convert::Into<Self::Error>>::into((
                 error,
                 self.path.to_string_lossy().to_string(),
             ))
         })?;
-        let app_state = bincode::deserialize(&loaded).map_err(|e| {
-            <(bincode::Error, String) as std::convert::Into<Self::Error>>::into((
-                e,
-                self.path.to_string_lossy().to_string(),
-            ))
-        })?;
+        let app_state = bincode::serde::decode_from_std_read(&mut file, self.bincode_config)
+            .map_err(|e| {
+                <(bincode::error::DecodeError, String) as std::convert::Into<Self::Error>>::into((
+                    e,
+                    self.path.to_string_lossy().to_string(),
+                ))
+            })?;
         Ok(app_state)
     }
 }
@@ -276,17 +291,14 @@ mod tests {
         let persister = create_test_persister();
         let result = persister.load_app_state::<AppConfigImpl, AppStateImpl>();
         assert!(&result.is_err());
-        use bincode::ErrorKind;
         assert!(matches!(
             result,
             Err(AppStateFilePersisterError::DeserializationError(ref err, _))
                 if {
-                   match &**err {
-                       ErrorKind::InvalidBoolEncoding(err_message) => {
-                        *err_message == 99
-                       },
-                       _ => false,
-                   }
+                   match &err {
+                    bincode::error::DecodeError::InvalidBooleanValue(err_message) => *err_message == 99,
+                    _ => false,
+                                    }
                 }
         ));
         cleanup_test_file();

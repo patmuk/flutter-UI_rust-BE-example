@@ -14,7 +14,7 @@ thiserror.workspace = true
 log.workspace = true
 simple_logger.workspace = true
 serde = { version = "^1.0.38", features = ["derive"] }
-bincode = "^1.3.3"
+bincode = { version = "^2.0.1", features = ["serde"] }
 
 [dev-dependencies]
 serial_test = "3.0.0"
