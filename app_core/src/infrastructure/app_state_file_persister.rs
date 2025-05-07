@@ -100,6 +100,7 @@ impl AppStatePersister for AppStateFilePersister {
         })
     }
 
+    // TODO persist in thread
     fn persist_app_state<AS: AppState + Serialize + std::fmt::Debug>(
         &self,
         app_state: &AS,
