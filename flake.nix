@@ -29,13 +29,21 @@
         overlays = [ ];
       };
       xcodeenv = import (nixpkgs + "/pkgs/development/mobile/xcodeenv") { inherit (pkgs) callPackage; };
+      local_toolchain_path = "$PWD/.toolchain";
+      local_flutter_path = "${local_toolchain_path}/flutter-local";
+      flutter_version = "latest";
+      flutter-local = import
+        ./nix/flutter-local.nix
+        {
+          inherit pkgs local_flutter_path flutter_version;
+        };
       frb_version = "latest";
       flutter_rust_bridge_codegen = import ./nix/flutter_rust_bridge_codegen.nix {
         inherit pkgs frb_version;
       };
       rustToolchain = fenix.packages.${system}.fromToolchainFile {
         file = ./rust-toolchain.toml;
-        sha256 = "sha256-Hn2uaQzRLidAWpfmRwSRdImifGUCAb9HeAqTYFXWeQk=";
+        sha256 = "sha256-X/4ZBHO3iW0fOenQ3foEvscgAPJYl2abspaBThDOukI=";
       };
       androidCustomPackage = android-nixpkgs.sdk.${system} (
         # show all potential values with
@@ -68,10 +76,11 @@
       devShells.default = pkgs.mkShellNoCC
         {
           strictDeps = true;
-          packages = with pkgs; [
+          buildInputs = with pkgs; [
             (xcodeenv.composeXcodeWrapper { versions = [ "16.2" ]; })
             cocoapods
-            flutter
+            # broken: https://github.com/flutter/flutter/issues/167823
+            # flutter
             flutter_rust_bridge_codegen
             rustToolchain
             androidCustomPackage
@@ -85,7 +94,6 @@
           # ~/.android/avd/<emu-name>/config.ini
           # and set `hw.keyboard = yes` and `hw.mainKeys = yes`
           # AVD_package = "system-images;android-34;aosp_atd;arm64-v8a";
-          # local_toolchain_path = "$PWD/.toolchain";
           # local_SDK_path = "${local_toolchain_path}/android";
           # local_AVD_path = "${local_SDK_path}/AVD";
           # avdmanager create avd --name android-34-pixel_8 --package '${AVD_package}' --device "pixel_8"
@@ -93,7 +101,14 @@
           shellHook = ''
             unset DEVELOPER_DIR
             unset SDKROOT
+
+            mkdir -p ${local_toolchain_path}
+            # installs flutter locally, if not there already
+            ${flutter-local.unpack_flutter}/bin/unpack_flutter
+            export PATH="${local_flutter_path}/flutter/bin:$PATH"
+            echo
           '';
+          # FLUTTER_ROOT = "${pkgs.flutter}";
         };
     }
     );
