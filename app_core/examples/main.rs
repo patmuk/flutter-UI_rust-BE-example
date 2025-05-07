@@ -1,7 +1,7 @@
 use app_core::application::api::lifecycle::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // condigure the app
+    // configure the app
     let app_config: AppConfigImpl = AppConfig::new(Some("./test_app_state.bin".to_string()));
     // this loads or created the state
     LifecycleImpl::initialise_with_app_config(app_config).expect("App state should have loaded.");
