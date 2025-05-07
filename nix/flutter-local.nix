@@ -7,7 +7,7 @@
 # check the url in https://docs.flutter.dev/release/archive?tab=macos
 # leave `hash = ""` and run `nix develop`. The error message will tell the correct hash value.
 rec {
-  latest_version = "3.24.4";
+  latest_version = "3.29.3";
   desired_version = if (flutter_version == null || flutter_version == "latest") then latest_version else flutter_version;
 
   flutter_source =

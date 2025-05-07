@@ -76,7 +76,7 @@
       devShells.default = pkgs.mkShellNoCC
         {
           strictDeps = true;
-          buildInputs = with pkgs; [
+          packages = with pkgs; [
             (xcodeenv.composeXcodeWrapper { versions = [ "16.2" ]; })
             cocoapods
             # broken: https://github.com/flutter/flutter/issues/167823
